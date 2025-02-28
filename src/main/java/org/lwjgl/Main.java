@@ -71,7 +71,7 @@ public class Main {
         glViewport(0, 0, width, height);
 
         // Initialize camera and scene
-        inputHandler = new InputHandler(window);
+        inputHandler = new InputHandler(window, width, height);
         camera = new Camera((float) width / (float) height);
         camera.setPosition(4, 5, 10);
         scene = new Scene();
@@ -79,7 +79,7 @@ public class Main {
         //UI
         try {
             imGuiManager = new ImGuiManager(window);
-            testWindow = new TestWindow(imGuiManager, camera, scene);
+            testWindow = new TestWindow(imGuiManager, camera, scene, inputHandler);
             imGuiManager.addWindow(testWindow);
         }
         catch (Exception e) {

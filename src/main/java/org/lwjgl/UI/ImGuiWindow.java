@@ -15,6 +15,8 @@ public abstract class ImGuiWindow {
         end();
     }
 
+    protected abstract void update();
+
     protected abstract void renderContent();
 
 }

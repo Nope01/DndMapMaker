@@ -56,6 +56,9 @@ public class ImGuiManager {
 
         // Update and render all registered windows
         for (ImGuiWindow window : windows) {
+            window.update();
+        }
+        for (ImGuiWindow window : windows) {
             window.render();
         }
 

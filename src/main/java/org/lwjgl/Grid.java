@@ -42,7 +42,7 @@ public class Grid extends SceneObject{
                 }
                 x = col * horizSpacing;
 
-                Hexagon hexagon = new Hexagon();
+                Hexagon hexagon = new Hexagon(new Vector2i(col, row));
                 hexagon.setPosition(x, y, 0.0f);
                 hexagon.setParent(this);
                 grid[row][col] = hexagon;
