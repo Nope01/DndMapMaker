@@ -11,6 +11,7 @@ public abstract class SceneObject {
     protected Vector3f scale;       // Local scale
     protected Matrix4f localMatrix; // Local transformation matrix
     protected Matrix4f worldMatrix; // World transformation matrix
+    protected float[] vertices;
 
     protected SceneObject parent;   // Reference to parent
     protected List<SceneObject> children; // List of children
@@ -22,6 +23,7 @@ public abstract class SceneObject {
         localMatrix = new Matrix4f();
         worldMatrix = new Matrix4f();
         children = new ArrayList<>();
+        vertices = new float[16];
     }
 
     // Update transformation matrices
@@ -64,7 +66,9 @@ public abstract class SceneObject {
     public Vector3f getPosition() { return position; }
     public Vector3f getRotation() { return rotation; }
     public Vector3f getScale() { return scale; }
+    public float[] getVertices() { return vertices; }
     public void setPosition(float x, float y, float z) { position.set(x, y, z); }
+    public void addPosition(float x, float y, float z) { position.add(x, y, z); }
     public void setRotation(float x, float y, float z) { rotation.set(x, y, z); }
     public void addRotation(float x, float y, float z) { rotation.add(x, y, z); }
     public void setScale(float x, float y, float z) { scale.set(x, y, z); }

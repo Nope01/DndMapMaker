@@ -21,7 +21,6 @@ public class Main {
     private long oldTime;
     private int shaderProgram;
     private InputHandler inputHandler;
-    private Camera camera;
     private Scene scene;
     private FloatBuffer matrixBuffer;
     private ImGuiManager imGuiManager;
@@ -72,14 +71,13 @@ public class Main {
 
         // Initialize camera and scene
         inputHandler = new InputHandler(window, width, height);
-        camera = new Camera((float) width / (float) height);
-        camera.setPosition(4, 5, 10);
-        scene = new Scene();
+
+        scene = new Scene(width, height, inputHandler);
 
         //UI
         try {
             imGuiManager = new ImGuiManager(window);
-            testWindow = new TestWindow(imGuiManager, camera, scene, inputHandler);
+            testWindow = new TestWindow(imGuiManager, scene.getCamera(), scene, inputHandler);
             imGuiManager.addWindow(testWindow);
         }
         catch (Exception e) {
@@ -95,7 +93,7 @@ public class Main {
         glfwSetFramebufferSizeCallback(window, (window, width, height) -> {
             if (width > 0 && height > 0) {
                 glViewport(0, 0, width, height);
-                camera.updateProjection((float) width / height);
+                scene.getCamera().updateProjection((float) width / height);
                 if (imGuiManager != null) imGuiManager.resize(width, height);
             }
         });
@@ -125,7 +123,7 @@ public class Main {
 
             // Update camera and scene
             inputHandler.update();
-            camera.update(inputHandler);
+            scene.getCamera().update(inputHandler);
             scene.update(deltaTime);
 
             if (testWindow != null) {
@@ -139,9 +137,9 @@ public class Main {
             // Set shader uniforms
             glUseProgram(shaderProgram);
             int projLoc = glGetUniformLocation(shaderProgram, "projection");
-            glUniformMatrix4fv(projLoc, false, camera.getProjectionMatrix().get(matrixBuffer)); matrixBuffer.rewind();
+            glUniformMatrix4fv(projLoc, false, scene.getCamera().getProjectionMatrix().get(matrixBuffer)); matrixBuffer.rewind();
             int viewLoc = glGetUniformLocation(shaderProgram, "view");
-            glUniformMatrix4fv(viewLoc, false, camera.getViewMatrix().get(matrixBuffer)); matrixBuffer.rewind();
+            glUniformMatrix4fv(viewLoc, false, scene.getCamera().getViewMatrix().get(matrixBuffer)); matrixBuffer.rewind();
 
             // Render scene
             scene.render(shaderProgram);

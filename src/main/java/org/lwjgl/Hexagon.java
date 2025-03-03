@@ -1,14 +1,14 @@
 package org.lwjgl;
 
-import org.joml.Vector2i;
-import org.joml.Vector3f;
-import org.joml.Vector3i;
+import org.joml.*;
+import org.joml.primitives.AABBf;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
+import java.lang.Math;
 import java.nio.FloatBuffer;
 import java.util.Random;
 
@@ -17,6 +17,7 @@ public class Hexagon extends SceneObject {
     private Vector3f color;   // Random color for the hexagon
     private Vector3i[] cubeDirectionVectors;
     private Vector2i offsetCoords;
+    private AABBf aabb;
     public static final float SIZE = 1.0f;
 
     public Hexagon(Vector2i offsetPos) {
@@ -40,6 +41,7 @@ public class Hexagon extends SceneObject {
                4  3  2
                  */
         };
+        aabb = new AABBf();
     }
 
     private void initGeometry() {
@@ -52,6 +54,7 @@ public class Hexagon extends SceneObject {
             vertices[i * 3 + 1] = radius * (float) Math.sin(angle); // y
             vertices[i * 3 + 2] = 0.0f;                            // z
         }
+        this.vertices = vertices;
 
         // Create VAO and VBO
         vaoId = glGenVertexArrays();
@@ -102,6 +105,10 @@ public class Hexagon extends SceneObject {
         glDeleteVertexArrays(vaoId);
     }
 
+    public float[] getVertices() {
+        return vertices;
+    }
+
     public Vector2i getOffset() {
         return offsetCoords;
     }
@@ -148,5 +155,17 @@ public class Hexagon extends SceneObject {
     //Given a hex and directional value, returns the coords for the neighbour in that direction
     public Vector3i getCubeNeighbour(Vector3i hex, int direction) {
         return cubeAddDirection(hex, cubeDirection(direction));
+    }
+
+    public boolean isPointInside(Vector3f worldPos) {
+        System.out.println(getOffset().x + " " + getOffset().y);
+        System.out.println(position.x + " " + position.y + " " + position.z);
+        return true;
+    }
+
+    private boolean isPointLeftOfLine(Vector2f point, Vector2f lineStart, Vector2f lineEnd) {
+        // 2D cross product to determine if point is left of line
+        return ((lineEnd.x - lineStart.x) * (point.y - lineStart.y) -
+                (lineEnd.y - lineStart.y) * (point.x - lineStart.x)) > 0;
     }
 }

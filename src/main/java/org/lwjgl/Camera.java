@@ -10,6 +10,8 @@ public class Camera {
     private Vector3f rotation; // Pitch (x), Yaw (y), Roll (z) in degrees
     private Matrix4f viewMatrix;
     private Matrix4f projectionMatrix;
+    private Matrix4f invViewMatrix;
+    private Matrix4f invProjMatrix;
 
     private Vector3f up;
     private Vector3f direction;
@@ -26,6 +28,8 @@ public class Camera {
         position = new Vector3f(0, 0, 0);
         rotation = new Vector3f(0, 0, 0);
         viewMatrix = new Matrix4f();
+        invViewMatrix = new Matrix4f();
+        invProjMatrix = new Matrix4f();
 
         direction = new Vector3f();
         right = new Vector3f();
@@ -84,6 +88,7 @@ public class Camera {
 
     public void updateProjection(float aspectRatio) {
         projectionMatrix.identity().perspective(fov, aspectRatio, near, far);
+        invProjMatrix.set(projectionMatrix).invert();
     }
     public Matrix4f getViewMatrix() { return viewMatrix; }
     public Matrix4f getProjectionMatrix() { return projectionMatrix; }
@@ -103,6 +108,7 @@ public class Camera {
                 .rotateX(rotation.x)
                 .rotateY(rotation.y)
                 .translate(-position.x, -position.y, -position.z);
+        invViewMatrix.set(viewMatrix).invert();
     }
 
     public void moveBackwards(float inc) {
@@ -140,4 +146,13 @@ public class Camera {
         position.add(up);
         recalculate();
     }
+
+    public Matrix4f getInvViewMatrix() {
+        return invViewMatrix;
+    }
+
+    public Matrix4f getInvProjMatrix() {
+        return invProjMatrix;
+    }
+
 }

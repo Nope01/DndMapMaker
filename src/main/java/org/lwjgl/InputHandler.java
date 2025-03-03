@@ -12,6 +12,7 @@ public class InputHandler {
     private Vector2f mouseDelta;
     private Vector2f mousePos;
     private Vector3f ndcPos;
+    private Vector3f worldPos;
 
     public InputHandler(long window, int width, int height) {
         this.window = window;
@@ -21,6 +22,7 @@ public class InputHandler {
         this.mousePos = new Vector2f();
         this.mouseDelta = new Vector2f();
         this.ndcPos = new Vector3f();
+        this.worldPos = new Vector3f();
 
         // Initialize mouse position
         double[] x = new double[1];
@@ -86,19 +88,38 @@ public class InputHandler {
         return ndcPos;
     }
 
-//    public Vector3f getRayIntersection(Scene scene) {
-//        Vector4f dir = getMouseDir(scene);
-//        Vector3f rayDir = new Vector3f(
-//                dir.x, dir.y, dir.z
-//        );
-//
-//        Vector3f center = scene.getCamera().getPosition();
-//        Vector3f point = new Vector3f(0.0f, 0.0f, 0.0f);
-//        Vector3f normal = new Vector3f(0.0f, 1.0f, 0.0f);
-//        float f = Intersectionf.intersectRayPlane(center, rayDir, point, normal, 0.5f);
-//
-//        //useful math for calculating intersection
-//        Vector3f intersectionPoint = new Vector3f(rayDir).mul(f).add(center);
-//        return intersectionPoint;
-//    }
+    public Vector3f getWorldPos(Scene scene) {
+        Vector4f dir = getMouseDir(scene);
+        Vector3f rayDir = new Vector3f(
+                dir.x, dir.y, dir.z
+        );
+
+        Vector3f center = scene.getCamera().getPosition();
+        Vector3f point = new Vector3f(0.0f, 0.0f, 0.0f);
+        Vector3f normal = new Vector3f(0.0f, 0.0f, 1.0f);
+        float f = Intersectionf.intersectRayPlane(center, rayDir, point, normal, 0.5f);
+
+        //useful math for calculating intersection
+        Vector3f intersectionPoint = new Vector3f(rayDir).mul(f).add(center);
+        return intersectionPoint;
+    }
+
+    public Vector4f getMouseDir(Scene scene) {
+        float x = getNdcPos().x;
+        float y = getNdcPos().y;
+        float z = -1.0f;
+
+        Matrix4f invProjMatrix = scene.getCamera().getInvProjMatrix();
+        invProjMatrix.invert();
+        Vector4f dir = new Vector4f(x, y, z, 1.0f);
+        dir.mul(invProjMatrix);
+        dir.z = -1.0f;
+        dir.w = 0.0f;
+
+        Matrix4f invViewMatrix = scene.getCamera().getInvViewMatrix();
+        dir.mul(invViewMatrix);
+        return dir;
+    }
+
+
 }
