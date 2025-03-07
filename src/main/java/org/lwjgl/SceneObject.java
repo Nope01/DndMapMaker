@@ -11,7 +11,17 @@ public abstract class SceneObject {
     protected Vector3f scale;       // Local scale
     protected Matrix4f localMatrix; // Local transformation matrix
     protected Matrix4f worldMatrix; // World transformation matrix
-    protected float[] vertices;
+    protected float[] verticesFloats;
+    protected Vector3f[] verticesVecs;
+    protected boolean selected;
+    //The default values for a 0,0,0 object
+    protected Vector3f min = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    protected Vector3f max = new Vector3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
+
+    //The current bounding box values
+    protected Vector3f[] aabbVertices;
+    protected Vector3f aabbMin = new Vector3f();
+    protected Vector3f aabbMax = new Vector3f();
 
     protected SceneObject parent;   // Reference to parent
     protected List<SceneObject> children; // List of children
@@ -23,7 +33,8 @@ public abstract class SceneObject {
         localMatrix = new Matrix4f();
         worldMatrix = new Matrix4f();
         children = new ArrayList<>();
-        vertices = new float[16];
+        verticesFloats = new float[16];
+        selected = false;
     }
 
     // Update transformation matrices
@@ -66,17 +77,44 @@ public abstract class SceneObject {
     public Vector3f getPosition() { return position; }
     public Vector3f getRotation() { return rotation; }
     public Vector3f getScale() { return scale; }
-    public float[] getVertices() { return vertices; }
-    public void setPosition(float x, float y, float z) { position.set(x, y, z); }
-    public void addPosition(float x, float y, float z) { position.add(x, y, z); }
+    public float[] getVerticesFloats() { return verticesFloats; }
+    public void setPosition(float x, float y, float z) {
+        position.set(x, y, z);
+        setAabb(new Vector3f(x, y, z));
+    }
+    public void setPosition(Vector3f pos) {
+        position.set(pos);
+        setAabb(pos);
+    }
+    public void addPosition(float x, float y, float z) {
+        position.add(x, y, z);
+        translateAabb(new Vector3f(x, y, z));
+    }
     public void setRotation(float x, float y, float z) { rotation.set(x, y, z); }
     public void addRotation(float x, float y, float z) { rotation.add(x, y, z); }
-    public void setScale(float x, float y, float z) { scale.set(x, y, z); }
+    public void setScale(float scale) { this.scale.set(scale, scale, scale); }
+
+    public void translateAabb(Vector3f translation) {
+        aabbMin.add(translation);
+        aabbMax.add(translation);
+    }
+
+    public void setAabb(Vector3f newPosition) {
+        aabbMin = min;
+        aabbMax = max;
+        aabbMin.add(newPosition);
+        aabbMax.add(newPosition);
+    }
+
+    public void scaleAabb(Vector3f scale) {
+        min.mul(scale);
+        max.mul(scale);
+    }
 
     // Abstract render method to be implemented by subclasses
     public abstract void render(int shaderProgram);
 
-    public abstract void update(Scene scene,long deltaTime);
+    public abstract void update(Scene scene, float deltaTime, InputHandler inputHandler);
 
     public abstract void cleanup();
 

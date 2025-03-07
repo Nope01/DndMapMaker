@@ -44,7 +44,6 @@ public class InputHandler {
         mouseDelta.set(currentX - lastMousePos.x, currentY - lastMousePos.y);
         mousePos.set((float) x[0], (float) y[0]);
         lastMousePos.set(currentX, currentY);
-
     }
 
     private void setupCallbacks() {
@@ -96,7 +95,7 @@ public class InputHandler {
 
         Vector3f center = scene.getCamera().getPosition();
         Vector3f point = new Vector3f(0.0f, 0.0f, 0.0f);
-        Vector3f normal = new Vector3f(0.0f, 0.0f, 1.0f);
+        Vector3f normal = new Vector3f(0.0f, 1.0f, 0.0f);
         float f = Intersectionf.intersectRayPlane(center, rayDir, point, normal, 0.5f);
 
         //useful math for calculating intersection
@@ -105,19 +104,21 @@ public class InputHandler {
     }
 
     public Vector4f getMouseDir(Scene scene) {
-        float x = getNdcPos().x;
-        float y = getNdcPos().y;
+        Vector3f ndc = getNdcPos();
+        float x = ndc.x;
+        float y = ndc.y;
         float z = -1.0f;
 
         Matrix4f invProjMatrix = scene.getCamera().getInvProjMatrix();
-        invProjMatrix.invert();
         Vector4f dir = new Vector4f(x, y, z, 1.0f);
-        dir.mul(invProjMatrix);
-        dir.z = -1.0f;
-        dir.w = 0.0f;
+        invProjMatrix.transform(dir); // More precise than mul
+
+        dir.z = -1.0f; dir.w = 0.0f;
 
         Matrix4f invViewMatrix = scene.getCamera().getInvViewMatrix();
-        dir.mul(invViewMatrix);
+        invViewMatrix.transform(dir);
+        dir.normalize(); // Ensure unit length
+
         return dir;
     }
 

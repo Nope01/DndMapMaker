@@ -24,14 +24,17 @@ public class Scene {
     }
 
     private void setupScene(int width, int height) {
-        camera = new Camera((float) width / (float) height);
-        camera.setPosition(0, 0, 10);
+        camera = new Camera(width, height);
+        camera.setPosition(3.5f, 10.0f, 5.0f);
+        camera.setRotation(1.5f, 0.0f);
+
         Grid grid = new Grid(this,5, 5);
         addObject(grid);
 
-        Hexagon hexagon = new Hexagon(new Vector2i(0, 0));
-        hexagon.setPosition(0, 0, 3);
-        addObject(hexagon);
+//        Hexagon plane = new Hexagon(new Vector2i(99, 99));
+//        plane.setPosition(0.0f, 0.2f, 0.0f);
+//        plane.setColor(0.0f, 0.0f, 0.0f);
+//        addObject(plane);
     }
 
     public void addObject(SceneObject object) {
@@ -54,11 +57,12 @@ public class Scene {
     public void update(float deltaTime) {
         for (SceneObject root : rootObjects) {
             root.update();
+            root.update(this, deltaTime, inputHandler);
         }
         selectObject();
-//        if (selectedObject != null) {
-//            selectedObject.addPosition(0.0f, 0.0f, 1.0f);
-//        }
+        if (selectedObject != null) {
+            selectedObject.update(this, deltaTime, inputHandler);
+        }
     }
 
     public void render(int shaderProgram) {
@@ -99,16 +103,30 @@ public class Scene {
         Vector2f intersect = new Vector2f();
         for (SceneObject object : rootObjects) {
             if (object instanceof Hexagon) {
-                if (((Hexagon) object).isPointInside(worldPos)) {
+                if (((Hexagon) object).rayIntersect(worldPos, mouseDir, camera)) {
+                    if (selectedObject != null) {
+                        selectedObject.selected = false;
+                    }
                     selectedObject = object;
+                    object.selected = true;
                     return object;
+                }
+                else {
+                    object.selected = false;
                 }
             }
             for (SceneObject child : object.children) {
                 if (child instanceof Hexagon) {
-                    if (((Hexagon) child).isPointInside(worldPos)) {
+                    if (((Hexagon) child).rayIntersect(worldPos, mouseDir, camera)) {
+                        if (selectedObject != null) {
+                            selectedObject.selected = false;
+                        }
                         selectedObject = child;
+                        child.selected = true;
                         return child;
+                    }
+                    else {
+                        child.selected = false;
                     }
                 }
             }

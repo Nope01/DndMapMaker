@@ -7,7 +7,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Camera {
     private Vector3f position;
-    private Vector3f rotation; // Pitch (x), Yaw (y), Roll (z) in degrees
+    private Vector2f rotation;
     private Matrix4f viewMatrix;
     private Matrix4f projectionMatrix;
     private Matrix4f invViewMatrix;
@@ -18,15 +18,15 @@ public class Camera {
     private Vector3f right;
     private float moveSpeed;
     private float rotateSpeed;
-    private float fov;
-    private float near;
-    private float far;
+    private static final float FOV = (float) Math.toRadians(60.0f);
+    private static final float Z_FAR = 100.f;
+    private static final float Z_NEAR = 1f;
     private float mouseSensitivity;
     private float panSensitivity;
 
-    public Camera(float aspectRatio) {
-        position = new Vector3f(0, 0, 0);
-        rotation = new Vector3f(0, 0, 0);
+    public Camera(int width, int height) {
+        position = new Vector3f();
+        rotation = new Vector2f();
         viewMatrix = new Matrix4f();
         invViewMatrix = new Matrix4f();
         invProjMatrix = new Matrix4f();
@@ -37,14 +37,11 @@ public class Camera {
 
         moveSpeed = 0.02f;
         rotateSpeed = 1.0f;
-        fov = 45.0f;
-        near = 0.1f;
-        far = 100f;
         mouseSensitivity = 0.05f;
         panSensitivity = 0.01f;
 
-        projectionMatrix = new Matrix4f().perspective(fov, aspectRatio, near, far);
-
+        projectionMatrix = new Matrix4f();
+        updateProjection(width, height);
     }
 
     public void update(InputHandler input) {
@@ -65,43 +62,22 @@ public class Camera {
         // Mouse rotation (only when captured)
         if (input.isRightClicked()) {
             Vector2f delta = input.getMouseDelta();
-            rotation.z -= delta.x * mouseSensitivity; // Roll
-            rotation.x -= delta.y * mouseSensitivity; // Pitch
-            // Clamp pitch to avoid flipping
-            rotation.x = Math.max(-90, Math.min(90, rotation.x));
+            this.addRotation((float) Math.toRadians(delta.y * mouseSensitivity),
+                    (float) Math.toRadians(delta.x * mouseSensitivity));
         }
 
-        //Mousewheel pan
+        //Middle click pan
         if (input.isMiddleClicked()) {
             Vector2f delta = input.getMouseDelta();
-            position.x -= delta.x * panSensitivity;
-            position.y += delta.y * panSensitivity;
+            this.addPosition(delta.y * panSensitivity, delta.x * panSensitivity);
         }
-
-        // Update view matrix
-        viewMatrix.identity()
-                .rotateX((float) Math.toRadians(rotation.x))
-                .rotateY((float) Math.toRadians(rotation.y))
-                .rotateZ((float) Math.toRadians(rotation.z))
-                .translate(-position.x, -position.y, -position.z);
     }
 
-    public void updateProjection(float aspectRatio) {
-        projectionMatrix.identity().perspective(fov, aspectRatio, near, far);
+    public void updateProjection(int width, int height) {
+        float aspectRatio = (float) width / height;
+        projectionMatrix.setPerspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
         invProjMatrix.set(projectionMatrix).invert();
     }
-    public Matrix4f getViewMatrix() { return viewMatrix; }
-    public Matrix4f getProjectionMatrix() { return projectionMatrix; }
-
-    public void setPosition(Vector3f position) { this.position = position; }
-    public void setPosition(float x, float y, float z) {
-        position.x = x;
-        position.y = y;
-        position.z = z;
-    }
-    public void setRotation(Vector3f rotation) { this.rotation = rotation; }
-    public Vector3f getPosition() { return position; }
-    public Vector3f getRotation() { return rotation; }
 
     private void recalculate() {
         viewMatrix.identity()
@@ -109,6 +85,39 @@ public class Camera {
                 .rotateY(rotation.y)
                 .translate(-position.x, -position.y, -position.z);
         invViewMatrix.set(viewMatrix).invert();
+        invProjMatrix.set(projectionMatrix).invert();
+    }
+
+    public Matrix4f getViewMatrix() { return viewMatrix; }
+    public Matrix4f getProjectionMatrix() { return projectionMatrix; }
+
+    public void setPosition(Vector3f position) {
+        position.set(position);
+        recalculate();
+    }
+    public void setPosition(float x, float y, float z) {
+        position.set(x, y, z);
+        recalculate();
+        System.out.println(projectionMatrix);
+    }
+
+    public void setRotation(float x, float y) {
+        rotation.set(x, y);
+        recalculate();
+    }
+
+    public Vector3f getPosition() { return position; }
+    public Vector2f getRotation() { return rotation; }
+
+    public void addPosition(float x, float y) {
+        moveUp(x);
+        moveLeft(y);
+        recalculate();
+    }
+
+    public void addRotation(float x, float y) {
+        rotation.add(x, y);
+        recalculate();
     }
 
     public void moveBackwards(float inc) {

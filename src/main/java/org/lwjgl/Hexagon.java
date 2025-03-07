@@ -1,8 +1,8 @@
 package org.lwjgl;
 
 import org.joml.*;
-import org.joml.primitives.AABBf;
 
+import static java.lang.Math.TAU;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -10,6 +10,7 @@ import static org.lwjgl.opengl.GL30.*;
 
 import java.lang.Math;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.Random;
 
 public class Hexagon extends SceneObject {
@@ -17,8 +18,11 @@ public class Hexagon extends SceneObject {
     private Vector3f color;   // Random color for the hexagon
     private Vector3i[] cubeDirectionVectors;
     private Vector2i offsetCoords;
-    private AABBf aabb;
+    private int[] indices;
     public static final float SIZE = 1.0f;
+    private int numFloats = 7 * 3;
+
+
 
     public Hexagon(Vector2i offsetPos) {
         super();
@@ -41,22 +45,74 @@ public class Hexagon extends SceneObject {
                4  3  2
                  */
         };
-        aabb = new AABBf();
+
+        for (Vector3f vertex : verticesVecs) {
+            min.x = Math.min(min.x, vertex.x);
+            min.y = Math.min(min.y, vertex.y);
+            min.z = Math.min(min.z, vertex.z);
+
+            max.x = Math.max(max.x, vertex.x);
+            max.y = Math.max(max.y, vertex.y);
+            max.z = Math.max(max.z, vertex.z);
+        }
+
+        Vector3f[] aabbVertices = {
+                new Vector3f(min.x, min.y, min.z),  // Bottom-left-back corner
+                new Vector3f(max.x, min.y, min.z),  // Bottom-right-back corner
+                new Vector3f(max.x, max.y, min.z),  // Top-right-back corner
+                new Vector3f(min.x, max.y, min.z),  // Top-left-back corner
+                new Vector3f(min.x, min.y, max.z),  // Bottom-left-front corner
+                new Vector3f(max.x, min.y, max.z),  // Bottom-right-front corner
+                new Vector3f(max.x, max.y, max.z),  // Top-right-front corner
+                new Vector3f(min.x, max.y, max.z)   // Top-left-front corner
+        };
+        this.aabbVertices = aabbVertices;
+
+        aabbMin = min;
+        aabbMax = max;
     }
 
     private void initGeometry() {
         // Hexagon vertices (6 vertices forming a regular hexagon)
-        float[] vertices = new float[18]; // 6 vertices * 3 coordinates
-        float radius = SIZE;
-        for (int i = 0; i < 6; i++) {
-            float angle = (float) (i * Math.PI / 3); // 60 degrees apart
-            vertices[i * 3] = radius * (float) Math.cos(angle);     // x
-            vertices[i * 3 + 1] = radius * (float) Math.sin(angle); // y
-            vertices[i * 3 + 2] = 0.0f;                            // z
-        }
-        this.vertices = vertices;
+        float[] vertices = new float[numFloats];
+        this.verticesFloats = vertices;
 
-        // Create VAO and VBO
+        Vector3f[] vecs = new Vector3f[7];
+
+        //Rotates a point to create a circle with 6 points (hexagon)
+        vecs[0] = new Vector3f(0, 0, 0);
+        Matrix3f rotation = new Matrix3f();
+        for (int i = 0; i < 6; i++) {
+            float angle = (float) (TAU/6);
+            rotation.rotationY(angle*i);
+            vecs[i+1] = new Vector3f(1.0f, 0.0f, 0.0f);
+            vecs[i+1].mul(rotation);
+        }
+
+        int count = 0;
+        for (Vector3f vec : vecs) {
+            vertices[count++] = vec.x;
+            vertices[count++] = vec.y;
+            vertices[count++] = vec.z;
+        }
+
+        Vector3f[] verticesVecs = new Vector3f[numFloats / 3];
+        count = 0;
+        for (int i = 0; i < vertices.length; i += 3) {
+            verticesVecs[count] = new Vector3f(vertices[i], vertices[i + 1], vertices[i + 2]);
+            count++;
+        }
+        this.verticesVecs = verticesVecs;
+
+        indices = new int[18];
+        int k = 0;
+        for (int i = 1; i <= 6; i++) {
+            indices[k++] = 0;
+            indices[k++] = i;
+            indices[k++] = (i%6)+1;
+        }
+
+        // Vertices
         vaoId = glGenVertexArrays();
         glBindVertexArray(vaoId);
 
@@ -66,9 +122,16 @@ public class Hexagon extends SceneObject {
         glBindBuffer(GL_ARRAY_BUFFER, vboId);
         glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
 
-        // Vertex attribute (position)
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
         glEnableVertexAttribArray(0);
+
+
+        // Indices
+        vboId = glGenBuffers();
+        IntBuffer indicesBuffer = BufferUtils.createIntBuffer(indices.length);
+        indicesBuffer.put(indices).flip();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboId);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
@@ -82,10 +145,12 @@ public class Hexagon extends SceneObject {
         glUniformMatrix4fv(modelLoc, false, worldMatrix.get(new float[16]));
         int colorLoc = glGetUniformLocation(shaderProgram, "color");
         glUniform3f(colorLoc, color.x, color.y, color.z);
+        int selected = glGetUniformLocation(shaderProgram, "selected");
+        glUniform1i(selected, this.selected ? 1 : 0);
 
         // Render hexagon
         glBindVertexArray(vaoId);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 6); // 6 vertices for hexagon
+        glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
         // Render children
@@ -95,9 +160,13 @@ public class Hexagon extends SceneObject {
     }
 
     @Override
-    public void update(Scene scene, long deltaTime) {
-
+    public void update(Scene scene, float deltaTime, InputHandler input) {
+//        if (selected) {
+//            Vector3f worldPos = input.getWorldPos(scene);
+//            this.setPosition(worldPos);
+//        }
     }
+
 
     // Cleanup method (call when done)
     public void cleanup() {
@@ -105,12 +174,24 @@ public class Hexagon extends SceneObject {
         glDeleteVertexArrays(vaoId);
     }
 
-    public float[] getVertices() {
-        return vertices;
+    public float[] getVerticesFloats() {
+        return verticesFloats;
+    }
+
+    public void setColor(float r, float g, float b) {
+        this.color = new Vector3f(r, g, b);
     }
 
     public Vector2i getOffset() {
         return offsetCoords;
+    }
+
+    public Vector3f[] getVerticesAsVecs() {
+        return verticesVecs;
+    }
+
+    public float[] getVerticesAsFloats() {
+        return verticesFloats;
     }
 
     //Below methods convert between coordinate types, namely cube and offset coords
@@ -157,10 +238,42 @@ public class Hexagon extends SceneObject {
         return cubeAddDirection(hex, cubeDirection(direction));
     }
 
-    public boolean isPointInside(Vector3f worldPos) {
-        System.out.println(getOffset().x + " " + getOffset().y);
-        System.out.println(position.x + " " + position.y + " " + position.z);
-        return true;
+    public boolean rayIntersect(Vector3f worldPos, Vector4f mouseDir, Vector3f cameraPos) {
+        float tMin = Float.MIN_VALUE;
+        float tMax = Float.MAX_VALUE;
+        Vector3f rayDirection = new Vector3f(mouseDir.x, mouseDir.y, mouseDir.z);
+
+        for (int i = 0; i < 3; i++) {  // Iterate over x, y, z axes
+            float rayDirComponent = rayDirection.get(i);
+            float rayOriginComponent = cameraPos.get(i);
+            float aabbMinComponent = aabbMin.get(i);
+            float aabbMaxComponent = aabbMax.get(i);
+
+            if (Math.abs(rayDirComponent) < 1E-6) {  // Ray is parallel to the slab
+                if (rayOriginComponent < aabbMinComponent || rayOriginComponent > aabbMaxComponent) {
+                    return false;  // Ray is outside the slab
+                }
+            } else {
+                float invDir = 1.0f / rayDirComponent;
+                float t1 = (aabbMinComponent - rayOriginComponent) * invDir;
+                float t2 = (aabbMaxComponent - rayOriginComponent) * invDir;
+
+                if (t1 > t2) {  // Swap t1 and t2 if t1 > t2
+                    float temp = t1;
+                    t1 = t2;
+                    t2 = temp;
+                }
+
+                tMin = Math.max(tMin, t1);  // Update tMin
+                tMax = Math.min(tMax, t2);  // Update tMax
+
+                if (tMin > tMax) {  // No intersection
+                    return false;
+                }
+            }
+        }
+
+        return true;  // Intersection found
     }
 
     private boolean isPointLeftOfLine(Vector2f point, Vector2f lineStart, Vector2f lineEnd) {

@@ -50,8 +50,9 @@ public class Main {
         //Monitor size
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
         width = vidmode.width();
-        height = vidmode.height();
+        height = 2066;
 
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         window = glfwCreateWindow(width, height, "LWJGL Camera Demo", NULL, NULL);
@@ -93,7 +94,7 @@ public class Main {
         glfwSetFramebufferSizeCallback(window, (window, width, height) -> {
             if (width > 0 && height > 0) {
                 glViewport(0, 0, width, height);
-                scene.getCamera().updateProjection((float) width / height);
+                scene.getCamera().updateProjection(width, height);
                 if (imGuiManager != null) imGuiManager.resize(width, height);
             }
         });
@@ -126,13 +127,7 @@ public class Main {
             scene.getCamera().update(inputHandler);
             scene.update(deltaTime);
 
-            if (testWindow != null) {
 
-            }
-
-            if (imGuiManager != null) {
-                imGuiManager.update(deltaTime, scene);
-            }
 
             // Set shader uniforms
             glUseProgram(shaderProgram);
@@ -143,6 +138,15 @@ public class Main {
 
             // Render scene
             scene.render(shaderProgram);
+
+            //UI
+            if (testWindow != null) {
+
+            }
+
+            if (imGuiManager != null) {
+                imGuiManager.update(deltaTime, scene);
+            }
 
             glfwSwapBuffers(window);
             glfwPollEvents();

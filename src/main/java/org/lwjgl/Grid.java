@@ -1,6 +1,7 @@
 package org.lwjgl;
 
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -35,15 +36,15 @@ public class Grid extends SceneObject{
                 float x, y, z;
 
                 if (col % 2 == 0) {
-                    y = row * vertSpacing;
+                    z = row * vertSpacing;
                 }
                 else {
-                    y = row * vertSpacing + (height/2);
+                    z = row * vertSpacing + (height/2);
                 }
                 x = col * horizSpacing;
 
                 Hexagon hexagon = new Hexagon(new Vector2i(col, row));
-                hexagon.setPosition(x, y, 0.0f);
+                hexagon.setPosition(x, 0.0f, z);
                 hexagon.setParent(this);
                 grid[row][col] = hexagon;
                 scene.addObject(hexagon);
@@ -62,8 +63,10 @@ public class Grid extends SceneObject{
     }
 
     @Override
-    public void update(Scene scene, long deltaTime) {
-
+    public void update(Scene scene, float deltaTime, InputHandler input) {
+        Vector3f worldPos = input.getWorldPos(scene);
+//        this.setPosition(worldPos);
+//        this.addRotation(0.5f, 0.5f ,0.5f);
     }
 
     @Override
@@ -74,5 +77,9 @@ public class Grid extends SceneObject{
                 hexagon.render(shaderProgram);
             }
         }
+    }
+
+    public Hexagon[][] getGrid() {
+        return grid;
     }
 }
