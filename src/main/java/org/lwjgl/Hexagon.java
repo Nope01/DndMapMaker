@@ -11,25 +11,26 @@ import static org.lwjgl.opengl.GL30.*;
 import java.lang.Math;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.Random;
 
 public class Hexagon extends SceneObject {
     private int vaoId, vboId; // Vertex Array Object and Vertex Buffer Object
     private Vector3f color;   // Random color for the hexagon
     private Vector3i[] cubeDirectionVectors;
     private Vector2i offsetCoords;
+    private Vector3i cubeCoords;
+    private Vector2i axialCoords;
     private int[] indices;
     public static final float SIZE = 1.0f;
     private int numFloats = 7 * 3;
 
     private int type;
 
-    private static final int N = 0;
-    private static final int NE = 1;
-    private static final int SE = 2;
-    private static final int S = 3;
-    private static final int SW = 4;
-    private static final int NW = 5;
+    public static final int N = 0;
+    public static final int NE = 1;
+    public static final int SE = 2;
+    public static final int S = 3;
+    public static final int SW = 4;
+    public static final int NW = 5;
 
     public static final int FOREST = 0;
     public static final int PLAINS = 1;
@@ -49,6 +50,8 @@ public class Hexagon extends SceneObject {
         initGeometry();
         initAabb();
         this.offsetCoords = offsetPos;
+        this.cubeCoords = offsetToCubeCoords(offsetPos);
+        this.axialCoords = cubeToAxialCoords(cubeCoords);
         cubeDirectionVectors = new Vector3i[]{
                 new Vector3i(0, -1, 1), //N
                 new Vector3i(1, -1, 0), //NE
@@ -244,8 +247,16 @@ public class Hexagon extends SceneObject {
         };
     }
 
-    public Vector2i getOffset() {
+    public Vector2i getOffsetCoords() {
         return offsetCoords;
+    }
+
+    public Vector3i getCubeCoords() {
+        return cubeCoords;
+    }
+
+    public Vector2i getAxialCoords() {
+        return axialCoords;
     }
 
     public Vector3f[] getVerticesAsVecs() {
@@ -298,6 +309,10 @@ public class Hexagon extends SceneObject {
     //Given a hex and directional value, returns the coords for the neighbour in that direction
     public Vector3i getCubeNeighbour(Vector3i hex, int direction) {
         return cubeAddDirection(hex, cubeDirection(direction));
+    }
+
+    public Vector3i getCubeNeighbour(int direction) {
+        return cubeAddDirection(cubeCoords, cubeDirection(direction));
     }
 
     public boolean rayIntersect(Vector3f worldPos, Vector4f mouseDir, Vector3f cameraPos) {

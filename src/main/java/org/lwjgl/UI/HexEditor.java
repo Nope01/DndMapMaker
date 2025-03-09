@@ -10,6 +10,8 @@ public class HexEditor extends ImGuiWindow{
 
     private SceneObject selectedObject;
     private int selectedType;
+    private int[] gridColumns;
+    private int[] gridRows;
 
     public HexEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super("Hex Editor");
@@ -18,6 +20,8 @@ public class HexEditor extends ImGuiWindow{
         this.inputHandler = inputHandler;
 
         selectedObject = scene.getSelectedObject();
+        gridColumns = new int[]{70};
+        gridRows = new int[]{50};
     }
 
     @Override
@@ -28,6 +32,7 @@ public class HexEditor extends ImGuiWindow{
     @Override
     protected void renderContent() {
         ImGui.begin("Hex Editor");
+
         ImGui.text("Selected Type: " + Hexagon.getTypeAsString(selectedType));
         if (ImGui.button("Forest")) {
             selectedType = Hexagon.FOREST;
@@ -46,6 +51,18 @@ public class HexEditor extends ImGuiWindow{
         }
         if (inputHandler.isLeftClicked() && selectedObject != null) {
             ((Hexagon) selectedObject).setType(selectedType);
+        }
+
+        if (ImGui.sliderInt("Grid columns", gridColumns, 0, 100)) {
+            scene.removeAllObjects();
+            Grid grid = new Grid(scene, gridColumns[0], gridRows[0]);
+            scene.addObject(grid);
+        }
+
+        if (ImGui.sliderInt("Grid rows", gridRows, 0, 100)) {
+            scene.removeAllObjects();
+            Grid grid = new Grid(scene, gridColumns[0], gridRows[0]);
+            scene.addObject(grid);
         }
 
         ImGui.end();

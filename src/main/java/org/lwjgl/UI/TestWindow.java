@@ -73,8 +73,9 @@ public class TestWindow extends ImGuiWindow {
         }
         else {
             if (selectedObject instanceof Hexagon)
-            ImGui.textUnformatted("Selected: " + ((Hexagon) selectedObject).getOffset().x + ", "
-                    + ((Hexagon) selectedObject).getOffset().y);
+            ImGui.textUnformatted("Cube: " + ((Hexagon) selectedObject).getCubeCoords().x + ", "
+                    + ((Hexagon) selectedObject).getCubeCoords().y + " ,"
+                    + ((Hexagon) selectedObject).getCubeCoords().z);
             ImGui.textUnformatted("Type: " + type);
         }
 
