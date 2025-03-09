@@ -8,7 +8,6 @@ import java.util.List;
 public class Scene {
     private Camera camera;
     private List<SceneObject> rootObjects;
-
     private int screenWidth;
     private int screenHeight;
     private InputHandler inputHandler;
@@ -25,10 +24,10 @@ public class Scene {
 
     private void setupScene(int width, int height) {
         camera = new Camera(width, height);
-        camera.setPosition(3.5f, 10.0f, 5.0f);
+        camera.setPosition(50f, 80.0f, 50f);
         camera.setRotation(1.5f, 0.0f);
 
-        Grid grid = new Grid(this,5, 5);
+        Grid grid = new Grid(this,70, 50);
         addObject(grid);
 
 //        Hexagon plane = new Hexagon(new Vector2i(99, 99));
@@ -130,6 +129,7 @@ public class Scene {
                     }
                 }
             }
+            selectedObject = null;
         }
 
 

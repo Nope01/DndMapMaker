@@ -1,5 +1,6 @@
 package org.lwjgl;
 
+import org.lwjgl.UI.HexEditor;
 import org.lwjgl.UI.ImGuiManager;
 import org.lwjgl.UI.TestWindow;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -25,6 +26,7 @@ public class Main {
     private FloatBuffer matrixBuffer;
     private ImGuiManager imGuiManager;
     private TestWindow testWindow;
+    private HexEditor hexEditor;
 
     public static void main(String[] args) {
         Main app = new Main();
@@ -78,8 +80,10 @@ public class Main {
         //UI
         try {
             imGuiManager = new ImGuiManager(window);
-            testWindow = new TestWindow(imGuiManager, scene.getCamera(), scene, inputHandler);
+            testWindow = new TestWindow(imGuiManager, scene, inputHandler);
+            hexEditor = new HexEditor(imGuiManager, scene, inputHandler);
             imGuiManager.addWindow(testWindow);
+            imGuiManager.addWindow(hexEditor);
         }
         catch (Exception e) {
             System.err.println("Failed to load imGuiManager: " + e.getMessage());
@@ -141,6 +145,10 @@ public class Main {
 
             //UI
             if (testWindow != null) {
+
+            }
+
+            if (hexEditor != null) {
 
             }
 

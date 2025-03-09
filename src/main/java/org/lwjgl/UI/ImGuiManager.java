@@ -2,6 +2,7 @@ package org.lwjgl.UI;
 
 import imgui.ImGui;
 import imgui.ImGuiIO;
+import imgui.flag.ImGuiCond;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.*;
 import org.lwjgl.Scene;
@@ -19,6 +20,7 @@ public class ImGuiManager {
     private List<ImGuiWindow> windows;
     private static ImGuiImplGlfw imGuiGlfw;
     private static ImGuiImplGl3 imGuiGl3;
+    private boolean firstFrame = true;
 
 
     public ImGuiManager(long window) {
@@ -58,9 +60,27 @@ public class ImGuiManager {
         for (ImGuiWindow window : windows) {
             window.update();
         }
-        for (ImGuiWindow window : windows) {
-            window.render();
+
+        if (firstFrame) {
+            //Debug
+            ImGui.setNextWindowPos(0, 0, ImGuiCond.Always);
+            ImGui.setNextWindowSize(500, 200);
+            windows.get(0).render();
+
+            //Hex
+            ImGui.setNextWindowPos(0, 200, ImGuiCond.Always);
+            ImGui.setNextWindowSize(500, 200);
+            windows.get(1).render();
+            firstFrame = false;
         }
+        else {
+            for (ImGuiWindow window : windows) {
+                window.render();
+            }
+        }
+
+
+
 
         // End frame and render
         ImGui.render();

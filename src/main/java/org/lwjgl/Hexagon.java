@@ -22,13 +22,32 @@ public class Hexagon extends SceneObject {
     public static final float SIZE = 1.0f;
     private int numFloats = 7 * 3;
 
+    private int type;
 
+    private static final int N = 0;
+    private static final int NE = 1;
+    private static final int SE = 2;
+    private static final int S = 3;
+    private static final int SW = 4;
+    private static final int NW = 5;
+
+    public static final int FOREST = 0;
+    public static final int PLAINS = 1;
+    public static final int DESERT = 2;
+    public static final int HILL = 3;
+    public static final int WATER = 4;
+
+    public static final Vector3f FOREST_COLOR = new Vector3f(0.5f, 0.8f, 0.4f);
+    public static final Vector3f PLAINS_COLOR = new Vector3f(0.93f, 0.93f, 0.82f);
+    public static final Vector3f DESERT_COLOR = new Vector3f(0.71f, 0.65f, 0.26f);
+    public static final Vector3f HILL_COLOR = new Vector3f(0.28f, 0.28f, 0.28f);
+    public static final Vector3f WATER_COLOR = new Vector3f(0.26f, 0.75f, 0.98f);
 
     public Hexagon(Vector2i offsetPos) {
         super();
-        Random rand = new Random();
-        color = new Vector3f(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
+        color = new Vector3f(0.2f, 0.2f, 0.2f);
         initGeometry();
+        initAabb();
         this.offsetCoords = offsetPos;
         cubeDirectionVectors = new Vector3i[]{
                 new Vector3i(0, -1, 1), //N
@@ -45,31 +64,7 @@ public class Hexagon extends SceneObject {
                4  3  2
                  */
         };
-
-        for (Vector3f vertex : verticesVecs) {
-            min.x = Math.min(min.x, vertex.x);
-            min.y = Math.min(min.y, vertex.y);
-            min.z = Math.min(min.z, vertex.z);
-
-            max.x = Math.max(max.x, vertex.x);
-            max.y = Math.max(max.y, vertex.y);
-            max.z = Math.max(max.z, vertex.z);
-        }
-
-        Vector3f[] aabbVertices = {
-                new Vector3f(min.x, min.y, min.z),  // Bottom-left-back corner
-                new Vector3f(max.x, min.y, min.z),  // Bottom-right-back corner
-                new Vector3f(max.x, max.y, min.z),  // Top-right-back corner
-                new Vector3f(min.x, max.y, min.z),  // Top-left-back corner
-                new Vector3f(min.x, min.y, max.z),  // Bottom-left-front corner
-                new Vector3f(max.x, min.y, max.z),  // Bottom-right-front corner
-                new Vector3f(max.x, max.y, max.z),  // Top-right-front corner
-                new Vector3f(min.x, max.y, max.z)   // Top-left-front corner
-        };
-        this.aabbVertices = aabbVertices;
-
-        aabbMin = min;
-        aabbMax = max;
+        type = 99;
     }
 
     private void initGeometry() {
@@ -137,6 +132,33 @@ public class Hexagon extends SceneObject {
         glBindVertexArray(0);
     }
 
+    private void initAabb() {
+        for (Vector3f vertex : verticesVecs) {
+            min.x = Math.min(min.x, vertex.x);
+            min.y = Math.min(min.y, vertex.y);
+            min.z = Math.min(min.z, vertex.z);
+
+            max.x = Math.max(max.x, vertex.x);
+            max.y = Math.max(max.y, vertex.y);
+            max.z = Math.max(max.z, vertex.z);
+        }
+
+        Vector3f[] aabbVertices = {
+                new Vector3f(min.x, min.y, min.z),  // Bottom-left-back corner
+                new Vector3f(max.x, min.y, min.z),  // Bottom-right-back corner
+                new Vector3f(max.x, max.y, min.z),  // Top-right-back corner
+                new Vector3f(min.x, max.y, min.z),  // Top-left-back corner
+                new Vector3f(min.x, min.y, max.z),  // Bottom-left-front corner
+                new Vector3f(max.x, min.y, max.z),  // Bottom-right-front corner
+                new Vector3f(max.x, max.y, max.z),  // Top-right-front corner
+                new Vector3f(min.x, max.y, max.z)   // Top-left-front corner
+        };
+        this.aabbVertices = aabbVertices;
+
+        aabbMin = min;
+        aabbMax = max;
+    }
+
     @Override
     public void render(int shaderProgram) {
         // Bind shader and set uniforms
@@ -161,9 +183,8 @@ public class Hexagon extends SceneObject {
 
     @Override
     public void update(Scene scene, float deltaTime, InputHandler input) {
-//        if (selected) {
-//            Vector3f worldPos = input.getWorldPos(scene);
-//            this.setPosition(worldPos);
+//        if (input.isLeftClicked()) {
+//            type = FOREST;
 //        }
     }
 
@@ -178,8 +199,49 @@ public class Hexagon extends SceneObject {
         return verticesFloats;
     }
 
+    public String getTypeAsString() {
+        return switch (type) {
+            case 0 -> "Forest";
+            case 1 -> "Plains";
+            case 2 -> "Desert";
+            case 3 -> "Hill";
+            case 4 -> "Water";
+            default -> "Unknown";
+        };
+    }
+
+    public static String getTypeAsString(int type) {
+        return switch (type) {
+            case 0 -> "Forest";
+            case 1 -> "Plains";
+            case 2 -> "Desert";
+            case 3 -> "Hill";
+            case 4 -> "Water";
+            default -> "Unknown";
+        };
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+        setColor(type);
+    }
+
     public void setColor(float r, float g, float b) {
         this.color = new Vector3f(r, g, b);
+    }
+
+    public void setColor(int type) {
+        switch (type) {
+            case 0 -> this.color = FOREST_COLOR;
+            case 1 -> this.color = PLAINS_COLOR;
+            case 2 -> this.color = DESERT_COLOR;
+            case 3 -> this.color = HILL_COLOR;
+            case 4 -> this.color = WATER_COLOR;
+        };
     }
 
     public Vector2i getOffset() {
@@ -272,13 +334,6 @@ public class Hexagon extends SceneObject {
                 }
             }
         }
-
         return true;  // Intersection found
-    }
-
-    private boolean isPointLeftOfLine(Vector2f point, Vector2f lineStart, Vector2f lineEnd) {
-        // 2D cross product to determine if point is left of line
-        return ((lineEnd.x - lineStart.x) * (point.y - lineStart.y) -
-                (lineEnd.y - lineStart.y) * (point.x - lineStart.x)) > 0;
     }
 }
