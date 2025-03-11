@@ -26,7 +26,7 @@ public class Scene {
         camera = new Camera(width, height);
         camera.setPosition(50f, 80.0f, 50f);
         camera.setRotation(1.5f, 0.0f);
-
+        camera.resize(width, height);
         Grid grid = new Grid(this,70, 50);
         addObject(grid);
 

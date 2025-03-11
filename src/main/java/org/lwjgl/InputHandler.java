@@ -35,7 +35,7 @@ public class InputHandler {
         setupCallbacks();
     }
 
-    public void update() {
+    public void update(int width, int height) {
         double[] x = new double[1];
         double[] y = new double[1];
         glfwGetCursorPos(window, x, y);
@@ -44,6 +44,8 @@ public class InputHandler {
         mouseDelta.set(currentX - lastMousePos.x, currentY - lastMousePos.y);
         mousePos.set((float) x[0], (float) y[0]);
         lastMousePos.set(currentX, currentY);
+        windowSize.x = width;
+        windowSize.y = height;
     }
 
     private void setupCallbacks() {

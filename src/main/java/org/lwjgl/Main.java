@@ -54,7 +54,7 @@ public class Main {
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
         width = vidmode.width();
-        height = 2066;
+        height = vidmode.height();
 
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         window = glfwCreateWindow(width, height, "LWJGL Camera Demo", NULL, NULL);
@@ -65,6 +65,12 @@ public class Main {
 
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
+
+        int[] arrWidth = new int[1];
+        int[] arrHeight = new int[1];
+        glfwGetFramebufferSize(window, arrWidth, arrHeight);
+        width = arrWidth[0];
+        height = arrHeight[0];
 
         // Set up OpenGL
         glEnable(GL_DEPTH_TEST);
@@ -127,7 +133,7 @@ public class Main {
             oldTime = time;
 
             // Update camera and scene
-            inputHandler.update();
+            inputHandler.update(width, height);
             scene.getCamera().update(inputHandler);
             scene.update(deltaTime);
 
