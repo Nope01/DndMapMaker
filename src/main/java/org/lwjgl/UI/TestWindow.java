@@ -77,6 +77,9 @@ public class TestWindow extends ImGuiWindow {
                     + ((Hexagon) selectedObject).getCubeCoords().y + " ,"
                     + ((Hexagon) selectedObject).getCubeCoords().z);
             ImGui.textUnformatted("Type: " + type);
+            ImGui.textUnformatted("ID: " + selectedObject.getId());
+            ImGui.textUnformatted("Offset: " + ((Hexagon) selectedObject).getOffsetCoords().x + ", "
+                    + ((Hexagon) selectedObject).getOffsetCoords().y);
         }
 
 

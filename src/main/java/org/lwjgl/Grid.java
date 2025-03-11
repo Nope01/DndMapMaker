@@ -17,10 +17,8 @@ public class Grid extends SceneObject{
         makeGrid(scene);
     }
 
-    public Grid(Scene scene) {
-        this.columns = 2;
-        this.rows = 2;
-        makeGrid(scene);
+    public Grid (Scene scene) {
+        this(scene, 2, 2);
     }
 
     public Hexagon[][] makeGrid(Scene scene) {
@@ -43,7 +41,8 @@ public class Grid extends SceneObject{
                 }
                 x = col * horizSpacing;
 
-                Hexagon hexagon = new Hexagon(new Vector2i(col, row));
+                Hexagon hexagon = new Hexagon(new Vector2i(row, col));
+                hexagon.setId("hex-" + row + "-" + col);
                 hexagon.setPosition(x, 0.0f, z);
                 hexagon.setParent(this);
                 grid[row][col] = hexagon;

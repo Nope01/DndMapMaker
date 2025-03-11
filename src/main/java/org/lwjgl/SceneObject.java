@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class SceneObject {
+    protected String id;
     protected Vector3f position;    // Local position
     protected Vector3f rotation;    // Local rotation (Euler angles in degrees)
     protected Vector3f scale;       // Local scale
@@ -14,6 +15,7 @@ public abstract class SceneObject {
     protected float[] verticesFloats;
     protected Vector3f[] verticesVecs;
     protected boolean selected;
+
     //The default values for a 0,0,0 object
     protected Vector3f min = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     protected Vector3f max = new Vector3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
@@ -26,7 +28,8 @@ public abstract class SceneObject {
     protected SceneObject parent;   // Reference to parent
     protected List<SceneObject> children; // List of children
 
-    public SceneObject() {
+    public SceneObject(String id) {
+        this.id = id;
         position = new Vector3f(0, 0, 0);
         rotation = new Vector3f(0, 0, 0);
         scale = new Vector3f(1, 1, 1);
@@ -35,6 +38,10 @@ public abstract class SceneObject {
         children = new ArrayList<>();
         verticesFloats = new float[16];
         selected = false;
+    }
+
+    public SceneObject() {
+        this("default");
     }
 
     // Update transformation matrices
@@ -73,6 +80,12 @@ public abstract class SceneObject {
     }
 
     // Getters and setters
+    public void setId(String id) {
+        this.id = id;
+    }
+    public String getId() {
+        return id;
+    }
     public Matrix4f getWorldMatrix() { return worldMatrix; }
     public Vector3f getPosition() { return position; }
     public Vector3f getRotation() { return rotation; }
