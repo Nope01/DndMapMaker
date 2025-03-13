@@ -49,6 +49,15 @@ public class Scene {
         }
     }
 
+    public SceneObject getObject(String id) {
+        for (SceneObject object : rootObjects) {
+            if (object.getId().equals(id)) {
+                return object;
+            }
+        }
+        return null;
+    }
+
     public void removeAllObjects() {
         rootObjects.clear();
     }

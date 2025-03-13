@@ -14,7 +14,7 @@ import java.nio.IntBuffer;
 
 public class Hexagon extends SceneObject {
     private int vaoId, vboId; // Vertex Array Object and Vertex Buffer Object
-    private Vector3f color;   // Random color for the hexagon
+       // Random color for the hexagon
     private Vector3i[] cubeDirectionVectors;
     private Vector2i offsetCoords;
     private Vector3i cubeCoords;
@@ -46,7 +46,7 @@ public class Hexagon extends SceneObject {
 
     public Hexagon(Vector2i offsetPos) {
         super();
-        color = new Vector3f(0.2f, 0.2f, 0.2f);
+        colour = new Vector3f(0.2f, 0.2f, 0.2f);
         initGeometry();
         initAabb();
         this.offsetCoords = offsetPos;
@@ -169,7 +169,7 @@ public class Hexagon extends SceneObject {
         int modelLoc = glGetUniformLocation(shaderProgram, "model");
         glUniformMatrix4fv(modelLoc, false, worldMatrix.get(new float[16]));
         int colorLoc = glGetUniformLocation(shaderProgram, "color");
-        glUniform3f(colorLoc, color.x, color.y, color.z);
+        glUniform3f(colorLoc, colour.x, colour.y, colour.z);
         int selected = glGetUniformLocation(shaderProgram, "selected");
         glUniform1i(selected, this.selected ? 1 : 0);
 
@@ -233,17 +233,14 @@ public class Hexagon extends SceneObject {
         setColor(type);
     }
 
-    public void setColor(float r, float g, float b) {
-        this.color = new Vector3f(r, g, b);
-    }
 
     public void setColor(int type) {
         switch (type) {
-            case 0 -> this.color = FOREST_COLOR;
-            case 1 -> this.color = PLAINS_COLOR;
-            case 2 -> this.color = DESERT_COLOR;
-            case 3 -> this.color = HILL_COLOR;
-            case 4 -> this.color = WATER_COLOR;
+            case 0 -> this.colour = FOREST_COLOR;
+            case 1 -> this.colour = PLAINS_COLOR;
+            case 2 -> this.colour = DESERT_COLOR;
+            case 3 -> this.colour = HILL_COLOR;
+            case 4 -> this.colour = WATER_COLOR;
         };
     }
 

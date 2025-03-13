@@ -58,7 +58,6 @@ public class TestWindow extends ImGuiWindow {
             scene.addObject(grid);
         }
 
-
         ImGui.textUnformatted("World position: " + df.format(worldPos.x) + ", "
                 + df.format(worldPos.y) + ", "
                 + df.format(worldPos.z));
@@ -80,6 +79,9 @@ public class TestWindow extends ImGuiWindow {
             ImGui.textUnformatted("ID: " + selectedObject.getId());
             ImGui.textUnformatted("Offset: " + ((Hexagon) selectedObject).getOffsetCoords().x + ", "
                     + ((Hexagon) selectedObject).getOffsetCoords().y);
+            ImGui.textUnformatted("Colour: " + selectedObject.getColour().x + ", "
+                    + selectedObject.getColour().y + ", "
+                    + selectedObject.getColour().z);
         }
 
 

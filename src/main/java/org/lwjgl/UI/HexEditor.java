@@ -12,6 +12,8 @@ public class HexEditor extends ImGuiWindow{
     private int selectedType;
     private int[] gridColumns;
     private int[] gridRows;
+    private int oldCols;
+    private int oldRows;
 
     public HexEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super("Hex Editor");
@@ -22,6 +24,8 @@ public class HexEditor extends ImGuiWindow{
         selectedObject = scene.getSelectedObject();
         gridColumns = new int[]{70};
         gridRows = new int[]{50};
+        oldCols = gridColumns[0];
+        oldRows = gridRows[0];
     }
 
     @Override
@@ -54,16 +58,31 @@ public class HexEditor extends ImGuiWindow{
         }
 
         if (ImGui.sliderInt("Grid columns", gridColumns, 0, 100)) {
-            scene.removeAllObjects();
-            Grid grid = new Grid(scene, gridColumns[0], gridRows[0]);
-            scene.addObject(grid);
+            Grid grid = scene.getObject("grid") instanceof Grid ? (Grid) scene.getObject("grid") : null;
+            if (oldCols > gridColumns[0]) {
+                grid.removeColumn(oldCols, gridColumns[0]);
+            }
+            if (oldCols < gridColumns[0]) {
+                grid.addColumn(oldCols, gridColumns[0]);
+            }
+            oldCols = gridColumns[0];
         }
 
         if (ImGui.sliderInt("Grid rows", gridRows, 0, 100)) {
-            scene.removeAllObjects();
-            Grid grid = new Grid(scene, gridColumns[0], gridRows[0]);
-            scene.addObject(grid);
+            Grid grid = scene.getObject("grid") instanceof Grid ? (Grid) scene.getObject("grid") : null;
+            if (oldRows > gridRows[0]) {
+                grid.removeRow(oldRows, gridRows[0]);
+            }
+            else {
+                if (oldRows < gridRows[0]) {
+                    grid.addRow(oldRows, gridRows[0]);
+                }
+
+            }
+
+            oldRows = gridRows[0];
         }
+
 
         ImGui.end();
     }

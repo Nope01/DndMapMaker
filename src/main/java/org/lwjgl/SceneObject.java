@@ -15,6 +15,7 @@ public abstract class SceneObject {
     protected float[] verticesFloats;
     protected Vector3f[] verticesVecs;
     protected boolean selected;
+    protected Vector3f colour;
 
     //The default values for a 0,0,0 object
     protected Vector3f min = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
@@ -79,6 +80,10 @@ public abstract class SceneObject {
         child.setParent(this);
     }
 
+    public void removeChild(SceneObject child) {
+        this.children.remove(child);
+    }
+
     // Getters and setters
     public void setId(String id) {
         this.id = id;
@@ -107,6 +112,8 @@ public abstract class SceneObject {
     public void addRotation(float x, float y, float z) { rotation.add(x, y, z); }
     public void setScale(float scale) { this.scale.set(scale, scale, scale); }
 
+    public void setColour(float r, float g, float b) {this.colour = new Vector3f(r, g, b);}
+    public Vector3f getColour() { return colour; }
     public void translateAabb(Vector3f translation) {
         aabbMin.add(translation);
         aabbMax.add(translation);
