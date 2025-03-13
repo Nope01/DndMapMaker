@@ -1,6 +1,7 @@
 package org.lwjgl.UI;
 
 import imgui.ImGui;
+import org.joml.Vector3i;
 import org.lwjgl.*;
 
 public class HexEditor extends ImGuiWindow{
@@ -14,6 +15,8 @@ public class HexEditor extends ImGuiWindow{
     private int[] gridRows;
     private int oldCols;
     private int oldRows;
+    private Grid grid;
+    private Vector3i distance;
 
     public HexEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super("Hex Editor");
@@ -26,11 +29,20 @@ public class HexEditor extends ImGuiWindow{
         gridRows = new int[]{50};
         oldCols = gridColumns[0];
         oldRows = gridRows[0];
+        grid = scene.getObject("grid") instanceof Grid ? (Grid) scene.getObject("grid") : null;
+        distance = new Vector3i();
     }
 
     @Override
     protected void update() {
         selectedObject = scene.getSelectedObject();
+        grid = scene.getObject("grid") instanceof Grid ? (Grid) scene.getObject("grid") : null;
+        if (selectedObject instanceof Hexagon) {
+            distance =
+                    Hexagon.cubeDistance(grid.getGrid()[0][0].getCubeCoords(),
+                            ((Hexagon) selectedObject).getCubeCoords());
+
+        }
     }
 
     @Override
@@ -53,12 +65,14 @@ public class HexEditor extends ImGuiWindow{
         if (ImGui.button("Water")) {
             selectedType = Hexagon.WATER;
         }
+        if (ImGui.button("Wall")) {
+            selectedType = Hexagon.WALL;
+        }
         if (inputHandler.isLeftClicked() && selectedObject != null) {
             ((Hexagon) selectedObject).setType(selectedType);
         }
 
         if (ImGui.sliderInt("Grid columns", gridColumns, 0, 100)) {
-            Grid grid = scene.getObject("grid") instanceof Grid ? (Grid) scene.getObject("grid") : null;
             if (oldCols > gridColumns[0]) {
                 grid.removeColumn(oldCols, gridColumns[0]);
             }
@@ -69,7 +83,6 @@ public class HexEditor extends ImGuiWindow{
         }
 
         if (ImGui.sliderInt("Grid rows", gridRows, 0, 100)) {
-            Grid grid = scene.getObject("grid") instanceof Grid ? (Grid) scene.getObject("grid") : null;
             if (oldRows > gridRows[0]) {
                 grid.removeRow(oldRows, gridRows[0]);
             }
@@ -77,11 +90,12 @@ public class HexEditor extends ImGuiWindow{
                 if (oldRows < gridRows[0]) {
                     grid.addRow(oldRows, gridRows[0]);
                 }
-
             }
-
             oldRows = gridRows[0];
         }
+
+        ImGui.textUnformatted(distance.x + ", " + distance.y + ", " + distance.z);
+
 
 
         ImGui.end();

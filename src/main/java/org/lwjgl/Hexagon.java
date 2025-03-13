@@ -3,6 +3,7 @@ package org.lwjgl;
 import org.joml.*;
 
 import static java.lang.Math.TAU;
+import static java.lang.Math.abs;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -37,12 +38,14 @@ public class Hexagon extends SceneObject {
     public static final int DESERT = 2;
     public static final int HILL = 3;
     public static final int WATER = 4;
+    public static final int WALL = 5;
 
     public static final Vector3f FOREST_COLOR = new Vector3f(0.5f, 0.8f, 0.4f);
     public static final Vector3f PLAINS_COLOR = new Vector3f(0.93f, 0.93f, 0.82f);
     public static final Vector3f DESERT_COLOR = new Vector3f(0.71f, 0.65f, 0.26f);
     public static final Vector3f HILL_COLOR = new Vector3f(0.28f, 0.28f, 0.28f);
     public static final Vector3f WATER_COLOR = new Vector3f(0.26f, 0.75f, 0.98f);
+    public static final Vector3f WALL_COLOR = Utils.RGBToVec3(252, 126, 66);
 
     public Hexagon(Vector2i offsetPos) {
         super();
@@ -209,6 +212,7 @@ public class Hexagon extends SceneObject {
             case 2 -> "Desert";
             case 3 -> "Hill";
             case 4 -> "Water";
+            case 5 -> "Wall";
             default -> "Unknown";
         };
     }
@@ -220,6 +224,7 @@ public class Hexagon extends SceneObject {
             case 2 -> "Desert";
             case 3 -> "Hill";
             case 4 -> "Water";
+            case 5 -> "Wall";
             default -> "Unknown";
         };
     }
@@ -241,6 +246,7 @@ public class Hexagon extends SceneObject {
             case 2 -> this.colour = DESERT_COLOR;
             case 3 -> this.colour = HILL_COLOR;
             case 4 -> this.colour = WATER_COLOR;
+            case 5 -> this.colour = WALL_COLOR;
         };
     }
 
@@ -308,6 +314,7 @@ public class Hexagon extends SceneObject {
         return cubeAddDirection(hex, cubeDirection(direction));
     }
 
+    //Hit detection
     public Vector3i getCubeNeighbour(int direction) {
         return cubeAddDirection(cubeCoords, cubeDirection(direction));
     }
@@ -347,5 +354,15 @@ public class Hexagon extends SceneObject {
             }
         }
         return true;  // Intersection found
+    }
+
+    //Distances
+    public static Vector3i cubeSubtract(Vector3i a, Vector3i b) {
+        return new Vector3i(a.x - b.x, a.y - b.y, a.z - b.z);
+    }
+
+    public static Vector3i cubeDistance(Vector3i a, Vector3i b) {
+        Vector3i vec = cubeSubtract(a, b);
+        return new Vector3i(abs(vec.x) + abs(vec.y) + abs(vec.z)).div(2);
     }
 }

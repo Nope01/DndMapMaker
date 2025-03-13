@@ -40,7 +40,7 @@ public class Grid extends SceneObject{
 
     public Hexagon createHexagon(int row, int col) {
         Vector3f pos = calculatePosition(row, col);
-        Hexagon hexagon = new Hexagon(new Vector2i(row, col));
+        Hexagon hexagon = new Hexagon(new Vector2i(col, row));
         hexagon.setId("hex-" + row + "-" + col);
         hexagon.setPosition(pos.x, pos.y, pos.z);
         hexagon.setParent(this);
