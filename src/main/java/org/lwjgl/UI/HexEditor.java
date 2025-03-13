@@ -1,6 +1,7 @@
 package org.lwjgl.UI;
 
 import imgui.ImGui;
+import org.joml.Vector2i;
 import org.joml.Vector3i;
 import org.lwjgl.*;
 

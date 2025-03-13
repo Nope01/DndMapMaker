@@ -8,8 +8,8 @@ import static org.lwjgl.opengl.GL20.*;
 
 public class Grid extends SceneObject{
 
-    private int columns;
-    private int rows;
+    public int columns;
+    public int rows;
     private Hexagon[][] grid;
 
     public Grid(Scene scene, int columns, int rows) {
@@ -75,9 +75,11 @@ public class Grid extends SceneObject{
 
     @Override
     public void update(Scene scene, float deltaTime, InputHandler input) {
-        Vector3f worldPos = input.getWorldPos(scene);
-//        this.setPosition(worldPos);
-//        this.addRotation(0.5f, 0.5f ,0.5f);
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
+                grid[row][col].inLine = false;
+            }
+        }
     }
 
     @Override
@@ -94,7 +96,7 @@ public class Grid extends SceneObject{
         return grid;
     }
 
-    public SceneObject getHexagonAt(int row, int col) {
+    public Hexagon getHexagonAt(int row, int col) {
         return grid[row][col];
     }
 

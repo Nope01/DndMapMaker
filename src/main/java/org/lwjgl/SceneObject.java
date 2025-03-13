@@ -14,7 +14,7 @@ public abstract class SceneObject {
     protected Matrix4f worldMatrix; // World transformation matrix
     protected float[] verticesFloats;
     protected Vector3f[] verticesVecs;
-    protected boolean selected;
+    public boolean selected;
     protected Vector3f colour;
 
     //The default values for a 0,0,0 object

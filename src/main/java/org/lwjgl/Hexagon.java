@@ -25,6 +25,7 @@ public class Hexagon extends SceneObject {
     private int numFloats = 7 * 3;
 
     private int type;
+    public boolean inLine;
 
     public static final int N = 0;
     public static final int NE = 1;
@@ -55,6 +56,7 @@ public class Hexagon extends SceneObject {
         this.offsetCoords = offsetPos;
         this.cubeCoords = offsetToCubeCoords(offsetPos);
         this.axialCoords = cubeToAxialCoords(cubeCoords);
+        this.inLine = false;
         cubeDirectionVectors = new Vector3i[]{
                 new Vector3i(0, -1, 1), //N
                 new Vector3i(1, -1, 0), //NE
@@ -175,6 +177,8 @@ public class Hexagon extends SceneObject {
         glUniform3f(colorLoc, colour.x, colour.y, colour.z);
         int selected = glGetUniformLocation(shaderProgram, "selected");
         glUniform1i(selected, this.selected ? 1 : 0);
+        int inLine = glGetUniformLocation(shaderProgram, "inLine");
+        glUniform1i(inLine, this.inLine ? 1 : 0);
 
         // Render hexagon
         glBindVertexArray(vaoId);
@@ -189,9 +193,15 @@ public class Hexagon extends SceneObject {
 
     @Override
     public void update(Scene scene, float deltaTime, InputHandler input) {
-//        if (input.isLeftClicked()) {
-//            type = FOREST;
-//        }
+        Grid grid = scene.getObject("grid") instanceof Grid ? (Grid) scene.getObject("grid") : null;
+        Vector3i[] results = Hexagon.cubeLineDraw(grid.getGrid()[0][0].getCubeCoords(),
+                ((Hexagon) scene.getSelectedObject()).getCubeCoords());
+
+        for (Vector3i vec : results) {
+            Vector2i offset = Hexagon.cubeToOffsetCoords(vec);
+            grid.getHexagonAt(offset.y, offset.x).inLine = true;
+        }
+
     }
 
 
@@ -273,26 +283,26 @@ public class Hexagon extends SceneObject {
     //Below methods convert between coordinate types, namely cube and offset coords
     //Axial coords is the same as cube coords, but hides the S coord
     //Might as well keep all the data?
-    public Vector2i cubeToAxialCoords(Vector3i cube) {
+    public static Vector2i cubeToAxialCoords(Vector3i cube) {
         int q = cube.x;
         int r = cube.y;
         return new Vector2i(q, r);
     }
 
-    public Vector3i axialToCubeCoords(Vector2i axial) {
+    public static Vector3i axialToCubeCoords(Vector2i axial) {
         int q = axial.x;
         int r = axial.y;
         int s = -q-r;
         return new Vector3i(q, r, s);
     }
 
-    public Vector2i cubeToOffsetCoords(Vector3i cube) {
+    public static Vector2i cubeToOffsetCoords(Vector3i cube) {
         int col = cube.x;
         int row = cube.y + (cube.x - (cube.x&1))/2;
         return new Vector2i(col, row);
     }
 
-    public Vector3i offsetToCubeCoords(Vector2i offset) {
+    public static Vector3i offsetToCubeCoords(Vector2i offset) {
         int q = offset.x;
         int r = offset.y - (offset.x - (offset.x&1))/2;
         int s = -q-r;
@@ -364,5 +374,47 @@ public class Hexagon extends SceneObject {
     public static Vector3i cubeDistance(Vector3i a, Vector3i b) {
         Vector3i vec = cubeSubtract(a, b);
         return new Vector3i(abs(vec.x) + abs(vec.y) + abs(vec.z)).div(2);
+    }
+
+    //Line
+
+    public static float lerp(float a, float b, float t) {
+        return a + (b - a) * t;
+    }
+    public static Vector3f cubeLerp(Vector3i a, Vector3i b, float t) {
+        return new Vector3f(
+                lerp(a.x, b.x, t),
+                lerp(a.y, b.y, t),
+                lerp(a.z, b.z, t));
+    }
+
+    public static Vector3i[] cubeLineDraw(Vector3i a, Vector3i b) {
+        int length = cubeDistance(a, b).x;
+        Vector3i[] results = new Vector3i[length];
+        for (int i = 0; i < length; i++) {
+            results[i] = cubeRound(cubeLerp(a, b, (float) (1.0/length * i)));
+        }
+        return results;
+    }
+
+    public static Vector3i cubeRound(Vector3f frac) {
+        int x = Math.round(frac.x);
+        int y = Math.round(frac.y);
+        int z = Math.round(frac.z);
+
+        float xDiff = Math.abs(x - frac.x);
+        float yDiff = Math.abs(y - frac.y);
+        float zDiff = Math.abs(z - frac.z);
+
+        if (xDiff > yDiff && xDiff > zDiff) {
+            x = -y - z;
+        }
+        else if (yDiff > zDiff) {
+            y = -x-z;
+        }
+        else {
+            z = -x-y;
+        }
+        return new Vector3i(x, y, z);
     }
 }
