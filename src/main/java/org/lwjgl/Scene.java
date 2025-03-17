@@ -67,7 +67,7 @@ public class Scene {
             root.update();
             root.update(this, deltaTime, inputHandler);
         }
-        selectObject();
+        ObjectSelection.selectObject(this, inputHandler, rootObjects);
         if (selectedObject != null) {
             selectedObject.update(this, deltaTime, inputHandler);
         }
@@ -147,5 +147,8 @@ public class Scene {
 
     public SceneObject getSelectedObject() {
         return selectedObject;
+    }
+    public void setSelectedObject(SceneObject selectedObject) {
+        this.selectedObject = selectedObject;
     }
 }

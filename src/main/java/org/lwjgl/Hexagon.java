@@ -199,6 +199,9 @@ public class Hexagon extends SceneObject {
 
         for (Vector3i vec : results) {
             Vector2i offset = Hexagon.cubeToOffsetCoords(vec);
+            if (offset.x < 0 || offset.y < 0) {
+                continue;
+            }
             grid.getHexagonAt(offset.y, offset.x).inLine = true;
         }
 
