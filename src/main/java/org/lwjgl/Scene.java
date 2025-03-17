@@ -5,6 +5,9 @@ import org.joml.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+
 public class Scene {
     private Camera camera;
     private List<SceneObject> rootObjects;

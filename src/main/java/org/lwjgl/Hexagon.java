@@ -1,5 +1,6 @@
 package org.lwjgl;
 
+import de.matthiasmann.twl.utils.PNGDecoder;
 import org.joml.*;
 
 import static java.lang.Math.TAU;
@@ -9,6 +10,7 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
+import java.io.IOException;
 import java.lang.Math;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -21,6 +23,7 @@ public class Hexagon extends SceneObject {
     private Vector3i cubeCoords;
     private Vector2i axialCoords;
     private int[] indices;
+    private float[] texCoords;
     public static final float SIZE = 1.0f;
     private int numFloats = 7 * 3;
 
@@ -115,6 +118,16 @@ public class Hexagon extends SceneObject {
             indices[k++] = (i%6)+1;
         }
 
+        texCoords = new float[] {
+                0.5f, 0.5f,
+                0.5f, 0.0f,
+                0.0f, 0.25f,
+                0.0f, 0.75f,
+                0.5f, 1.0f,
+                1.0f, 0.75f,
+                1.0f, 0.25f };
+
+
         // Vertices
         vaoId = glGenVertexArrays();
         glBindVertexArray(vaoId);
@@ -128,6 +141,18 @@ public class Hexagon extends SceneObject {
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
         glEnableVertexAttribArray(0);
 
+
+        //Normals
+
+
+        //Texcoords
+        vboId = glGenBuffers();
+        FloatBuffer texCoordsBuffer = BufferUtils.createFloatBuffer(7*2);
+        texCoordsBuffer.put(texCoords).flip();
+        glBindBuffer(GL_ARRAY_BUFFER, vboId);
+        glBufferData(GL_ARRAY_BUFFER, texCoordsBuffer, GL_STATIC_DRAW);
+        glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
+        glEnableVertexAttribArray(2);
 
         // Indices
         vboId = glGenBuffers();
@@ -179,6 +204,12 @@ public class Hexagon extends SceneObject {
         glUniform1i(selected, this.selected ? 1 : 0);
         int inLine = glGetUniformLocation(shaderProgram, "inLine");
         glUniform1i(inLine, this.inLine ? 1 : 0);
+        int texCoords = glGetUniformLocation(shaderProgram, "texCoords");
+        glUniform2f(texCoords, this.texCoords[0], this.texCoords[1]);
+        int texture = glGetUniformLocation(shaderProgram, "textureSampler");
+        glUniform1i(texture, 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
 
         // Render hexagon
         glBindVertexArray(vaoId);
