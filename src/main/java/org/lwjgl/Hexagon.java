@@ -29,6 +29,7 @@ public class Hexagon extends SceneObject {
 
     private int type;
     public boolean inLine;
+    private Texture texture;
 
     public static final int N = 0;
     public static final int NE = 1;
@@ -76,6 +77,7 @@ public class Hexagon extends SceneObject {
                  */
         };
         type = 99;
+        texture = new Texture("src/main/resources/textures/sandvich.png");
     }
 
     private void initGeometry() {
@@ -124,7 +126,7 @@ public class Hexagon extends SceneObject {
                 0.0f, 0.25f,
                 0.0f, 0.75f,
                 0.5f, 1.0f,
-                1.0f, 0.75f,
+                1.0f, 0.5f,
                 1.0f, 0.25f };
 
 
@@ -152,7 +154,7 @@ public class Hexagon extends SceneObject {
         glBindBuffer(GL_ARRAY_BUFFER, vboId);
         glBufferData(GL_ARRAY_BUFFER, texCoordsBuffer, GL_STATIC_DRAW);
         glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
-        glEnableVertexAttribArray(2);
+        glEnableVertexAttribArray(1);
 
         // Indices
         vboId = glGenBuffers();
@@ -206,10 +208,9 @@ public class Hexagon extends SceneObject {
         glUniform1i(inLine, this.inLine ? 1 : 0);
         int texCoords = glGetUniformLocation(shaderProgram, "texCoords");
         glUniform2f(texCoords, this.texCoords[0], this.texCoords[1]);
-        int texture = glGetUniformLocation(shaderProgram, "textureSampler");
-        glUniform1i(texture, 0);
+
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
+        texture.bind();
 
         // Render hexagon
         glBindVertexArray(vaoId);
