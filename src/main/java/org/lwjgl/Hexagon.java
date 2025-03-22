@@ -23,13 +23,11 @@ public class Hexagon extends SceneObject {
     private Vector3i cubeCoords;
     private Vector2i axialCoords;
     private int[] indices;
-    private float[] texCoords;
     public static final float SIZE = 1.0f;
     private int numFloats = 7 * 3;
 
     private int type;
     public boolean inLine;
-    private Texture texture;
 
     public static final int N = 0;
     public static final int NE = 1;
@@ -77,7 +75,7 @@ public class Hexagon extends SceneObject {
                  */
         };
         type = 99;
-        texture = new Texture("src/main/resources/textures/sandvich.png");
+        //texture = new Texture("src/main/resources/textures/default_texture.png");
     }
 
     private void initGeometry() {

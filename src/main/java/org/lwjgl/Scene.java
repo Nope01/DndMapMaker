@@ -30,7 +30,7 @@ public class Scene {
         camera.setPosition(50f, 80.0f, 50f);
         camera.setRotation(1.5f, 0.0f);
         camera.resize(width, height);
-        Grid grid = new Grid(this, 7, 5);
+        Grid grid = new Grid(this, 70, 50);
         addObject(grid);
 
 //        Hexagon plane = new Hexagon(new Vector2i(99, 99));
@@ -105,47 +105,6 @@ public class Scene {
 
     public Camera getCamera() {
         return camera;
-    }
-
-    public SceneObject selectObject() {
-        Vector3f worldPos = inputHandler.getWorldPos(this);
-        Vector3f camera = getCamera().getPosition();
-        Vector4f mouseDir = inputHandler.getMouseDir(this);
-        Vector2f intersect = new Vector2f();
-        for (SceneObject object : rootObjects) {
-            if (object instanceof Hexagon) {
-                if (((Hexagon) object).rayIntersect(worldPos, mouseDir, camera)) {
-                    if (selectedObject != null) {
-                        selectedObject.selected = false;
-                    }
-                    selectedObject = object;
-                    object.selected = true;
-                    return object;
-                }
-                else {
-                    object.selected = false;
-                }
-            }
-            for (SceneObject child : object.children) {
-                if (child instanceof Hexagon) {
-                    if (((Hexagon) child).rayIntersect(worldPos, mouseDir, camera)) {
-                        if (selectedObject != null) {
-                            selectedObject.selected = false;
-                        }
-                        selectedObject = child;
-                        child.selected = true;
-                        return child;
-                    }
-                    else {
-                        child.selected = false;
-                    }
-                }
-            }
-            selectedObject = null;
-        }
-
-
-        return null;
     }
 
     public SceneObject getSelectedObject() {

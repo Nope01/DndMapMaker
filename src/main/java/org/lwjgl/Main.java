@@ -90,7 +90,7 @@ public class Main {
             testWindow = new TestWindow(imGuiManager, scene, inputHandler);
             hexEditor = new HexEditor(imGuiManager, scene, inputHandler);
             imGuiManager.addWindow(testWindow);
-            //imGuiManager.addWindow(hexEditor);
+            imGuiManager.addWindow(hexEditor);
         }
         catch (Exception e) {
             System.err.println("Failed to load imGuiManager: " + e.getMessage());

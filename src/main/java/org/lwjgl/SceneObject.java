@@ -16,8 +16,10 @@ public abstract class SceneObject {
     protected Vector3f[] verticesVecs;
     public boolean selected;
     protected Vector3f colour;
+    protected Texture texture;
+    protected float[] texCoords;
 
-    //The default values for a 0,0,0 object
+    //The default bounding box values for a 0,0,0 object
     protected Vector3f min = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     protected Vector3f max = new Vector3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
 
@@ -39,6 +41,7 @@ public abstract class SceneObject {
         children = new ArrayList<>();
         verticesFloats = new float[16];
         selected = false;
+        texture = new Texture("src/main/resources/textures/default_texture.png");
     }
 
     public SceneObject() {
@@ -130,6 +133,12 @@ public abstract class SceneObject {
         min.mul(scale);
         max.mul(scale);
     }
+
+    public void setTexture(Texture texture) {
+        this.texture = texture;
+    }
+
+    public Texture getTexture() { return texture; }
 
     // Abstract render method to be implemented by subclasses
     public abstract void render(int shaderProgram);

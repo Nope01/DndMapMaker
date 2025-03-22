@@ -70,7 +70,9 @@ public class HexEditor extends ImGuiWindow{
             selectedType = Hexagon.WALL;
         }
         if (inputHandler.isLeftClicked() && selectedObject != null) {
-            ((Hexagon) selectedObject).setType(selectedType);
+            //((Hexagon) selectedObject).setType(selectedType);
+            Texture texture = new Texture("src/main/resources/textures/sandvich.png");
+            selectedObject.setTexture(texture);
         }
 
         if (ImGui.sliderInt("Grid columns", gridColumns, 0, 100)) {
