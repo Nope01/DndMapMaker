@@ -207,7 +207,10 @@ public class Hexagon extends SceneObject {
         glUniform2f(texCoords, this.texCoords[0], this.texCoords[1]);
 
         glActiveTexture(GL_TEXTURE0);
-        texture.bind();
+        if (texture != null) {
+            texture.bind();
+        }
+
 
         // Render hexagon
         glBindVertexArray(vaoId);

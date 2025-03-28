@@ -25,9 +25,10 @@ public class HexEditor extends ImGuiWindow{
         this.scene = scene;
         this.inputHandler = inputHandler;
 
+        Grid grid = (Grid) scene.getObject("grid");
         selectedObject = scene.getSelectedObject();
-        gridColumns = new int[]{70};
-        gridRows = new int[]{50};
+        gridColumns = new int[]{grid.columns};
+        gridRows = new int[]{grid.rows};
         oldCols = gridColumns[0];
         oldRows = gridRows[0];
         grid = scene.getObject("grid") instanceof Grid ? (Grid) scene.getObject("grid") : null;
@@ -70,9 +71,7 @@ public class HexEditor extends ImGuiWindow{
             selectedType = Hexagon.WALL;
         }
         if (inputHandler.isLeftClicked() && selectedObject != null) {
-            //((Hexagon) selectedObject).setType(selectedType);
-            Texture texture = scene.getTextureCache().getTexture(TextureCache.SANDVICH);
-            selectedObject.setTexture(texture);
+            ((Hexagon) selectedObject).setType(selectedType);
         }
 
         if (ImGui.sliderInt("Grid columns", gridColumns, 0, 100)) {

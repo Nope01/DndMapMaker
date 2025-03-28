@@ -30,16 +30,11 @@ public class Scene {
 
     private void setupScene(int width, int height) {
         camera = new Camera(width, height);
-        camera.setPosition(0f, 5.0f, 0f);
+        camera.setPosition(50f, 80.0f, 50f);
         camera.setRotation(1.5f, 0.0f);
         camera.resize(width, height);
-        Grid grid = new Grid(this, 1, 1);
+        Grid grid = new Grid(this, 20, 50);
         addObject(grid);
-
-//        Hexagon plane = new Hexagon(new Vector2i(99, 99));
-//        plane.setPosition(0.0f, 0.2f, 0.0f);
-//        plane.setColor(0.0f, 0.0f, 0.0f);
-//        addObject(plane);
     }
 
     public void addObject(SceneObject object) {
