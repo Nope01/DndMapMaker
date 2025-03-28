@@ -5,6 +5,8 @@ import org.lwjgl.UI.ImGuiManager;
 import org.lwjgl.UI.TestWindow;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+
+import java.io.File;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import static org.lwjgl.glfw.GLFW.*;
@@ -14,6 +16,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 public class Main {
     private long window;
@@ -177,14 +180,14 @@ public class Main {
 
     private int createShaderProgram() {
         int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShader, loadShaderSource("shaders/vertex.glsl"));
+        glShaderSource(vertexShader, loadShaderSource("resources/shaders/vertex.glsl"));
         glCompileShader(vertexShader);
         if (glGetShaderi(vertexShader, GL_COMPILE_STATUS) == GL_FALSE) {
             System.err.println("Vertex shader compilation failed: " + glGetShaderInfoLog(vertexShader));
         }
 
         int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, loadShaderSource("shaders/fragment.glsl"));
+        glShaderSource(fragmentShader, loadShaderSource("resources/shaders/fragment.glsl"));
         glCompileShader(fragmentShader);
         if (glGetShaderi(fragmentShader, GL_COMPILE_STATUS) == GL_FALSE) {
             System.err.println("Fragment shader compilation failed: " + glGetShaderInfoLog(fragmentShader));
@@ -205,8 +208,10 @@ public class Main {
 
     private String loadShaderSource(String path) {
         try {
-            java.nio.file.Path filePath = java.nio.file.Paths.get(ClassLoader.getSystemResource(path).toURI());
-            byte[] bytes = java.nio.file.Files.readAllBytes(filePath);
+            File file = new File(path);
+            byte[] bytes = Files.readAllBytes(file.toPath());
+            //java.nio.file.Path filePath = java.nio.file.Paths.get(ClassLoader.getSystemResource(path).toURI());
+            //byte[] bytes = java.nio.file.Files.readAllBytes(filePath);
             return new String(bytes, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException("Failed to load shader: " + path, e);

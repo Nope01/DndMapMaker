@@ -71,7 +71,7 @@ public class HexEditor extends ImGuiWindow{
         }
         if (inputHandler.isLeftClicked() && selectedObject != null) {
             //((Hexagon) selectedObject).setType(selectedType);
-            Texture texture = new Texture("src/main/resources/textures/sandvich.png");
+            Texture texture = scene.getTextureCache().getTexture(TextureCache.SANDVICH);
             selectedObject.setTexture(texture);
         }
 

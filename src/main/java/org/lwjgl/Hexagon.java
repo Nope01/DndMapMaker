@@ -75,7 +75,7 @@ public class Hexagon extends SceneObject {
                  */
         };
         type = 99;
-        //texture = new Texture("src/main/resources/textures/default_texture.png");
+        //texture = new Texture(TextureCache.DEFAULT_TEXTURE);
     }
 
     private void initGeometry() {
@@ -120,13 +120,12 @@ public class Hexagon extends SceneObject {
 
         texCoords = new float[] {
                 0.5f, 0.5f,
-                0.5f, 0.0f,
-                0.0f, 0.25f,
-                0.0f, 0.75f,
-                0.5f, 1.0f,
                 1.0f, 0.5f,
-                1.0f, 0.25f };
-
+                0.75f, 0.0f,
+                0.25f, 0.0f,
+                0.0f, 0.5f,
+                0.25f, 1.0f,
+                0.75f, 1.0f };
 
         // Vertices
         vaoId = glGenVertexArrays();

@@ -30,6 +30,7 @@ public class Grid extends SceneObject{
             for (int row = 0; row < rows; row++) {
                 Hexagon hexagon = createHexagon(row, col);
                 grid[row][col] = hexagon;
+                hexagon.setTexture(scene.getTextureCache().getTexture(TextureCache.SANDVICH));
                 this.addChild(hexagon);
                 //scene.addObject(hexagon);
             }

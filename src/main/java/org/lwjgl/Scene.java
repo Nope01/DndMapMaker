@@ -15,22 +15,25 @@ public class Scene {
     private int screenHeight;
     private InputHandler inputHandler;
     private SceneObject selectedObject;
+    private TextureCache textureCache;
 
     public Scene(int width, int height, InputHandler inputHandler) {
         rootObjects = new ArrayList<>();
-        setupScene(width, height);
         this.screenWidth = width;
         this.screenHeight = height;
         this.inputHandler = inputHandler;
         this.selectedObject = null;
+        this.textureCache = new TextureCache();
+
+        setupScene(width, height);
     }
 
     private void setupScene(int width, int height) {
         camera = new Camera(width, height);
-        camera.setPosition(50f, 80.0f, 50f);
+        camera.setPosition(0f, 5.0f, 0f);
         camera.setRotation(1.5f, 0.0f);
         camera.resize(width, height);
-        Grid grid = new Grid(this, 70, 50);
+        Grid grid = new Grid(this, 1, 1);
         addObject(grid);
 
 //        Hexagon plane = new Hexagon(new Vector2i(99, 99));
@@ -112,5 +115,9 @@ public class Scene {
     }
     public void setSelectedObject(SceneObject selectedObject) {
         this.selectedObject = selectedObject;
+    }
+
+    public TextureCache getTextureCache() {
+        return textureCache;
     }
 }

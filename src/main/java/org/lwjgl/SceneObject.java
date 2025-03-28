@@ -41,7 +41,7 @@ public abstract class SceneObject {
         children = new ArrayList<>();
         verticesFloats = new float[16];
         selected = false;
-        texture = new Texture("src/main/resources/textures/default_texture.png");
+        //texture = new Texture("resources/textures/default_texture.png");
     }
 
     public SceneObject() {
