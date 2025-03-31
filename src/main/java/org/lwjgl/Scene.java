@@ -68,6 +68,10 @@ public class Scene {
             root.update();
             root.update(this, deltaTime, inputHandler);
         }
+        if (selectedObject != null) {
+            ObjectSelection.resetSelectedObject(selectedObject);
+            selectedObject = null;
+        }
         ObjectSelection.selectObject(this, inputHandler, rootObjects);
         if (selectedObject != null) {
             selectedObject.update(this, deltaTime, inputHandler);

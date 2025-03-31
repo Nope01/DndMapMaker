@@ -29,6 +29,7 @@ public class HexEditor extends ImGuiWindow{
 
         Grid grid = (Grid) scene.getObject("grid");
         selectedObject = scene.getSelectedObject();
+        selectedType = 99;
         gridColumns = new int[]{grid.columns};
         gridRows = new int[]{grid.rows};
         oldCols = gridColumns[0];

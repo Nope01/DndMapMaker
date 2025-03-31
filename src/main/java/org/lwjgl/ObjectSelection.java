@@ -1,15 +1,13 @@
 package org.lwjgl;
 
 
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.util.List;
 
 public class ObjectSelection {
-
-    public static boolean checkIntersection(SceneObject object,
+    public static boolean checkObjectMouseHover(SceneObject object,
                                                 Scene scene,
                                                 InputHandler inputHandler) {
         Vector3f worldPos = inputHandler.getWorldPos(scene);
@@ -29,23 +27,33 @@ public class ObjectSelection {
         }
         return false;
     }
+
     public static void selectObject(Scene scene,
                                            InputHandler inputHandler,
                                            List<SceneObject> rootObjects) {
         for (SceneObject object : rootObjects) {
-            if (checkIntersection(object, scene, inputHandler)) {
-                object.selected = true;
-                scene.setSelectedObject(object);
-            }
+            childrenIntersectionChecks(scene, inputHandler, object);
+        }
+    }
 
-            for (SceneObject child : object.children) {
-                if (child instanceof Hexagon) {
-                    if (checkIntersection(child, scene, inputHandler)) {
-                        child.selected = true;
-                        scene.setSelectedObject(child);
-                    }
-                }
+    private static void childrenIntersectionChecks(Scene scene,
+                                                   InputHandler inputHandler,
+                                                   SceneObject sceneObject) {
+
+        if (checkObjectMouseHover(sceneObject, scene, inputHandler)) {
+            sceneObject.selected = true;
+            scene.setSelectedObject(sceneObject);
+        }
+
+
+        if (!sceneObject.children.isEmpty()) {
+            for (SceneObject child : sceneObject.children) {
+                childrenIntersectionChecks(scene, inputHandler, child);
             }
         }
+    }
+
+    public static void resetSelectedObject(SceneObject object) {
+        object.selected = false;
     }
 }

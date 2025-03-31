@@ -136,6 +136,9 @@ public class Main {
             float deltaTime = (time - oldTime) / 1000f;
             oldTime = time;
 
+            // Render scene
+            scene.render(shaderProgram);
+
             // Update camera and scene
             inputHandler.update(width, height);
             scene.getCamera().update(inputHandler);
@@ -150,8 +153,7 @@ public class Main {
             int viewLoc = glGetUniformLocation(shaderProgram, "view");
             glUniformMatrix4fv(viewLoc, false, scene.getCamera().getViewMatrix().get(matrixBuffer)); matrixBuffer.rewind();
 
-            // Render scene
-            scene.render(shaderProgram);
+
 
             //UI
             if (testWindow != null) {
