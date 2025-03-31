@@ -12,6 +12,7 @@ public class HexEditor extends ImGuiWindow{
 
     private SceneObject selectedObject;
     private int selectedType;
+    private Texture selectedTexture;
     private int[] gridColumns;
     private int[] gridRows;
     private int oldCols;
@@ -24,6 +25,7 @@ public class HexEditor extends ImGuiWindow{
         this.imGuiManager = imGuiManager;
         this.scene = scene;
         this.inputHandler = inputHandler;
+        this.selectedTexture = scene.getTextureCache().getTexture("default_texture");
 
         Grid grid = (Grid) scene.getObject("grid");
         selectedObject = scene.getSelectedObject();
@@ -54,15 +56,19 @@ public class HexEditor extends ImGuiWindow{
         ImGui.text("Selected Type: " + Hexagon.getTypeAsString(selectedType));
         if (ImGui.button("Forest")) {
             selectedType = Hexagon.FOREST;
+            selectedTexture = scene.getTextureCache().getTexture("grass_13");
         }
         if (ImGui.button("Plains")) {
             selectedType = Hexagon.PLAINS;
+            selectedTexture = scene.getTextureCache().getTexture("grass_05");
         }
         if (ImGui.button("Desert")) {
             selectedType = Hexagon.DESERT;
+            selectedTexture = scene.getTextureCache().getTexture("sand_07");
         }
         if (ImGui.button("Hill")) {
             selectedType = Hexagon.HILL;
+            selectedTexture = scene.getTextureCache().getTexture("stone_07");
         }
         if (ImGui.button("Water")) {
             selectedType = Hexagon.WATER;
@@ -72,6 +78,7 @@ public class HexEditor extends ImGuiWindow{
         }
         if (inputHandler.isLeftClicked() && selectedObject != null) {
             ((Hexagon) selectedObject).setType(selectedType);
+            selectedObject.setTexture(selectedTexture);
         }
 
         if (ImGui.sliderInt("Grid columns", gridColumns, 0, 100)) {

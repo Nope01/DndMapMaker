@@ -11,15 +11,17 @@ public class Texture {
 
     private int textureId;
     private String texturePath;
+    private String textureName;
 
     public Texture(int width, int height, ByteBuffer buf) {
         this.texturePath = "";
         generateTexture(width, height, buf);
     }
 
-    public Texture(String texturePath) {
+    public Texture(String texturePath, String name) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             this.texturePath = texturePath;
+            this.textureName = name;
             IntBuffer w = stack.mallocInt(1);
             IntBuffer h = stack.mallocInt(1);
             IntBuffer channels = stack.mallocInt(1);
@@ -60,5 +62,9 @@ public class Texture {
 
     public String getTexturePath() {
         return texturePath;
+    }
+
+    public String getTextureName() {
+        return textureName;
     }
 }

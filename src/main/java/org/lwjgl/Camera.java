@@ -77,9 +77,6 @@ public class Camera {
         float aspectRatio = (float) width / height;
         projectionMatrix.setPerspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
         invProjMatrix.set(projectionMatrix).invert();
-        System.out.println(width);
-        System.out.println(height);
-        System.out.println(projectionMatrix);
     }
 
     public void resize(int width, int height) {

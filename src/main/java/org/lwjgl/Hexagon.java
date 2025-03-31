@@ -234,9 +234,9 @@ public class Hexagon extends SceneObject {
             if (offset.x < 0 || offset.y < 0) {
                 continue;
             }
-            grid.getHexagonAt(offset.y, offset.x).inLine = true;
+            Hexagon lineHex = grid.getHexagonAt(offset.y, offset.x);
+            lineHex.inLine = true;
         }
-
     }
 
 
@@ -280,7 +280,7 @@ public class Hexagon extends SceneObject {
 
     public void setType(int type) {
         this.type = type;
-        setColor(type);
+        //setColor(type);
     }
 
 
