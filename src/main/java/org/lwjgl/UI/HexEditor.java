@@ -76,6 +76,7 @@ public class HexEditor extends ImGuiWindow{
         }
         if (ImGui.button("Wall")) {
             selectedType = Hexagon.WALL;
+            selectedTexture = scene.getTextureCache().getTexture("modern_campsite");
         }
         if (inputHandler.isLeftClicked() && selectedObject != null) {
             ((Hexagon) selectedObject).setType(selectedType);

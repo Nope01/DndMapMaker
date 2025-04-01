@@ -118,14 +118,39 @@ public class Hexagon extends SceneObject {
             indices[k++] = (i%6)+1;
         }
 
+//        texCoords = new float[] {
+//                0.5f, 0.5f,
+//                1.0f, 0.5f,
+//                0.75f, 0.0f,
+//                0.25f, 0.0f,
+//                0.0f, 0.5f,
+//                0.25f, 1.0f,
+//                0.75f, 1.0f };
+
         texCoords = new float[] {
                 0.5f, 0.5f,
-                1.0f, 0.5f,
-                0.75f, 0.0f,
-                0.25f, 0.0f,
-                0.0f, 0.5f,
-                0.25f, 1.0f,
-                0.75f, 1.0f };
+                1.0f, 0.75f,
+                1.0f, 0.25f,
+                0.5f, 0.0f,
+                0.0f, 0.25f,
+                0.0f, 0.75f,
+                0.5f, 1.0f };
+
+//        float sin30 = (float) Math.sin(TAU/12);
+//        float cos30 = (float) Math.cos(TAU/12);
+//        Matrix2f rot60 = new Matrix2f(0.5f, 0.866f, -0.866f, 0.5f);
+//        Matrix2f rot30 = new Matrix2f(cos30, sin30, -sin30, cos30);
+//
+//        Vector2f[] texCoordsVecs = Utils.floatToVector2f(texCoords);
+//        System.out.println("//");
+//        for (Vector2f vec : texCoordsVecs) {
+//            vec.add(-0.5f, -0.5f);
+//            vec.mul(rot30);
+//            vec.sub(-0.5f, -0.5f);
+//
+//            System.out.println(vec.x + " " + vec.y);
+//        }
+//        texCoords = Utils.vector2fToFloat(texCoordsVecs);
 
         // Vertices
         vaoId = glGenVertexArrays();

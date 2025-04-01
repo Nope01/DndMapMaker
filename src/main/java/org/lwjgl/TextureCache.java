@@ -63,8 +63,7 @@ public class TextureCache {
     }
 
     private String getNameFromFile(String fileName) {
-        String extension = fileName.substring(0, fileName.lastIndexOf("."));
-        System.out.println(extension);
-        return extension;
+        String imageName = fileName.substring(0, fileName.lastIndexOf("."));
+        return imageName;
     }
 }

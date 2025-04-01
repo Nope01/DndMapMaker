@@ -26,4 +26,25 @@ public class Utils {
         }
         return result;
     }
+
+    public static float[] vector3fToFloat (Vector3f[] vecList) {
+        float[] result = new float[vecList.length * 2];
+        int count = 0;
+        for (Vector3f vec : vecList) {
+            result[count++] = vec.x;
+            result[count++] = vec.y;
+        }
+        return result;
+    }
+
+    public static Vector3f[] float2fToVector3f (float[] floatList) {
+        Vector3f[] result = new Vector3f[floatList.length / 2];
+        int count = 0;
+        for (int i = 0; i < result.length; i++) {
+            result[i] = new Vector3f(floatList[count++], floatList[count++], 0);
+        }
+        return result;
+    }
+
+
 }
