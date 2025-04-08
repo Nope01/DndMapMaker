@@ -37,7 +37,7 @@ public class Scene {
         addObject(grid);
 
         Hexagon background = new Hexagon(new Vector2i(0, 0));
-        background.setPosition(0.0f, 1.0f, 0.0f);
+        background.setPosition(0.0f, -1.0f, 0.0f);
         background.setScale(100f);
         background.setColour(0.5f, 0.5f, 0.0f);
         addObject(background);

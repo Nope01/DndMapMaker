@@ -17,6 +17,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Map;
 
 public class Main {
     private long window;
@@ -30,6 +31,7 @@ public class Main {
     private ImGuiManager imGuiManager;
     private TestWindow testWindow;
     private HexEditor hexEditor;
+    private Map<String, Integer> shaderMap;
 
     public static void main(String[] args) {
         Main app = new Main();
@@ -101,7 +103,8 @@ public class Main {
         }
 
         // Create and compile shaders
-        shaderProgram = createShaderProgram();
+        shaderMap = new ShaderProgramCache().getShaderMap();
+        shaderProgram = shaderMap.get("default");
 
         matrixBuffer = BufferUtils.createFloatBuffer(16);
 
@@ -157,7 +160,6 @@ public class Main {
 
             //UI
             if (testWindow != null) {
-
             }
 
             if (hexEditor != null) {
@@ -180,43 +182,5 @@ public class Main {
         glfwTerminate();
     }
 
-    private int createShaderProgram() {
-        int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShader, loadShaderSource("resources/shaders/vertex.glsl"));
-        glCompileShader(vertexShader);
-        if (glGetShaderi(vertexShader, GL_COMPILE_STATUS) == GL_FALSE) {
-            System.err.println("Vertex shader compilation failed: " + glGetShaderInfoLog(vertexShader));
-        }
 
-        int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, loadShaderSource("resources/shaders/fragment.glsl"));
-        glCompileShader(fragmentShader);
-        if (glGetShaderi(fragmentShader, GL_COMPILE_STATUS) == GL_FALSE) {
-            System.err.println("Fragment shader compilation failed: " + glGetShaderInfoLog(fragmentShader));
-        }
-
-        int program = glCreateProgram();
-        glAttachShader(program, vertexShader);
-        glAttachShader(program, fragmentShader);
-        glLinkProgram(program);
-        if (glGetProgrami(program, GL_LINK_STATUS) == GL_FALSE) {
-            System.err.println("Shader program linking failed: " + glGetProgramInfoLog(program));
-        }
-
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
-        return program;
-    }
-
-    private String loadShaderSource(String path) {
-        try {
-            File file = new File(path);
-            byte[] bytes = Files.readAllBytes(file.toPath());
-            //java.nio.file.Path filePath = java.nio.file.Paths.get(ClassLoader.getSystemResource(path).toURI());
-            //byte[] bytes = java.nio.file.Files.readAllBytes(filePath);
-            return new String(bytes, StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to load shader: " + path, e);
-        }
-    }
 }
