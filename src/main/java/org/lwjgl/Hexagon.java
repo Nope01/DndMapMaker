@@ -219,7 +219,11 @@ public class Hexagon extends SceneObject {
     @Override
     public void render(int shaderProgram) {
         // Bind shader and set uniforms
+
         glUseProgram(shaderProgram);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         int modelLoc = glGetUniformLocation(shaderProgram, "model");
         glUniformMatrix4fv(modelLoc, false, worldMatrix.get(new float[16]));
         int colorLoc = glGetUniformLocation(shaderProgram, "color");
@@ -242,6 +246,7 @@ public class Hexagon extends SceneObject {
         glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
+
         // Render children
         for (SceneObject child : children) {
             child.render(shaderProgram);
@@ -250,18 +255,6 @@ public class Hexagon extends SceneObject {
 
     @Override
     public void update(Scene scene, float deltaTime, InputHandler input) {
-        Grid grid = scene.getObject("grid") instanceof Grid ? (Grid) scene.getObject("grid") : null;
-        Vector3i[] results = Hexagon.cubeLineDraw(grid.getGrid()[0][0].getCubeCoords(),
-                ((Hexagon) scene.getSelectedObject()).getCubeCoords());
-
-        for (Vector3i vec : results) {
-            Vector2i offset = Hexagon.cubeToOffsetCoords(vec);
-            if (offset.x < 0 || offset.y < 0) {
-                continue;
-            }
-            Hexagon lineHex = grid.getHexagonAt(offset.y, offset.x);
-            lineHex.inLine = true;
-        }
     }
 
 

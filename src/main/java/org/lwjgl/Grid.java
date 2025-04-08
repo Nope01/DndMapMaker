@@ -3,6 +3,7 @@ package org.lwjgl;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.joml.Vector3i;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -164,5 +165,21 @@ public class Grid extends SceneObject{
             }
         }
         rows = current;
+    }
+
+    public void lineDraw(Scene scene) {
+        if (scene.getSelectedObject() != null) {
+            Vector3i[] results = Hexagon.cubeLineDraw(grid[0][0].getCubeCoords(),
+                    ((Hexagon) scene.getSelectedObject()).getCubeCoords());
+
+            for (Vector3i vec : results) {
+                Vector2i offset = Hexagon.cubeToOffsetCoords(vec);
+                if (offset.x < 0 || offset.y < 0) {
+                    continue;
+                }
+                Hexagon lineHex = getHexagonAt(offset.y, offset.x);
+                lineHex.inLine = true;
+            }
+        }
     }
 }
