@@ -23,6 +23,17 @@ public class ShaderProgramCache {
         return shaderMap;
     }
 
+    public int getShader(String shaderName) {
+        int shader = -1;
+        if (shaderName != null) {
+            shader = shaderMap.get(shaderName);
+        }
+        if (shader == -1) {
+            shader = shaderMap.get("default");
+        }
+        return shader;
+    }
+
     public static int createShaderProgram(String name) {
         String vertexPath = "resources/shaders/" + name + "/vertex.glsl";
         String fragmentPath = "resources/shaders/" + name + "/fragment.glsl";

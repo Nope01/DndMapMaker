@@ -15,7 +15,7 @@ void main() {
     vec3 lineColour = vec3(0.0f, 1.0f, 0.3f);
 
     FragColor = vec4(color, 1.0f) + textureColor;
-    FragColor = vec4(FragColor.xyz, 0.2f);
+    FragColor = vec4(FragColor.xyz, 0.5f);
 
     if (selected > 0) {
         FragColor = vec4(selectedColour, 1.0f);

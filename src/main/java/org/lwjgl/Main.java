@@ -31,7 +31,7 @@ public class Main {
     private ImGuiManager imGuiManager;
     private TestWindow testWindow;
     private HexEditor hexEditor;
-    private Map<String, Integer> shaderMap;
+    public ShaderProgramCache shaderCache;
 
     public static void main(String[] args) {
         Main app = new Main();
@@ -86,7 +86,11 @@ public class Main {
         // Initialize camera and scene
         inputHandler = new InputHandler(window, width, height);
 
-        scene = new Scene(width, height, inputHandler);
+        // Create and compile shaders
+        shaderCache = new ShaderProgramCache();
+        shaderProgram = shaderCache.getShaderMap().get("default");
+
+        scene = new Scene(width, height, inputHandler, shaderCache);
 
         //UI
         try {
@@ -102,9 +106,7 @@ public class Main {
             e.printStackTrace();
         }
 
-        // Create and compile shaders
-        shaderMap = new ShaderProgramCache().getShaderMap();
-        shaderProgram = shaderMap.get("default");
+
 
         matrixBuffer = BufferUtils.createFloatBuffer(16);
 
@@ -139,8 +141,9 @@ public class Main {
             float deltaTime = (time - oldTime) / 1000f;
             oldTime = time;
 
+
             // Render scene
-            scene.render(shaderProgram);
+            scene.render();
 
             // Update camera and scene
             inputHandler.update(width, height);
@@ -148,15 +151,16 @@ public class Main {
             scene.update(deltaTime);
 
 
-
-            // Set shader uniforms
-            glUseProgram(shaderProgram);
-            int projLoc = glGetUniformLocation(shaderProgram, "projection");
-            glUniformMatrix4fv(projLoc, false, scene.getCamera().getProjectionMatrix().get(matrixBuffer)); matrixBuffer.rewind();
-            int viewLoc = glGetUniformLocation(shaderProgram, "view");
-            glUniformMatrix4fv(viewLoc, false, scene.getCamera().getViewMatrix().get(matrixBuffer)); matrixBuffer.rewind();
-
-
+            //For each shader, set it as active then set uniforms
+            //Either do it once here or for each sceneObject
+            shaderCache.getShaderMap().values().forEach(shader -> {
+                // Set shader uniforms
+                glUseProgram(shader);
+                int projLoc = glGetUniformLocation(shaderProgram, "projection");
+                glUniformMatrix4fv(projLoc, false, scene.getCamera().getProjectionMatrix().get(matrixBuffer)); matrixBuffer.rewind();
+                int viewLoc = glGetUniformLocation(shaderProgram, "view");
+                glUniformMatrix4fv(viewLoc, false, scene.getCamera().getViewMatrix().get(matrixBuffer)); matrixBuffer.rewind();
+            });
 
             //UI
             if (testWindow != null) {

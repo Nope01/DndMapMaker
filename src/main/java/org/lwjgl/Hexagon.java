@@ -217,7 +217,7 @@ public class Hexagon extends SceneObject {
     }
 
     @Override
-    public void render(int shaderProgram) {
+    public void render() {
         // Bind shader and set uniforms
 
         glUseProgram(shaderProgram);
@@ -249,7 +249,8 @@ public class Hexagon extends SceneObject {
 
         // Render children
         for (SceneObject child : children) {
-            child.render(shaderProgram);
+            child.render();
+
         }
     }
 

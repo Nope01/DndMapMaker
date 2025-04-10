@@ -7,6 +7,7 @@ import java.util.List;
 
 public abstract class SceneObject {
     protected String id;
+    protected int shaderProgram;
     protected Vector3f position;    // Local position
     protected Vector3f rotation;    // Local rotation (Euler angles in degrees)
     protected Vector3f scale;       // Local scale
@@ -31,8 +32,9 @@ public abstract class SceneObject {
     protected SceneObject parent;   // Reference to parent
     protected List<SceneObject> children; // List of children
 
-    public SceneObject(String id) {
+    public SceneObject(String id, int shaderProgram) {
         this.id = id;
+        this.shaderProgram = shaderProgram;
         position = new Vector3f(0, 0, 0);
         rotation = new Vector3f(0, 0, 0);
         scale = new Vector3f(1, 1, 1);
@@ -41,11 +43,10 @@ public abstract class SceneObject {
         children = new ArrayList<>();
         verticesFloats = new float[16];
         selected = false;
-        //texture = new Texture("resources/textures/default_texture.png");
     }
 
     public SceneObject() {
-        this("default");
+        this("default", 3);
     }
 
     // Update transformation matrices
@@ -94,6 +95,12 @@ public abstract class SceneObject {
     public String getId() {
         return id;
     }
+    public void setShaderProgram(int shaderProgram) {
+        this.shaderProgram = shaderProgram;
+    }
+    public int getShaderProgram() {
+        return shaderProgram;
+    }
     public Matrix4f getWorldMatrix() { return worldMatrix; }
     public Vector3f getPosition() { return position; }
     public Vector3f getRotation() { return rotation; }
@@ -141,7 +148,7 @@ public abstract class SceneObject {
     public Texture getTexture() { return texture; }
 
     // Abstract render method to be implemented by subclasses
-    public abstract void render(int shaderProgram);
+    public abstract void render();
 
     public abstract void update(Scene scene, float deltaTime, InputHandler inputHandler);
 

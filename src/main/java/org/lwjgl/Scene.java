@@ -7,6 +7,7 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL20.glUseProgram;
 
 public class Scene {
     private Camera camera;
@@ -16,14 +17,16 @@ public class Scene {
     private InputHandler inputHandler;
     private SceneObject selectedObject;
     private TextureCache textureCache;
+    private ShaderProgramCache shaderCache;
 
-    public Scene(int width, int height, InputHandler inputHandler) {
+    public Scene(int width, int height, InputHandler inputHandler, ShaderProgramCache shaderCache) {
         rootObjects = new ArrayList<>();
         this.screenWidth = width;
         this.screenHeight = height;
         this.inputHandler = inputHandler;
         this.selectedObject = null;
         this.textureCache = new TextureCache();
+        this.shaderCache = shaderCache;
 
         setupScene(width, height);
     }
@@ -37,9 +40,11 @@ public class Scene {
         addObject(grid);
 
         Hexagon background = new Hexagon(new Vector2i(0, 0));
+        background.setId("background");
         background.setPosition(0.0f, -1.0f, 0.0f);
         background.setScale(100f);
         background.setColour(0.5f, 0.5f, 0.0f);
+        background.setShaderProgram(shaderCache.getShaderMap().get("background"));
         addObject(background);
     }
 
@@ -86,9 +91,9 @@ public class Scene {
         grid.lineDraw(this);
     }
 
-    public void render(int shaderProgram) {
+    public void render() {
         for (SceneObject root : rootObjects) {
-            root.render(shaderProgram);
+            root.render();
         }
     }
 
@@ -126,5 +131,8 @@ public class Scene {
 
     public TextureCache getTextureCache() {
         return textureCache;
+    }
+    public ShaderProgramCache getShaderCache() {
+        return shaderCache;
     }
 }

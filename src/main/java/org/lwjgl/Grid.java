@@ -30,6 +30,7 @@ public class Grid extends SceneObject{
         for (int col = 0; col < columns; col++) {
             for (int row = 0; row < rows; row++) {
                 Hexagon hexagon = createHexagon(row, col);
+                hexagon.setShaderProgram(scene.getShaderCache().getShader("default"));
                 grid[row][col] = hexagon;
                 hexagon.setTexture(scene.getTextureCache().getTexture("default_texture"));
                 this.addChild(hexagon);
@@ -85,11 +86,11 @@ public class Grid extends SceneObject{
     }
 
     @Override
-    public void render(int shaderProgram) {
+    public void render() {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 Hexagon hexagon = grid[row][col];
-                hexagon.render(shaderProgram);
+                hexagon.render();
             }
         }
     }
