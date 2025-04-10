@@ -3,6 +3,8 @@ package org.lwjgl;
 
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.lwjgl.objects.Hexagon;
+import org.lwjgl.objects.SceneObject;
 
 import java.util.List;
 

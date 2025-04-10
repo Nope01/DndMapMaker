@@ -1,9 +1,10 @@
 package org.lwjgl.UI;
 
 import imgui.ImGui;
-import org.joml.Vector2i;
 import org.joml.Vector3i;
 import org.lwjgl.*;
+import org.lwjgl.objects.Hexagon;
+import org.lwjgl.objects.SceneObject;
 
 public class HexEditor extends ImGuiWindow{
     private ImGuiManager imGuiManager;

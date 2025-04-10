@@ -1,13 +1,18 @@
-package org.lwjgl;
+package org.lwjgl.objects;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.lwjgl.InputHandler;
+import org.lwjgl.Scene;
+import org.lwjgl.Texture;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class SceneObject {
     protected String id;
     protected int shaderProgram;
+    protected int vaoId, vboId;
     protected Vector3f position;    // Local position
     protected Vector3f rotation;    // Local rotation (Euler angles in degrees)
     protected Vector3f scale;       // Local scale
@@ -15,6 +20,7 @@ public abstract class SceneObject {
     protected Matrix4f worldMatrix; // World transformation matrix
     protected float[] verticesFloats;
     protected Vector3f[] verticesVecs;
+    protected int[] indices;
     public boolean selected;
     protected Vector3f colour;
     protected Texture texture;
@@ -29,8 +35,8 @@ public abstract class SceneObject {
     protected Vector3f aabbMin = new Vector3f();
     protected Vector3f aabbMax = new Vector3f();
 
-    protected SceneObject parent;   // Reference to parent
-    protected List<SceneObject> children; // List of children
+    public SceneObject parent;   // Reference to parent
+    public List<SceneObject> children; // List of children
 
     public SceneObject(String id, int shaderProgram) {
         this.id = id;

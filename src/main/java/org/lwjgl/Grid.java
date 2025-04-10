@@ -1,13 +1,12 @@
 package org.lwjgl;
 
-import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
+import org.lwjgl.objects.Hexagon;
+import org.lwjgl.objects.SceneObject;
 
-import static org.lwjgl.opengl.GL20.*;
-
-public class Grid extends SceneObject{
+public class Grid extends SceneObject {
 
     public int columns;
     public int rows;
@@ -34,7 +33,6 @@ public class Grid extends SceneObject{
                 grid[row][col] = hexagon;
                 hexagon.setTexture(scene.getTextureCache().getTexture("default_texture"));
                 this.addChild(hexagon);
-                //scene.addObject(hexagon);
             }
         }
         this.grid = grid;

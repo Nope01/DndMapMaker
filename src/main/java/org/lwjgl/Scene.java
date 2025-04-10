@@ -1,13 +1,12 @@
 package org.lwjgl;
 
 import org.joml.*;
+import org.lwjgl.objects.Hexagon;
+import org.lwjgl.objects.ImageQuad;
+import org.lwjgl.objects.SceneObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 
 public class Scene {
     private Camera camera;
@@ -36,16 +35,21 @@ public class Scene {
         camera.setPosition(50f, 80.0f, 50f);
         camera.setRotation(1.5f, 0.0f);
         camera.resize(width, height);
+
+
+
         Grid grid = new Grid(this, 70, 50);
         addObject(grid);
 
-        Hexagon background = new Hexagon(new Vector2i(0, 0));
+        ImageQuad background = new ImageQuad();
         background.setId("background");
-        background.setPosition(0.0f, -1.0f, 0.0f);
+        background.setPosition(50.0f, 1.0f, 50.0f);
         background.setScale(100f);
-        background.setColour(0.5f, 0.5f, 0.0f);
-        background.setShaderProgram(shaderCache.getShaderMap().get("background"));
+        background.setColour(0.0f, 0.0f, 0.0f);
+        background.setShaderProgram(shaderCache.getShaderMap().get("transparent"));
+        background.setTexture(textureCache.getTexture("map"));
         addObject(background);
+
     }
 
     public void addObject(SceneObject object) {

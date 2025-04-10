@@ -1,7 +1,7 @@
-package org.lwjgl;
+package org.lwjgl.objects;
 
-import de.matthiasmann.twl.utils.PNGDecoder;
 import org.joml.*;
+import org.lwjgl.*;
 
 import static java.lang.Math.TAU;
 import static java.lang.Math.abs;
@@ -10,19 +10,17 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
-import java.io.IOException;
 import java.lang.Math;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 public class Hexagon extends SceneObject {
-    private int vaoId, vboId; // Vertex Array Object and Vertex Buffer Object
+    //private int vaoId, vboId; // Vertex Array Object and Vertex Buffer Object
        // Random color for the hexagon
     private Vector3i[] cubeDirectionVectors;
     private Vector2i offsetCoords;
     private Vector3i cubeCoords;
     private Vector2i axialCoords;
-    private int[] indices;
     public static final float SIZE = 1.0f;
     private int numFloats = 7 * 3;
 
@@ -118,15 +116,6 @@ public class Hexagon extends SceneObject {
             indices[k++] = (i%6)+1;
         }
 
-//        texCoords = new float[] {
-//                0.5f, 0.5f,
-//                1.0f, 0.5f,
-//                0.75f, 0.0f,
-//                0.25f, 0.0f,
-//                0.0f, 0.5f,
-//                0.25f, 1.0f,
-//                0.75f, 1.0f };
-
         texCoords = new float[] {
                 0.5f, 0.5f,
                 1.0f, 0.75f,
@@ -136,54 +125,13 @@ public class Hexagon extends SceneObject {
                 0.0f, 0.75f,
                 0.5f, 1.0f };
 
-//        float sin30 = (float) Math.sin(TAU/12);
-//        float cos30 = (float) Math.cos(TAU/12);
-//        Matrix2f rot60 = new Matrix2f(0.5f, 0.866f, -0.866f, 0.5f);
-//        Matrix2f rot30 = new Matrix2f(cos30, sin30, -sin30, cos30);
-//
-//        Vector2f[] texCoordsVecs = Utils.floatToVector2f(texCoords);
-//        System.out.println("//");
-//        for (Vector2f vec : texCoordsVecs) {
-//            vec.add(-0.5f, -0.5f);
-//            vec.mul(rot30);
-//            vec.sub(-0.5f, -0.5f);
-//
-//            System.out.println(vec.x + " " + vec.y);
-//        }
-//        texCoords = Utils.vector2fToFloat(texCoordsVecs);
-
-        // Vertices
+        //Buffers
         vaoId = glGenVertexArrays();
         glBindVertexArray(vaoId);
 
-        vboId = glGenBuffers();
-        FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(vertices.length);
-        vertexBuffer.put(vertices).flip();
-        glBindBuffer(GL_ARRAY_BUFFER, vboId);
-        glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-        glEnableVertexAttribArray(0);
-
-
-        //Normals
-
-
-        //Texcoords
-        vboId = glGenBuffers();
-        FloatBuffer texCoordsBuffer = BufferUtils.createFloatBuffer(7*2);
-        texCoordsBuffer.put(texCoords).flip();
-        glBindBuffer(GL_ARRAY_BUFFER, vboId);
-        glBufferData(GL_ARRAY_BUFFER, texCoordsBuffer, GL_STATIC_DRAW);
-        glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
-        glEnableVertexAttribArray(1);
-
-        // Indices
-        vboId = glGenBuffers();
-        IntBuffer indicesBuffer = BufferUtils.createIntBuffer(indices.length);
-        indicesBuffer.put(indices).flip();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboId);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
+        ObjectUtils.bindVerticesList(verticesFloats);
+        ObjectUtils.bindTexCoordList(texCoords);
+        ObjectUtils.bindIndicesList(indices);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
@@ -243,7 +191,7 @@ public class Hexagon extends SceneObject {
 
         // Render hexagon
         glBindVertexArray(vaoId);
-        glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, numFloats, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
 

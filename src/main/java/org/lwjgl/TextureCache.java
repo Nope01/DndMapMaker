@@ -9,9 +9,9 @@ import java.util.Map;
 public class TextureCache {
     public static final String DEFAULT_PATH = "resources/textures/";
     public static final String TILE_PATH = DEFAULT_PATH + "tiles/";
-    public static final String MILITARY_PATH = TILE_PATH + "military/";
     public static final String DEFAULT_TEXTURE = DEFAULT_PATH + "default_texture.png";
     public static final String SANDVICH = DEFAULT_PATH + "sandvich.png";
+    public static final String MAP = DEFAULT_PATH + "map.png";
     private Map<String, Texture> textureMap;
 
     public TextureCache() {
@@ -41,6 +41,7 @@ public class TextureCache {
     public void initTextures() {
         addNewTexture(DEFAULT_TEXTURE, "default_texture");
         addNewTexture(SANDVICH, "sandvich");
+        addNewTexture(MAP, "map");
 
         //Open main tile folder
         Path tileFolder = Paths.get(TILE_PATH);

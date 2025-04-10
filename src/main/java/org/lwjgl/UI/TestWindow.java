@@ -1,11 +1,10 @@
 package org.lwjgl.UI;
 
 import imgui.ImGui;
-import imgui.type.ImFloat;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.*;
+import org.lwjgl.objects.Hexagon;
+import org.lwjgl.objects.SceneObject;
 
 import java.text.DecimalFormat;
 

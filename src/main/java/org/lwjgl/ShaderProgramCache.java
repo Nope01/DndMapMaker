@@ -17,6 +17,7 @@ public class ShaderProgramCache {
         shaderMap = new HashMap<>();
         shaderMap.put("default", createShaderProgram("default"));
         shaderMap.put("background", createShaderProgram("background"));
+        shaderMap.put("transparent", createShaderProgram("transparent"));
     }
 
     public Map<String, Integer> getShaderMap() {
