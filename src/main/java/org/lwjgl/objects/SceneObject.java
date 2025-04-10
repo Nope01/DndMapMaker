@@ -6,10 +6,11 @@ import org.lwjgl.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.Texture;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class SceneObject {
+public abstract class SceneObject implements Serializable {
     protected String id;
     protected int shaderProgram;
     protected int vaoId, vboId;
@@ -23,7 +24,7 @@ public abstract class SceneObject {
     protected int[] indices;
     public boolean selected;
     protected Vector3f colour;
-    protected Texture texture;
+    protected transient Texture texture;
     protected float[] texCoords;
 
     //The default bounding box values for a 0,0,0 object

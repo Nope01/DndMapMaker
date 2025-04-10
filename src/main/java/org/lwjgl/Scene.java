@@ -35,20 +35,18 @@ public class Scene {
         camera.setPosition(50f, 80.0f, 50f);
         camera.setRotation(1.5f, 0.0f);
         camera.resize(width, height);
-
-
-
+        
         Grid grid = new Grid(this, 70, 50);
         addObject(grid);
 
-        ImageQuad background = new ImageQuad();
-        background.setId("background");
-        background.setPosition(50.0f, 1.0f, 50.0f);
-        background.setScale(100f);
-        background.setColour(0.0f, 0.0f, 0.0f);
-        background.setShaderProgram(shaderCache.getShaderMap().get("transparent"));
-        background.setTexture(textureCache.getTexture("map"));
-        addObject(background);
+//        ImageQuad background = new ImageQuad();
+//        background.setId("background");
+//        background.setPosition(50.0f, 1.0f, 50.0f);
+//        background.setScale(100f);
+//        background.setColour(0.0f, 0.0f, 0.0f);
+//        background.setShaderProgram(shaderCache.getShaderMap().get("transparent"));
+//        background.setTexture(textureCache.getTexture("map"));
+//        addObject(background);
 
     }
 

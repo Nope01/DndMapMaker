@@ -6,6 +6,11 @@ import org.joml.Vector3i;
 import org.lwjgl.objects.Hexagon;
 import org.lwjgl.objects.SceneObject;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
+
 public class Grid extends SceneObject {
 
     public int columns;
@@ -179,6 +184,19 @@ public class Grid extends SceneObject {
                 Hexagon lineHex = getHexagonAt(offset.y, offset.x);
                 lineHex.inLine = true;
             }
+        }
+    }
+
+    public void save() {
+        try {
+            FileOutputStream fileOut = new FileOutputStream("Grid.ser");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(grid);
+            out.close();
+            fileOut.close();
+            System.out.println("Saved Grid");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -106,6 +106,10 @@ public class HexEditor extends ImGuiWindow{
             oldRows = gridRows[0];
         }
 
+        if (ImGui.button("Save")) {
+            grid.save();
+        }
+
         ImGui.textUnformatted(distance.x + ", " + distance.y + ", " + distance.z);
 
 
