@@ -74,6 +74,7 @@ public class HexEditor extends ImGuiWindow{
         }
         if (ImGui.button("Water")) {
             selectedType = Hexagon.WATER;
+            selectedTexture = scene.getTextureCache().getTexture("sandvich");
         }
         if (ImGui.button("Wall")) {
             selectedType = Hexagon.WALL;

@@ -4,6 +4,16 @@ plugins {
     id 'application'
 }
 
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes "Main-Class":"org.lwjgl.Main"
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it)}
+    }
+}
+
 application {
     mainClass = 'org.lwjgl.Main'
 }
@@ -136,4 +146,9 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+java {
+    sourceCompatibility JavaVersion.VERSION_19
+    targetCompatibility JavaVersion.VERSION_19
 }

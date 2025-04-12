@@ -3,7 +3,6 @@ package org.lwjgl.objects;
 import org.joml.*;
 import org.lwjgl.*;
 
-import static java.lang.Math.TAU;
 import static java.lang.Math.abs;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -17,6 +16,7 @@ import java.nio.IntBuffer;
 public class Hexagon extends SceneObject {
     //private int vaoId, vboId; // Vertex Array Object and Vertex Buffer Object
        // Random color for the hexagon
+    private static final float TAU = 6.283185307179586f;
     private Vector3i[] cubeDirectionVectors;
     private Vector2i offsetCoords;
     private Vector3i cubeCoords;

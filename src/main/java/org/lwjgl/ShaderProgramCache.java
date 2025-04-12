@@ -1,17 +1,22 @@
 package org.lwjgl;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL20.glDeleteShader;
 
 public class ShaderProgramCache {
     Map<String, Integer> shaderMap;
+    private static String DEFAULT_PATH = "shaders/";
+    private static String EXE_PATH = "shaders/";
 
     public ShaderProgramCache() {
         shaderMap = new HashMap<>();
@@ -35,9 +40,9 @@ public class ShaderProgramCache {
         return shader;
     }
 
-    public static int createShaderProgram(String name) {
-        String vertexPath = "resources/shaders/" + name + "/vertex.glsl";
-        String fragmentPath = "resources/shaders/" + name + "/fragment.glsl";
+    public int createShaderProgram(String name) {
+        String vertexPath = DEFAULT_PATH + name + "/vertex.glsl";
+        String fragmentPath = DEFAULT_PATH + name + "/fragment.glsl";
 
         int vertexShader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShader, loadShaderSource(vertexPath));
@@ -66,11 +71,23 @@ public class ShaderProgramCache {
         return program;
     }
 
-    private static String loadShaderSource(String path) {
-        try {
-            File file = new File(path);
-            byte[] bytes = Files.readAllBytes(file.toPath());
-            return new String(bytes, StandardCharsets.UTF_8);
+    private String loadShaderSource(String path){
+        try (InputStream stream = getClass().getClassLoader().getResourceAsStream(path)){
+
+//            File file = new File("src/main/resources/" + path);
+//            System.out.println("Loading shader file: " + file.getAbsolutePath());
+//            byte[] bytes = Files.readAllBytes(file.toPath());
+//            System.out.println("Loading shader file: " + bytes.toString());
+            //return new String(bytes, StandardCharsets.UTF_8);
+
+//            System.out.println("");
+//            System.out.println(new String(stream.readAllBytes(), StandardCharsets.UTF_8));
+//            System.out.println("");
+            if (stream == null) {
+                throw new Exception("Cannot find file " + path);
+            }
+            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+
         } catch (Exception e) {
             throw new RuntimeException("Failed to load shader: " + path, e);
         }

@@ -1,7 +1,10 @@
 package org.lwjgl;
 
+import de.matthiasmann.twl.utils.PNGDecoder;
 import org.lwjgl.system.MemoryStack;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.*;
 
 import static org.lwjgl.opengl.GL30.*;
@@ -19,24 +22,45 @@ public class Texture {
     }
 
     public Texture(String texturePath, String name) {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            this.texturePath = texturePath;
+//        try (MemoryStack stack = MemoryStack.stackPush()) {
+//            this.texturePath = texturePath;
+//            this.textureName = name;
+//            IntBuffer w = stack.mallocInt(1);
+//            IntBuffer h = stack.mallocInt(1);
+//            IntBuffer channels = stack.mallocInt(1);
+//
+//            InputStream stream = getClass().getClassLoader().getResourceAsStream(texturePath);
+//            ByteBuffer buf = stbi_load(texturePath, w, h, channels, 4);
+//            if (buf == null) {
+//                throw new RuntimeException("Image file [" + texturePath + "] not loaded: " + stbi_failure_reason());
+//            }
+//
+//            int width = w.get();
+//            int height = h.get();
+//
+//            generateTexture(width, height, buf);
+//
+//            stbi_image_free(buf);
+//        }
+
+        try (InputStream stream = getClass().getClassLoader().getResourceAsStream(texturePath)){
+            this.texturePath =texturePath;
             this.textureName = name;
-            IntBuffer w = stack.mallocInt(1);
-            IntBuffer h = stack.mallocInt(1);
-            IntBuffer channels = stack.mallocInt(1);
 
-            ByteBuffer buf = stbi_load(texturePath, w, h, channels, 4);
-            if (buf == null) {
-                throw new RuntimeException("Image file [" + texturePath + "] not loaded: " + stbi_failure_reason());
-            }
+            PNGDecoder decoder = new PNGDecoder(stream);
+            int width = decoder.getWidth();
+            int height = decoder.getHeight();
 
-            int width = w.get();
-            int height = h.get();
+            ByteBuffer buffer = ByteBuffer.allocateDirect(4*width*height);
+            decoder.decode(buffer, width*4, PNGDecoder.Format.RGBA);
+            buffer.flip();
 
-            generateTexture(width, height, buf);
+            System.out.println("Generating texture: " + textureName);
+            generateTexture(width, height, buffer);
 
-            stbi_image_free(buf);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

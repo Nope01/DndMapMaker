@@ -12,6 +12,8 @@ import java.nio.IntBuffer;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL32.GL_CONTEXT_CORE_PROFILE_BIT;
+import static org.lwjgl.opengl.GL32.GL_CONTEXT_PROFILE_MASK;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 
@@ -50,6 +52,9 @@ public class Main {
 
     private void init() {
         // Initialize GLFW
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
@@ -105,8 +110,6 @@ public class Main {
             System.err.println("Failed to load imGuiManager: " + e.getMessage());
             e.printStackTrace();
         }
-
-
 
         matrixBuffer = BufferUtils.createFloatBuffer(16);
 

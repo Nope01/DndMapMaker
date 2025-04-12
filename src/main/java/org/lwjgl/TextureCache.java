@@ -1,17 +1,23 @@
 package org.lwjgl;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TextureCache {
-    public static final String DEFAULT_PATH = "resources/textures/";
-    public static final String TILE_PATH = DEFAULT_PATH + "tiles/";
-    public static final String DEFAULT_TEXTURE = DEFAULT_PATH + "default_texture.png";
-    public static final String SANDVICH = DEFAULT_PATH + "sandvich.png";
-    public static final String MAP = DEFAULT_PATH + "map.png";
+    public static final String DEFAULT_PATH = "src/main/resources/textures/";
+    public static String EXE_PATH = "textures/";
+    public static final String TILE_PATH = EXE_PATH + "tiles/";
+    public static final String DEFAULT_TEXTURE = EXE_PATH + "default_texture.png";
+    public static final String SANDVICH = EXE_PATH + "sandvich.png";
+    public static final String MAP = EXE_PATH + "map.png";
     private Map<String, Texture> textureMap;
 
     public TextureCache() {
@@ -44,22 +50,44 @@ public class TextureCache {
         addNewTexture(MAP, "map");
 
         //Open main tile folder
-        Path tileFolder = Paths.get(TILE_PATH);
-        File tileCategories = tileFolder.toFile();
+//        Path tileFolder = Paths.get(TILE_PATH);
+//        File tileCategories = tileFolder.toFile();
+
+//        System.out.println("Loading textures...");
+//        ClassLoader classLoader = TextureCache.class.getClassLoader();
+//        try {
+//            InputStream inputStream = classLoader.getResourceAsStream(EXE_PATH);
+//            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+//            BufferedReader reader = new BufferedReader(inputStreamReader);
+//            System.out.println("Reader created");
+//            reader.lines().forEach(line -> {
+//                System.out.println(line);
+//                addNewTexture(EXE_PATH + line, line.substring(0, line.lastIndexOf('.')));});
+//        }
+//        catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         //Recursively iterate through subfolders and add textures to cache
-        openAllFilesInFolder(tileCategories);
+        //openAllFilesInFolder(tileCategories);
     }
 
-    private void openAllFilesInFolder(File dir) {
-        File[] fileList = dir.listFiles();
-        for (File file : fileList) {
-            if (file.isFile()) {
-                addNewTexture(file.getPath(), getNameFromFile(file.getName()));
-            }
-            else {
-                openAllFilesInFolder(file);
-            }
+    private void openAllFilesInFolder(String line) {
+//        File[] fileList = dir.listFiles();
+//        for (File file : fileList) {
+//            if (file.isFile()) {
+//                addNewTexture(file.getPath(), getNameFromFile(file.getName()));
+//            }
+//            else {
+//                openAllFilesInFolder(file);
+//            }
+//        }
+
+        if (line.substring(line.lastIndexOf('.') + 1).equals(".png")) {
+            addNewTexture(line, line.substring(0, line.lastIndexOf('.') + 1));
+        }
+        else {
+            openAllFilesInFolder(line.substring(0, line.lastIndexOf('.') + 1));
         }
     }
 
