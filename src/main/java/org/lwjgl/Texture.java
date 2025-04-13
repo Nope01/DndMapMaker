@@ -91,4 +91,7 @@ public class Texture {
     public String getTextureName() {
         return textureName;
     }
+    public int getTextureId() {
+        return textureId;
+    }
 }

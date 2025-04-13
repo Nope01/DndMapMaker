@@ -20,6 +20,16 @@ public class HexEditor extends ImGuiWindow{
     private int oldRows;
     private Grid grid;
     private Vector3i distance;
+    //Grid uses this to populate tile selection
+    private String[] tileNames = new String[] {
+            "grass_13",
+            "grass_05",
+            "sand_07",
+            "stone_07",
+            "sandvich",
+            "modern_campsite",
+
+    };
 
     public HexEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super("Hex Editor");
@@ -56,30 +66,25 @@ public class HexEditor extends ImGuiWindow{
         ImGui.begin("Hex Editor");
 
         ImGui.text("Selected Type: " + Hexagon.getTypeAsString(selectedType));
-        if (ImGui.button("Forest")) {
-            selectedType = Hexagon.FOREST;
-            selectedTexture = scene.getTextureCache().getTexture("grass_13");
+        ImGui.setNextItemOpen(true);
+        if (ImGui.treeNode("Grid", "Terrain")) {
+            for (int y = 0; y < 2; y++) {
+                for (int x = 0; x < 3; x++) {
+                    if (x > 0) {
+                        ImGui.sameLine();
+                    }
+                    ImGui.pushID(y * 4 + x);
+                    if (ImGui.imageButton(scene.getTextureCache().getTexture(tileNames[x+y]).getTextureId(),
+                            50.0f, 50.0f)) {
+                        selectedTexture = scene.getTextureCache().getTexture(tileNames[x+y]);
+                    }
+                    ImGui.popID();
+                }
+            }
+            ImGui.treePop();
         }
-        if (ImGui.button("Plains")) {
-            selectedType = Hexagon.PLAINS;
-            selectedTexture = scene.getTextureCache().getTexture("grass_05");
-        }
-        if (ImGui.button("Desert")) {
-            selectedType = Hexagon.DESERT;
-            selectedTexture = scene.getTextureCache().getTexture("sand_07");
-        }
-        if (ImGui.button("Hill")) {
-            selectedType = Hexagon.HILL;
-            selectedTexture = scene.getTextureCache().getTexture("stone_07");
-        }
-        if (ImGui.button("Water")) {
-            selectedType = Hexagon.WATER;
-            selectedTexture = scene.getTextureCache().getTexture("sandvich");
-        }
-        if (ImGui.button("Wall")) {
-            selectedType = Hexagon.WALL;
-            selectedTexture = scene.getTextureCache().getTexture("modern_campsite");
-        }
+
+
         if (inputHandler.isLeftClicked() && selectedObject != null) {
             ((Hexagon) selectedObject).setType(selectedType);
             selectedObject.setTexture(selectedTexture);
