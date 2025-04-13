@@ -44,7 +44,7 @@ public class Texture {
 //        }
 
         try (InputStream stream = getClass().getClassLoader().getResourceAsStream(texturePath)){
-            this.texturePath =texturePath;
+            this.texturePath = texturePath;
             this.textureName = name;
 
             PNGDecoder decoder = new PNGDecoder(stream);

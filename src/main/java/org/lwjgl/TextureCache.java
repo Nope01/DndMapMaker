@@ -47,7 +47,12 @@ public class TextureCache {
     public void initTextures() {
         addNewTexture(DEFAULT_TEXTURE, "default_texture");
         addNewTexture(SANDVICH, "sandvich");
-        addNewTexture(MAP, "map");
+        addNewTexture(EXE_PATH + "grass_13.png", "grass_13");
+        addNewTexture(EXE_PATH + "grass_05.png", "grass_05");
+        addNewTexture(EXE_PATH + "sand_07.png", "sand_07");
+        addNewTexture(EXE_PATH + "stone_07.png", "stone_07");
+        addNewTexture(EXE_PATH + "modern_campsite.png", "modern_campsite");
+
 
         //Open main tile folder
 //        Path tileFolder = Paths.get(TILE_PATH);
