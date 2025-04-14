@@ -47,17 +47,25 @@ public class TextureCache {
     public void initTextures() {
         addNewTexture(DEFAULT_TEXTURE, "default_texture");
         addNewTexture(SANDVICH, "sandvich");
-        addNewTexture(EXE_PATH + "grass_13.png", "grass_13");
+
+        //Life is pain
         addNewTexture(EXE_PATH + "grass_05.png", "grass_05");
+        addNewTexture(EXE_PATH + "grass_10.png", "grass_10");
+        addNewTexture(EXE_PATH + "grass_11.png", "grass_11");
+        addNewTexture(EXE_PATH + "grass_12.png", "grass_12");
+        addNewTexture(EXE_PATH + "grass_13.png", "grass_13");
+
         addNewTexture(EXE_PATH + "sand_07.png", "sand_07");
-        addNewTexture(EXE_PATH + "stone_07.png", "stone_07");
-        addNewTexture(EXE_PATH + "modern_campsite.png", "modern_campsite");
+        addNewTexture(EXE_PATH + "sand_12.png", "sand_12");
+        addNewTexture(EXE_PATH + "sand_13.png", "sand_13");
+        addNewTexture(EXE_PATH + "sand_14.png", "sand_14");
+        addNewTexture(EXE_PATH + "sand_15.png", "sand_15");
 
 
         //Open main tile folder
 //        Path tileFolder = Paths.get(TILE_PATH);
 //        File tileCategories = tileFolder.toFile();
-
+//
 //        System.out.println("Loading textures...");
 //        ClassLoader classLoader = TextureCache.class.getClassLoader();
 //        try {

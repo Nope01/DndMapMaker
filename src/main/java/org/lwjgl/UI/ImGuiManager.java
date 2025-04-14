@@ -69,7 +69,7 @@ public class ImGuiManager {
 
             //Hex
             ImGui.setNextWindowPos(0, 200, ImGuiCond.Always);
-            ImGui.setNextWindowSize(500, 300);
+            ImGui.setNextWindowSize(500, 900);
             windows.get(1).render();
 
             firstFrame = false;

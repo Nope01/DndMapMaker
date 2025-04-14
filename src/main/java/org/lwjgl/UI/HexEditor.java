@@ -21,15 +21,23 @@ public class HexEditor extends ImGuiWindow{
     private Grid grid;
     private Vector3i distance;
     //Grid uses this to populate tile selection
-    private String[] tileNames = new String[] {
-            "grass_13",
-            "grass_05",
-            "sand_07",
-            "stone_07",
-            "sandvich",
-            "modern_campsite",
 
+    private String[] grassTileNames = new String[] {
+        "grass_05",
+        "grass_10",
+        "grass_11",
+        "grass_12",
+        "grass_13",
     };
+
+    private String[] desertTileNames = new String[] {
+        "sand_07",
+        "sand_12",
+        "sand_13",
+        "sand_14",
+        "sand_15",
+    };
+
 
     public HexEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super("Hex Editor");
@@ -45,7 +53,7 @@ public class HexEditor extends ImGuiWindow{
         gridRows = new int[]{grid.rows};
         oldCols = gridColumns[0];
         oldRows = gridRows[0];
-        grid = scene.getObject("grid") instanceof Grid ? (Grid) scene.getObject("grid") : null;
+        this.grid = scene.getObject("grid") instanceof Grid ? (Grid) scene.getObject("grid") : null;
         distance = new Vector3i();
     }
 
@@ -66,24 +74,19 @@ public class HexEditor extends ImGuiWindow{
         ImGui.begin("Hex Editor");
 
         ImGui.text("Selected Type: " + Hexagon.getTypeAsString(selectedType));
+        ImGui.text("Selected Texture: " + selectedTexture.getTextureName());
+
+        ImGui.separator();
         ImGui.setNextItemOpen(true);
-        if (ImGui.treeNode("Grid", "Terrain")) {
-            for (int y = 0; y < 2; y++) {
-                for (int x = 0; x < 3; x++) {
-                    if (x > 0) {
-                        ImGui.sameLine();
-                    }
-                    ImGui.pushID(y * 4 + x);
-                    if (ImGui.imageButton(scene.getTextureCache().getTexture(tileNames[x+y]).getTextureId(),
-                            50.0f, 50.0f)) {
-                        selectedTexture = scene.getTextureCache().getTexture(tileNames[x+y]);
-                    }
-                    ImGui.popID();
-                }
-            }
-            ImGui.treePop();
+        if (ImGui.treeNode("Grid", "Forest")) {
+            selectedTexture = GuiUtils.createTerrainGrid(1, 5, grassTileNames, scene, selectedTexture);
         }
 
+        ImGui.separator();
+        ImGui.setNextItemOpen(true);
+        if (ImGui.treeNode("Grid", "Desert")) {
+            selectedTexture = GuiUtils.createTerrainGrid(1, 5, desertTileNames, scene, selectedTexture);
+        }
 
         if (inputHandler.isLeftClicked() && selectedObject != null) {
             ((Hexagon) selectedObject).setType(selectedType);

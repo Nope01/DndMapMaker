@@ -189,6 +189,7 @@ public class Hexagon extends SceneObject {
         }
 
 
+
         // Render hexagon
         glBindVertexArray(vaoId);
         glDrawElements(GL_TRIANGLES, numFloats, GL_UNSIGNED_INT, 0);
