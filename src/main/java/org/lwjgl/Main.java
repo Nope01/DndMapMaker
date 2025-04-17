@@ -1,5 +1,6 @@
 package org.lwjgl;
 
+import imgui.ImGuiIO;
 import org.lwjgl.UI.HexEditor;
 import org.lwjgl.UI.ImGuiManager;
 import org.lwjgl.UI.TestWindow;
@@ -31,8 +32,6 @@ public class Main {
     private Scene scene;
     private FloatBuffer matrixBuffer;
     private ImGuiManager imGuiManager;
-    private TestWindow testWindow;
-    private HexEditor hexEditor;
     public ShaderProgramCache shaderCache;
 
     public static void main(String[] args) {
@@ -97,14 +96,10 @@ public class Main {
 
         scene = new Scene(width, height, inputHandler, shaderCache);
 
-        //UI
+        //UI init
         try {
-            imGuiManager = new ImGuiManager(window);
-
-            testWindow = new TestWindow(imGuiManager, scene, inputHandler);
-            hexEditor = new HexEditor(imGuiManager, scene, inputHandler);
-            imGuiManager.addWindow(testWindow);
-            imGuiManager.addWindow(hexEditor);
+            imGuiManager = new ImGuiManager(window, width, height);
+            imGuiManager.initUiPanels(imGuiManager, scene, inputHandler);
         }
         catch (Exception e) {
             System.err.println("Failed to load imGuiManager: " + e.getMessage());
@@ -164,14 +159,6 @@ public class Main {
                 int viewLoc = glGetUniformLocation(shaderProgram, "view");
                 glUniformMatrix4fv(viewLoc, false, scene.getCamera().getViewMatrix().get(matrixBuffer)); matrixBuffer.rewind();
             });
-
-            //UI
-            if (testWindow != null) {
-            }
-
-            if (hexEditor != null) {
-
-            }
 
             if (imGuiManager != null) {
                 imGuiManager.update(deltaTime, scene);

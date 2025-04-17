@@ -3,10 +3,14 @@ package org.lwjgl.UI;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiWindowFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.*;
+import org.lwjgl.InputHandler;
 import org.lwjgl.Scene;
+import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.system.windows.DISPLAY_DEVICE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +25,15 @@ public class ImGuiManager {
     private static ImGuiImplGlfw imGuiGlfw;
     private static ImGuiImplGl3 imGuiGl3;
     private boolean firstFrame = true;
+    private int screenWidth;
+    private int screenHeight;
 
 
-    public ImGuiManager(long window) {
+    public ImGuiManager(long window, int width, int height) {
         this.window = window;
         this.windows = new ArrayList<>();
+        this.screenWidth = width;
+        this.screenHeight = height;
         imGuiGlfw = new ImGuiImplGlfw();
         imGuiGl3 = new ImGuiImplGl3();
         init();
@@ -62,21 +70,29 @@ public class ImGuiManager {
         }
 
         if (firstFrame) {
-            //Debug
+            //Menu
             ImGui.setNextWindowPos(0, 0, ImGuiCond.Always);
-            ImGui.setNextWindowSize(500, 200);
+            ImGui.setNextWindowSize(screenWidth, 0);
             windows.get(0).render();
+            //Debug
+            ImGui.setNextWindowPos(0, 50, ImGuiCond.Always);
+            ImGui.setNextWindowSize(500, 200);
+
+            windows.get(1).render();
 
             //Hex
-            ImGui.setNextWindowPos(0, 200, ImGuiCond.Always);
+            ImGui.setNextWindowPos(0, 250, ImGuiCond.Always);
             ImGui.setNextWindowSize(500, 900);
-            windows.get(1).render();
+            windows.get(2).render();
 
             firstFrame = false;
         }
         else {
             for (ImGuiWindow window : windows) {
                 window.render();
+                if (ImGui.isWindowHovered()) {
+                    System.out.println("Hovering");
+                }
             }
         }
 
@@ -97,6 +113,14 @@ public class ImGuiManager {
         ImGui.destroyContext();
     }
 
+    public void initUiPanels(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
+        MenuBar menuBar = new MenuBar(imGuiManager, scene, inputHandler);
+        TestWindow testWindow = new TestWindow(imGuiManager, scene, inputHandler);
+        HexEditor hexEditor = new HexEditor(imGuiManager, scene, inputHandler);
+        imGuiManager.addWindow(menuBar);
+        imGuiManager.addWindow(testWindow);
+        imGuiManager.addWindow(hexEditor);
+    }
     public void addWindow(ImGuiWindow window) {
         windows.add(window);
     }

@@ -1,6 +1,8 @@
 package org.lwjgl.UI;
 
 import imgui.ImGui;
+import imgui.flag.ImGuiWindowFlags;
+import imgui.type.ImString;
 import org.joml.Vector3i;
 import org.lwjgl.*;
 import org.lwjgl.data.MapSaveLoad;
@@ -72,7 +74,7 @@ public class HexEditor extends ImGuiWindow{
 
     @Override
     protected void renderContent() {
-        ImGui.begin("Hex Editor");
+        ImGui.begin("Hex Editor", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
 
         ImGui.text("Selected Type: " + Hexagon.getTypeAsString(selectedType));
         ImGui.text("Selected Texture: " + selectedTexture.getTextureName());
@@ -95,27 +97,27 @@ public class HexEditor extends ImGuiWindow{
             ((Hexagon) selectedObject).setType(Hexagon.FOREST);
         }
 
-        if (ImGui.sliderInt("Grid columns", gridColumns, 0, 100)) {
-            if (oldCols > gridColumns[0]) {
-                grid.removeColumn(oldCols, gridColumns[0]);
-            }
-            if (oldCols < gridColumns[0]) {
-                grid.addColumn(oldCols, gridColumns[0]);
-            }
-            oldCols = gridColumns[0];
-        }
-
-        if (ImGui.sliderInt("Grid rows", gridRows, 0, 100)) {
-            if (oldRows > gridRows[0]) {
-                grid.removeRow(oldRows, gridRows[0]);
-            }
-            else {
-                if (oldRows < gridRows[0]) {
-                    grid.addRow(oldRows, gridRows[0]);
-                }
-            }
-            oldRows = gridRows[0];
-        }
+//        if (ImGui.sliderInt("Grid columns", gridColumns, 0, 100)) {
+//            if (oldCols > gridColumns[0]) {
+//                grid.removeColumn(oldCols, gridColumns[0]);
+//            }
+//            if (oldCols < gridColumns[0]) {
+//                grid.addColumn(oldCols, gridColumns[0]);
+//            }
+//            oldCols = gridColumns[0];
+//        }
+//
+//        if (ImGui.sliderInt("Grid rows", gridRows, 0, 100)) {
+//            if (oldRows > gridRows[0]) {
+//                grid.removeRow(oldRows, gridRows[0]);
+//            }
+//            else {
+//                if (oldRows < gridRows[0]) {
+//                    grid.addRow(oldRows, gridRows[0]);
+//                }
+//            }
+//            oldRows = gridRows[0];
+//        }
 
         if (ImGui.button("Save")) {
             scene.saveMap();
@@ -124,11 +126,6 @@ public class HexEditor extends ImGuiWindow{
             scene.loadMap();
 
         }
-
-        ImGui.textUnformatted(distance.x + ", " + distance.y + ", " + distance.z);
-
-
-
         ImGui.end();
     }
 }

@@ -1,6 +1,7 @@
 package org.lwjgl.UI;
 
 import imgui.ImGui;
+import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector3f;
 import org.lwjgl.*;
 import org.lwjgl.objects.Hexagon;
@@ -49,7 +50,7 @@ public class TestWindow extends ImGuiWindow {
 
     @Override
     protected void renderContent() {
-        ImGui.begin("Test UI Window");
+        ImGui.begin("Test UI Window", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
         if (ImGui.button("Press")) {
             scene.removeAllObjects();
 

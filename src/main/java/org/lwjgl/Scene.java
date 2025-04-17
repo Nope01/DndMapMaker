@@ -1,9 +1,7 @@
 package org.lwjgl;
 
-import org.joml.*;
 import org.lwjgl.data.MapSaveLoad;
 import org.lwjgl.objects.Hexagon;
-import org.lwjgl.objects.ImageQuad;
 import org.lwjgl.objects.SceneObject;
 
 import java.util.ArrayList;
@@ -140,12 +138,15 @@ public class Scene {
     public ShaderProgramCache getShaderCache() {
         return shaderCache;
     }
+    public Grid getGrid() {
+        return grid;
+    }
 
     public void saveMap() {
         mapSaveLoad.saveFile(grid);
     }
     public void loadMap() {
         Grid temp = mapSaveLoad.loadFile();
-        grid.setGrid(temp.getGrid(), temp.rows, temp.columns);
+        grid.setGridFromLoad(temp.getGrid(), temp.rows, temp.columns);
     }
 }

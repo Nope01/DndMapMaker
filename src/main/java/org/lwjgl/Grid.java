@@ -6,10 +6,6 @@ import org.joml.Vector3i;
 import org.lwjgl.objects.Hexagon;
 import org.lwjgl.objects.SceneObject;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-
 
 public class Grid extends SceneObject {
 
@@ -101,7 +97,10 @@ public class Grid extends SceneObject {
     public Hexagon[][] getGrid() {
         return grid;
     }
-    public void setGrid(Hexagon[][] newGrid, int rows, int cols) {
+    public void setGrid(Hexagon[][] grid) {
+        this.grid = grid;
+    }
+    public void setGridFromLoad(Hexagon[][] newGrid, int rows, int cols) {
         //This logic might help with resizing the grid bug?
         this.grid = newGrid;
         for (int col = 0; col < cols; col++) {

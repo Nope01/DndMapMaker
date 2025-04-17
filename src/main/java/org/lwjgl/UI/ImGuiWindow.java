@@ -1,5 +1,7 @@
 package org.lwjgl.UI;
 
+import imgui.flag.ImGuiWindowFlags;
+
 import static imgui.ImGui.*;
 
 public abstract class ImGuiWindow {
@@ -10,9 +12,9 @@ public abstract class ImGuiWindow {
     }
 
     public void render() {
-        begin(title);
+        //begin(title);
         renderContent();
-        end();
+        //end();
     }
 
     protected abstract void update();
