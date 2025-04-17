@@ -1,9 +1,11 @@
 package org.lwjgl;
 
+import org.lwjgl.data.ImageGeneration;
 import org.lwjgl.data.MapSaveLoad;
 import org.lwjgl.objects.Hexagon;
 import org.lwjgl.objects.SceneObject;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,16 +15,18 @@ public class Scene {
     private Grid grid;
     private int screenWidth;
     private int screenHeight;
+    private long window;
     private InputHandler inputHandler;
     private SceneObject selectedObject;
     private TextureCache textureCache;
     private ShaderProgramCache shaderCache;
     private MapSaveLoad mapSaveLoad;
 
-    public Scene(int width, int height, InputHandler inputHandler, ShaderProgramCache shaderCache) {
+    public Scene(int width, int height, InputHandler inputHandler, ShaderProgramCache shaderCache, long window) {
         rootObjects = new ArrayList<>();
         this.screenWidth = width;
         this.screenHeight = height;
+        this.window = window;
         this.inputHandler = inputHandler;
         this.selectedObject = null;
         this.textureCache = new TextureCache();
@@ -148,5 +152,9 @@ public class Scene {
     public void loadMap() {
         Grid temp = mapSaveLoad.loadFile();
         grid.setGridFromLoad(temp.getGrid(), temp.rows, temp.columns);
+    }
+
+    public void saveImage() {
+        ImageGeneration.saveImageAsFile(window, screenWidth, screenHeight);
     }
 }

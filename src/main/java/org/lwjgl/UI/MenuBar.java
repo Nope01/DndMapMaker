@@ -42,6 +42,9 @@ public class MenuBar extends ImGuiWindow {
             if (ImGui.menuItem("Load")) {
                 scene.loadMap();
             }
+            if (ImGui.menuItem("Screenshot")) {
+                scene.saveImage();
+            }
             ImGui.endMenu();
         }
 

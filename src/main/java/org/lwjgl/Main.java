@@ -17,11 +17,6 @@ import static org.lwjgl.opengl.GL32.GL_CONTEXT_CORE_PROFILE_BIT;
 import static org.lwjgl.opengl.GL32.GL_CONTEXT_PROFILE_MASK;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.Map;
-
 public class Main {
     private long window;
     private int width;
@@ -94,7 +89,7 @@ public class Main {
         shaderCache = new ShaderProgramCache();
         shaderProgram = shaderCache.getShaderMap().get("default");
 
-        scene = new Scene(width, height, inputHandler, shaderCache);
+        scene = new Scene(width, height, inputHandler, shaderCache, window);
 
         //UI init
         try {
