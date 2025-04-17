@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
 import static org.lwjgl.opengl.GL11.*;
 
 public class ImageGeneration {
@@ -18,6 +17,7 @@ public class ImageGeneration {
     public static void saveImageAsFile(long window, int width, int height) {
         BufferedImage image = makeImage(window, width, height);
 
+        //Need to add file explorer popup
         try {
             FileSystemView fsv = FileSystemView.getFileSystemView();
             System.out.println(fsv.getHomeDirectory());
@@ -25,7 +25,6 @@ public class ImageGeneration {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     private static BufferedImage makeImage(long window, int width, int height) {

@@ -1,5 +1,6 @@
 package org.lwjgl;
 
+import imgui.ImGui;
 import org.joml.*;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -57,8 +58,11 @@ public class InputHandler {
     public boolean isKeyPressed(int key) {
         return glfwGetKey(window, key) == GLFW_PRESS;
     }
+
+    //todo: need to fix clicking through ui
     public boolean isLeftClicked() {
-        return glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS;
+        return glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS
+                && !ImGui.getIO().getWantCaptureMouse();
     }
 
     public boolean isRightClicked() {

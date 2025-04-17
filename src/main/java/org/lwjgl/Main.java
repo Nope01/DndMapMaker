@@ -1,20 +1,14 @@
 package org.lwjgl;
 
-import imgui.ImGuiIO;
-import org.lwjgl.UI.HexEditor;
 import org.lwjgl.UI.ImGuiManager;
-import org.lwjgl.UI.TestWindow;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
-import java.io.File;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL32.GL_CONTEXT_CORE_PROFILE_BIT;
-import static org.lwjgl.opengl.GL32.GL_CONTEXT_PROFILE_MASK;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Main {
