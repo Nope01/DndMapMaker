@@ -3,6 +3,7 @@ package org.lwjgl.UI;
 import imgui.ImGui;
 import org.joml.Vector3i;
 import org.lwjgl.*;
+import org.lwjgl.data.MapSaveLoad;
 import org.lwjgl.objects.Hexagon;
 import org.lwjgl.objects.SceneObject;
 
@@ -91,6 +92,7 @@ public class HexEditor extends ImGuiWindow{
         if (inputHandler.isLeftClicked() && selectedObject != null) {
             ((Hexagon) selectedObject).setType(selectedType);
             selectedObject.setTexture(selectedTexture);
+            ((Hexagon) selectedObject).setType(Hexagon.FOREST);
         }
 
         if (ImGui.sliderInt("Grid columns", gridColumns, 0, 100)) {
@@ -116,7 +118,11 @@ public class HexEditor extends ImGuiWindow{
         }
 
         if (ImGui.button("Save")) {
-            grid.save();
+            scene.saveMap();
+        }
+        if (ImGui.button("Load")) {
+            scene.loadMap();
+
         }
 
         ImGui.textUnformatted(distance.x + ", " + distance.y + ", " + distance.z);

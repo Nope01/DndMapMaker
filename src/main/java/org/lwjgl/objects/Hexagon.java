@@ -9,11 +9,12 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
+import java.io.Serializable;
 import java.lang.Math;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-public class Hexagon extends SceneObject {
+public class Hexagon extends SceneObject implements Serializable {
     //private int vaoId, vboId; // Vertex Array Object and Vertex Buffer Object
        // Random color for the hexagon
     private static final float TAU = 6.283185307179586f;

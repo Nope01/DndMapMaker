@@ -101,6 +101,15 @@ public class Grid extends SceneObject {
     public Hexagon[][] getGrid() {
         return grid;
     }
+    public void setGrid(Hexagon[][] newGrid, int rows, int cols) {
+        //This logic might help with resizing the grid bug?
+        this.grid = newGrid;
+        for (int col = 0; col < cols; col++) {
+            for (int row = 0; row < rows; row++) {
+                this.addChild(grid[row][col]);
+            }
+        }
+    }
 
     public Hexagon getHexagonAt(int row, int col) {
         return grid[row][col];
@@ -119,7 +128,7 @@ public class Grid extends SceneObject {
         columns = current;
     }
 
-    public void removeRow(int old, int current) {
+        public void removeRow(int old, int current) {
 //        for (int col = 0; col < columns; col++) {
 //            this.removeChild(grid[old-1][col]);
 //        }
@@ -184,19 +193,6 @@ public class Grid extends SceneObject {
                 Hexagon lineHex = getHexagonAt(offset.y, offset.x);
                 lineHex.inLine = true;
             }
-        }
-    }
-
-    public void save() {
-        try {
-            FileOutputStream fileOut = new FileOutputStream("Grid.ser");
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(grid);
-            out.close();
-            fileOut.close();
-            System.out.println("Saved Grid");
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

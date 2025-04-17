@@ -24,7 +24,7 @@ public abstract class SceneObject implements Serializable {
     protected int[] indices;
     public boolean selected;
     protected Vector3f colour;
-    protected transient Texture texture;
+    protected Texture texture;
     protected float[] texCoords;
 
     //The default bounding box values for a 0,0,0 object

@@ -1,6 +1,7 @@
 package org.lwjgl;
 
 import org.joml.*;
+import org.lwjgl.data.MapSaveLoad;
 import org.lwjgl.objects.Hexagon;
 import org.lwjgl.objects.ImageQuad;
 import org.lwjgl.objects.SceneObject;
@@ -11,12 +12,14 @@ import java.util.List;
 public class Scene {
     private Camera camera;
     private List<SceneObject> rootObjects;
+    private Grid grid;
     private int screenWidth;
     private int screenHeight;
     private InputHandler inputHandler;
     private SceneObject selectedObject;
     private TextureCache textureCache;
     private ShaderProgramCache shaderCache;
+    private MapSaveLoad mapSaveLoad;
 
     public Scene(int width, int height, InputHandler inputHandler, ShaderProgramCache shaderCache) {
         rootObjects = new ArrayList<>();
@@ -26,6 +29,7 @@ public class Scene {
         this.selectedObject = null;
         this.textureCache = new TextureCache();
         this.shaderCache = shaderCache;
+        this.mapSaveLoad = new MapSaveLoad();
 
         setupScene(width, height);
     }
@@ -36,7 +40,7 @@ public class Scene {
         camera.setRotation(1.5f, 0.0f);
         camera.resize(width, height);
         
-        Grid grid = new Grid(this, 70, 50);
+        this.grid = new Grid(this, 70, 50);
         addObject(grid);
 
 //        ImageQuad background = new ImageQuad();
@@ -89,7 +93,6 @@ public class Scene {
         if (selectedObject != null) {
             selectedObject.update(this, deltaTime, inputHandler);
         }
-        Grid grid = (Grid) getObject("grid");
         //grid.lineDraw(this);
     }
 
@@ -136,5 +139,13 @@ public class Scene {
     }
     public ShaderProgramCache getShaderCache() {
         return shaderCache;
+    }
+
+    public void saveMap() {
+        mapSaveLoad.saveFile(grid);
+    }
+    public void loadMap() {
+        Grid temp = mapSaveLoad.loadFile();
+        grid.setGrid(temp.getGrid(), temp.rows, temp.columns);
     }
 }
