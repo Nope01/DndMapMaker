@@ -46,6 +46,7 @@ public class TextureCache {
 
     public void initTextures() {
         addNewTexture(DEFAULT_TEXTURE, "default_texture");
+        addNewTexture(EXE_PATH + "empty.png", "empty");
         addNewTexture(SANDVICH, "sandvich");
 
         //Life is pain
@@ -60,6 +61,8 @@ public class TextureCache {
         addNewTexture(EXE_PATH + "sand_13.png", "sand_13");
         addNewTexture(EXE_PATH + "sand_14.png", "sand_14");
         addNewTexture(EXE_PATH + "sand_15.png", "sand_15");
+        addNewTexture(EXE_PATH + "tavern.png", "tavern");
+        addNewTexture(EXE_PATH + "soda.png", "soda");
 
 
         //Open main tile folder

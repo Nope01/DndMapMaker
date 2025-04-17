@@ -27,6 +27,7 @@ public class Hexagon extends SceneObject implements Serializable {
 
     private int type;
     public boolean inLine;
+    private Texture iconTexture;
 
     public static final int N = 0;
     public static final int NE = 1;
@@ -74,7 +75,6 @@ public class Hexagon extends SceneObject implements Serializable {
                  */
         };
         type = 99;
-        //texture = new Texture(TextureCache.DEFAULT_TEXTURE);
     }
 
     private void initGeometry() {
@@ -188,8 +188,13 @@ public class Hexagon extends SceneObject implements Serializable {
         if (texture != null) {
             texture.bind();
         }
+        glActiveTexture(GL_TEXTURE1);
+        if (iconTexture != null) {
+            iconTexture.bind();
+        }
 
-
+        glUniform1i(glGetUniformLocation(shaderProgram, "terrainTexture"), 0);
+        glUniform1i(glGetUniformLocation(shaderProgram, "iconTexture"), 1);
 
         // Render hexagon
         glBindVertexArray(vaoId);
@@ -250,6 +255,14 @@ public class Hexagon extends SceneObject implements Serializable {
     public void setType(int type) {
         this.type = type;
         //setColor(type);
+    }
+
+    public void setIconTexture(Texture texture) {
+        this.iconTexture = texture;
+    }
+
+    public Texture getIconTexture() {
+        return iconTexture;
     }
 
 

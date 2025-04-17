@@ -15,8 +15,10 @@ public class GuiUtils {
     Output: selectedTexture - selected texture based on chosen tile
             several imageButtons laid out in a grid
      */
-    public static Texture createTerrainGrid(int cols, int rows, String[] tileNames, Scene scene, Texture selectedTexture) {
+    public static boolean createTerrainGrid(int cols, int rows, String[] tileNames, Scene scene, HexEditor editor) {
         int tileNameIncrement = 0;
+        boolean result = false;
+
         for (int y = 0; y < cols; y++) {
             for (int x = 0; x < rows; x++) {
                 if (x > 0) {
@@ -25,7 +27,8 @@ public class GuiUtils {
                 ImGui.pushID(y * 4 + x);
                 if (ImGui.imageButton(scene.getTextureCache().getTexture(tileNames[tileNameIncrement]).getTextureId(),
                         75.0f, 75.0f)) {
-                    selectedTexture = scene.getTextureCache().getTexture(tileNames[tileNameIncrement]);
+                    editor.setSelectedTerrainTexture(scene.getTextureCache().getTexture(tileNames[tileNameIncrement]));
+                    result = true;
                 }
                 ImGui.popID();
                 tileNameIncrement++;
@@ -33,6 +36,30 @@ public class GuiUtils {
         }
         ImGui.treePop();
 
-        return selectedTexture;
+        return result;
+    }
+
+    public static boolean creatIconGrid(int cols, int rows, String[] tileNames, Scene scene, HexEditor editor) {
+        int tileNameIncrement = 0;
+        boolean result = false;
+
+        for (int y = 0; y < cols; y++) {
+            for (int x = 0; x < rows; x++) {
+                if (x > 0) {
+                    ImGui.sameLine();
+                }
+                ImGui.pushID(y * 4 + x);
+                if (ImGui.imageButton(scene.getTextureCache().getTexture(tileNames[tileNameIncrement]).getTextureId(),
+                        75.0f, 75.0f)) {
+                    editor.setSelectedIconTexture(scene.getTextureCache().getTexture(tileNames[tileNameIncrement]));
+                    result = true;
+                }
+                ImGui.popID();
+                tileNameIncrement++;
+            }
+        }
+        ImGui.treePop();
+
+        return result;
     }
 }

@@ -7,14 +7,23 @@ uniform vec3 color;
 uniform int selected;
 uniform int inLine;
 
-uniform sampler2D textureSampler;
+uniform sampler2D terrainTexture;
+uniform sampler2D iconTexture;
 
 void main() {
-    vec4 textureColor = texture(textureSampler, texCoords);
+    vec4 terrainTextureColour = texture(terrainTexture, texCoords);
+    vec4 iconTextureColour = texture(iconTexture, texCoords);
     vec3 selectedColour = vec3(173.0/255.0, 62.0/255.0, 62.0/255.0);
     vec3 lineColour = vec3(0.0, 1.0, 0.3);
 
-    FragColor = vec4(color, 1.0) + textureColor;
+    if (iconTextureColour.a > 0.001f) {
+        FragColor = vec4(vec4(color, 1.0f) + iconTextureColour);
+        FragColor.rgb = FragColor.rgb - 0.2f;
+    }
+    else {
+        FragColor = vec4(vec4(color, 1.0f) + terrainTextureColour);
+    }
+
 
     if (selected > 0) {
         FragColor = vec4(selectedColour, 1.0);

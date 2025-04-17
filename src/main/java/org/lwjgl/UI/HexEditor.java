@@ -2,10 +2,8 @@ package org.lwjgl.UI;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
-import imgui.type.ImString;
 import org.joml.Vector3i;
 import org.lwjgl.*;
-import org.lwjgl.data.MapSaveLoad;
 import org.lwjgl.objects.Hexagon;
 import org.lwjgl.objects.SceneObject;
 
@@ -16,7 +14,9 @@ public class HexEditor extends ImGuiWindow{
 
     private SceneObject selectedObject;
     private int selectedType;
-    private Texture selectedTexture;
+    private Texture selectedTerrainTexture;
+    private Texture selectedIconTexture;
+    private boolean isTerrainSelected;
     private int[] gridColumns;
     private int[] gridRows;
     private int oldCols;
@@ -41,13 +41,19 @@ public class HexEditor extends ImGuiWindow{
         "sand_15",
     };
 
+    private String[] iconNames = new String[] {
+            "tavern",
+            "soda",
+    };
+
 
     public HexEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super("Hex Editor");
         this.imGuiManager = imGuiManager;
         this.scene = scene;
         this.inputHandler = inputHandler;
-        this.selectedTexture = scene.getTextureCache().getTexture("default_texture");
+        this.selectedTerrainTexture = scene.getTextureCache().getTexture("default_texture");
+        this.selectedIconTexture = scene.getTextureCache().getTexture("default_texture");
 
         Grid grid = (Grid) scene.getObject("grid");
         selectedObject = scene.getSelectedObject();
@@ -77,25 +83,49 @@ public class HexEditor extends ImGuiWindow{
         ImGui.begin("Hex Editor", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
 
         ImGui.text("Selected Type: " + Hexagon.getTypeAsString(selectedType));
-        ImGui.text("Selected Texture: " + selectedTexture.getTextureName());
+        ImGui.text("Selected Texture: " + selectedTerrainTexture.getTextureName());
+        ImGui.text("Selected Icon: " + selectedIconTexture.getTextureName());
 
+        //Tiles
         ImGui.separator();
         ImGui.setNextItemOpen(true);
         if (ImGui.treeNode("Grid", "Forest")) {
-            selectedTexture = GuiUtils.createTerrainGrid(1, 5, grassTileNames, scene, selectedTexture);
+            if (GuiUtils.createTerrainGrid(1, 5, grassTileNames, scene, this)) {
+                //selectedIconTexture = scene.getTextureCache().getTexture("default_texture");
+                isTerrainSelected = true;
+            }
         }
 
         ImGui.separator();
         ImGui.setNextItemOpen(true);
         if (ImGui.treeNode("Grid", "Desert")) {
-            selectedTexture = GuiUtils.createTerrainGrid(1, 5, desertTileNames, scene, selectedTexture);
+            if (GuiUtils.createTerrainGrid(1, 5, desertTileNames, scene, this)) {
+                //selectedIconTexture = scene.getTextureCache().getTexture("default_texture");
+                isTerrainSelected = true;
+            }
+        }
+
+        //Icons
+        ImGui.separator();
+        ImGui.setNextItemOpen(true);
+        if (ImGui.treeNode("Grid", "Icons")) {
+            if(GuiUtils.creatIconGrid(1, 2, iconNames, scene, this)) {
+                //selectedTerrainTexture = scene.getTextureCache().getTexture("default_texture");
+                isTerrainSelected = false;
+            }
         }
 
         if (inputHandler.isLeftClicked() && selectedObject != null) {
             ((Hexagon) selectedObject).setType(selectedType);
-            selectedObject.setTexture(selectedTexture);
             ((Hexagon) selectedObject).setType(Hexagon.FOREST);
+            if (isTerrainSelected) {
+                selectedObject.setTexture(selectedTerrainTexture);
+            }
+            else {
+                ((Hexagon) selectedObject).setIconTexture(selectedIconTexture);
+            }
         }
+
 
 //        if (ImGui.sliderInt("Grid columns", gridColumns, 0, 100)) {
 //            if (oldCols > gridColumns[0]) {
@@ -118,14 +148,19 @@ public class HexEditor extends ImGuiWindow{
 //            }
 //            oldRows = gridRows[0];
 //        }
-
-        if (ImGui.button("Save")) {
-            scene.saveMap();
-        }
-        if (ImGui.button("Load")) {
-            scene.loadMap();
-
-        }
         ImGui.end();
+    }
+
+    public void setSelectedTerrainTexture(Texture texture) {
+        selectedTerrainTexture = texture;
+    }
+    public Texture getSelectedTerrainTexture() {
+        return selectedTerrainTexture;
+    }
+    public void setSelectedIconTexture(Texture texture) {
+        selectedIconTexture = texture;
+    }
+    public Texture getSelectedIconTexture() {
+        return selectedIconTexture;
     }
 }
