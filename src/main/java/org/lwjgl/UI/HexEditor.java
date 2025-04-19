@@ -16,7 +16,7 @@ public class HexEditor extends ImGuiWindow{
     private int selectedType;
     private Texture selectedTerrainTexture;
     private Texture selectedIconTexture;
-    private boolean isTerrainSelected;
+    private boolean isTerrainSelected = true;
     private int[] gridColumns;
     private int[] gridRows;
     private int oldCols;
@@ -44,6 +44,12 @@ public class HexEditor extends ImGuiWindow{
     private String[] iconNames = new String[] {
             "tavern",
             "soda",
+            "tavern (2)",
+            "caravel",
+            "castle",
+            "anchor",
+            "anvil",
+            "coffer",
     };
 
 
@@ -109,7 +115,7 @@ public class HexEditor extends ImGuiWindow{
         ImGui.separator();
         ImGui.setNextItemOpen(true);
         if (ImGui.treeNode("Grid", "Icons")) {
-            if(GuiUtils.creatIconGrid(1, 2, iconNames, scene, this)) {
+            if(GuiUtils.creatIconGrid(2, 4, iconNames, scene, this)) {
                 //selectedTerrainTexture = scene.getTextureCache().getTexture("default_texture");
                 isTerrainSelected = false;
             }

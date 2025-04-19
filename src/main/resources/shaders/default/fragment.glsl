@@ -1,6 +1,7 @@
 #version 330 core
 
 in vec2 texCoords;
+in vec2 iconTexCoords;
 out vec4 FragColor;
 
 uniform vec3 color;
@@ -12,7 +13,7 @@ uniform sampler2D iconTexture;
 
 void main() {
     vec4 terrainTextureColour = texture(terrainTexture, texCoords);
-    vec4 iconTextureColour = texture(iconTexture, texCoords);
+    vec4 iconTextureColour = texture(iconTexture, iconTexCoords);
     vec3 selectedColour = vec3(173.0/255.0, 62.0/255.0, 62.0/255.0);
     vec3 lineColour = vec3(0.0, 1.0, 0.3);
 

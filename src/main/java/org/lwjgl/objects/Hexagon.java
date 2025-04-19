@@ -83,9 +83,9 @@ public class Hexagon extends SceneObject implements Serializable {
         this.verticesFloats = vertices;
 
         Vector3f[] vecs = new Vector3f[7];
-
         //Rotates a point to create a circle with 6 points (hexagon)
         vecs[0] = new Vector3f(0, 0, 0);
+
         Matrix3f rotation = new Matrix3f();
         for (int i = 0; i < 6; i++) {
             float angle = (float) (TAU/6);
@@ -117,14 +117,26 @@ public class Hexagon extends SceneObject implements Serializable {
             indices[k++] = (i%6)+1;
         }
 
+        //Tilted
+//        texCoords = new float[] {
+//                0.5f, 0.5f,
+//                1.0f, 0.75f,
+//                1.0f, 0.25f,
+//                0.5f, 0.0f,
+//                0.0f, 0.25f,
+//                0.0f, 0.75f,
+//                0.5f, 1.0f };
+
+        //Upright
         texCoords = new float[] {
                 0.5f, 0.5f,
-                1.0f, 0.75f,
-                1.0f, 0.25f,
-                0.5f, 0.0f,
-                0.0f, 0.25f,
-                0.0f, 0.75f,
-                0.5f, 1.0f };
+                1.0f, 0.5f,
+                0.75f, 0.0f,
+                0.25f, 0.0f,
+                0.0f, 0.5f,
+                0.25f, 1.0f,
+                0.75f, 1.0f };
+
 
         //Buffers
         vaoId = glGenVertexArrays();

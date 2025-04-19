@@ -33,6 +33,10 @@ public class TextureCache {
         textureMap.put(name, new Texture(path, name));
     }
 
+    public void addNewTexture(String name) {
+        addNewTexture(EXE_PATH + name + ".png", name);
+    }
+
     public Texture getTexture(String path) {
         Texture texture = null;
         if (path != null) {
@@ -63,6 +67,13 @@ public class TextureCache {
         addNewTexture(EXE_PATH + "sand_15.png", "sand_15");
         addNewTexture(EXE_PATH + "tavern.png", "tavern");
         addNewTexture(EXE_PATH + "soda.png", "soda");
+
+        addNewTexture("tavern (2)");
+        addNewTexture("caravel");
+        addNewTexture("castle");
+        addNewTexture("anchor");
+        addNewTexture("anvil");
+        addNewTexture("coffer");
 
 
         //Open main tile folder
