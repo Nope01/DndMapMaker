@@ -151,7 +151,9 @@ public class Scene {
     }
     public void loadMap() {
         Grid temp = mapSaveLoad.loadFile();
-        grid.setGridFromLoad(temp.getGrid(), temp.rows, temp.columns);
+        if (temp != null) {
+            grid.setGridFromLoad(temp.getGrid(), temp.rows, temp.columns);
+        }
     }
 
     public void saveImage() {

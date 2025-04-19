@@ -1,13 +1,11 @@
 package org.lwjgl.data;
 
 import org.lwjgl.Grid;
-import org.lwjgl.objects.Hexagon;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import java.io.*;
-import java.nio.file.Path;
 
 public class MapSaveLoad {
 
@@ -18,7 +16,7 @@ public class MapSaveLoad {
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Ser files *.ser", "ser"
         );
-        FileSystemView fsv = FileSystemView.getFileSystemView();//For getting desktop path
+        FileSystemView fsv = FileSystemView.getFileSystemView(); //For getting desktop path
 
         saveFileChooser = new JFileChooser();
         saveFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -30,39 +28,48 @@ public class MapSaveLoad {
         loadFileChooser.setFileFilter(filter);
         loadFileChooser.setCurrentDirectory(fsv.getHomeDirectory());
     }
+
     public void saveFile(Object object) {
-        File file = null;
-        String path = "";
+        File file;
+        String path;
 
         int returnVal = saveFileChooser.showSaveDialog(null);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             file = saveFileChooser.getSelectedFile();
-            System.out.println(file.getAbsolutePath());
+            path = file.getAbsolutePath();
+            System.out.println("Saving: " + path);
 
             if (file.exists()) {
                 System.out.println("File already exists!");
-                //Overwrite file if its same type
+                path = path.substring(0, path.lastIndexOf("."));
+                if (fileOverridePopup() == JOptionPane.OK_OPTION) {
+                    System.out.println(file.delete());
+                    serializeObject(object, path);
+                    return;
+                }
+                if (fileOverridePopup() == JOptionPane.NO_OPTION) {
+                    saveFile(object);
+                    return;
+                }
+                if (fileOverridePopup() == JOptionPane.CANCEL_OPTION) {
+                    System.out.println("Cancelled by user");
+                }
             }
             else {
-                path = file.getAbsolutePath();
                 serializeObject(object, path);
             }
-
         }
     }
 
     public Grid loadFile() {
-        File file = null;
-        String path = "";
+        File file;
 
         int returnVal = loadFileChooser.showOpenDialog(null);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             file = loadFileChooser.getSelectedFile();
-            System.out.println(file.getAbsolutePath());
+            System.out.println("Loading: " + file.getAbsolutePath());
             if (file.exists()) {
-                path = file.getAbsolutePath();
-                Grid returnObject = deserializeObject(file);
-                return returnObject;
+                return deserializeObject(file);
             }
         }
         return null;
@@ -104,5 +111,13 @@ public class MapSaveLoad {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static void deleteFile(String path) {
+        File file = new File(path);
+        System.out.println(file.delete());
+    }
+    public static int fileOverridePopup() {
+        return JOptionPane.showConfirmDialog(null, "Override existing file?");
     }
 }

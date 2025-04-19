@@ -4,8 +4,7 @@ import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import org.lwjgl.InputHandler;
 import org.lwjgl.Scene;
-
-import java.awt.*;
+import org.lwjgl.data.MapSaveLoad;
 
 public class MenuBar extends ImGuiWindow {
 
@@ -44,6 +43,9 @@ public class MenuBar extends ImGuiWindow {
             }
             if (ImGui.menuItem("Screenshot")) {
                 scene.saveImage();
+            }
+            if (ImGui.menuItem("Test")) {
+                MapSaveLoad.fileOverridePopup();
             }
             ImGui.endMenu();
         }
