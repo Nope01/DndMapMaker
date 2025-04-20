@@ -50,6 +50,7 @@ public class TextureCache {
 
     public void initTextures() {
         addNewTexture(DEFAULT_TEXTURE, "default_texture");
+        addNewTexture("default_tile");
         addNewTexture(EXE_PATH + "empty.png", "empty");
         addNewTexture(SANDVICH, "sandvich");
 
@@ -75,6 +76,12 @@ public class TextureCache {
         addNewTexture("anvil");
         addNewTexture("coffer");
 
+        addNewTexture("water_01");
+        addNewTexture("snow_01");
+        addNewTexture("volcanic_mountain_01");
+        addNewTexture("jungle_01");
+        addNewTexture("mountain_01");
+        addNewTexture("swamp_01");
 
         //Open main tile folder
 //        Path tileFolder = Paths.get(TILE_PATH);

@@ -18,11 +18,11 @@ void main() {
     vec3 lineColour = vec3(0.0, 1.0, 0.3);
 
     if (iconTextureColour.a > 0.001f) {
-        FragColor = vec4(vec4(color, 1.0f) + iconTextureColour);
+        FragColor = vec4(iconTextureColour);
         FragColor.rgb = FragColor.rgb - 0.2f;
     }
     else {
-        FragColor = vec4(vec4(color, 1.0f) + terrainTextureColour);
+        FragColor = vec4(terrainTextureColour);
     }
 
 

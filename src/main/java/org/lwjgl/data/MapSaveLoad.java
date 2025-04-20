@@ -14,7 +14,7 @@ public class MapSaveLoad {
 
     public MapSaveLoad() {
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "Ser files *.ser", "ser"
+                "Map file *.ser", "ser"
         );
         FileSystemView fsv = FileSystemView.getFileSystemView(); //For getting desktop path
 
@@ -112,11 +112,7 @@ public class MapSaveLoad {
         }
         return null;
     }
-
-    private static void deleteFile(String path) {
-        File file = new File(path);
-        System.out.println(file.delete());
-    }
+    
     public static int fileOverridePopup() {
         return JOptionPane.showConfirmDialog(null, "Override existing file?");
     }

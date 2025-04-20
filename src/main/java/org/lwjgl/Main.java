@@ -55,7 +55,7 @@ public class Main {
         height = vidmode.height();
 
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        window = glfwCreateWindow(width, height, "LWJGL Camera Demo", NULL, NULL);
+        window = glfwCreateWindow(width, height, "DND map maker", NULL, NULL);
         if (window == NULL) {
             glfwTerminate();
             throw new RuntimeException("Failed to create GLFW window");

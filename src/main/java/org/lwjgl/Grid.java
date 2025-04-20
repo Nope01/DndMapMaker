@@ -32,7 +32,7 @@ public class Grid extends SceneObject {
                 Hexagon hexagon = createHexagon(row, col);
                 hexagon.setShaderProgram(scene.getShaderCache().getShader("default"));
                 grid[row][col] = hexagon;
-                hexagon.setTexture(scene.getTextureCache().getTexture("default_texture"));
+                hexagon.setTexture(scene.getTextureCache().getTexture("default_tile"));
                 hexagon.setIconTexture(scene.getTextureCache().getTexture("empty"));
                 this.addChild(hexagon);
             }

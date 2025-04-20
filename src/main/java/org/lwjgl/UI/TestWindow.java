@@ -1,5 +1,6 @@
 package org.lwjgl.UI;
 
+import imgui.ImFontAtlas;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector3f;
@@ -51,14 +52,7 @@ public class TestWindow extends ImGuiWindow {
     @Override
     protected void renderContent() {
         ImGui.begin("Test UI Window", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
-        if (ImGui.button("Press")) {
-            scene.removeAllObjects();
-
-            Grid grid = new Grid(scene, 2, 3);
-            scene.addObject(grid);
-        }
-
-        ImGui.textUnformatted("World position: " + df.format(worldPos.x) + ", "
+        ImGui.textUnformatted("Mouse pos (world): " + df.format(worldPos.x) + ", "
                 + df.format(worldPos.y) + ", "
                 + df.format(worldPos.z));
 
@@ -67,18 +61,20 @@ public class TestWindow extends ImGuiWindow {
                 + ", " + df.format(cameraPos.z));
 
 
+        ImGui.separator();
+        ImGui.text("Hexagon details");
         if (selectedObject == null) {
             ImGui.textUnformatted("Null");
         }
         else {
             if (selectedObject instanceof Hexagon)
-            ImGui.textUnformatted("Cube: " + ((Hexagon) selectedObject).getCubeCoords().x + ", "
+            ImGui.textUnformatted("Cube coords: " + ((Hexagon) selectedObject).getCubeCoords().x + ", "
                     + ((Hexagon) selectedObject).getCubeCoords().y + " ,"
                     + ((Hexagon) selectedObject).getCubeCoords().z);
-            ImGui.textUnformatted("Type: " + type);
-            ImGui.textUnformatted("ID: " + selectedObject.getId());
-            ImGui.textUnformatted("Offset: " + ((Hexagon) selectedObject).getOffsetCoords().x + ", "
+            ImGui.textUnformatted("Offset coords: " + ((Hexagon) selectedObject).getOffsetCoords().x + ", "
                     + ((Hexagon) selectedObject).getOffsetCoords().y);
+            ImGui.textUnformatted("Tile type: " + type);
+            ImGui.textUnformatted("ID: " + selectedObject.getId());
             ImGui.textUnformatted("Colour: " + selectedObject.getColour().x + ", "
                     + selectedObject.getColour().y + ", "
                     + selectedObject.getColour().z);

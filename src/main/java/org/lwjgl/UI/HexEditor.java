@@ -26,19 +26,24 @@ public class HexEditor extends ImGuiWindow{
     //Grid uses this to populate tile selection
 
     private String[] grassTileNames = new String[] {
-        "grass_05",
-        "grass_10",
-        "grass_11",
-        "grass_12",
-        "grass_13",
+            "grass_05",
+            "grass_10",
+            "grass_11",
+            "grass_12",
+            "grass_13",
     };
 
     private String[] desertTileNames = new String[] {
-        "sand_07",
-        "sand_12",
-        "sand_13",
-        "sand_14",
-        "sand_15",
+            "sand_07",
+            "sand_12",
+            "sand_13",
+            "sand_14",
+            "sand_15",
+            "water_01",
+            "snow_01",
+            "jungle_01",
+            "mountain_01",
+            "swamp_01",
     };
 
     private String[] iconNames = new String[] {
@@ -58,8 +63,8 @@ public class HexEditor extends ImGuiWindow{
         this.imGuiManager = imGuiManager;
         this.scene = scene;
         this.inputHandler = inputHandler;
-        this.selectedTerrainTexture = scene.getTextureCache().getTexture("default_texture");
-        this.selectedIconTexture = scene.getTextureCache().getTexture("default_texture");
+        this.selectedTerrainTexture = scene.getTextureCache().getTexture("default_tile");
+        this.selectedIconTexture = scene.getTextureCache().getTexture("empty");
 
         Grid grid = (Grid) scene.getObject("grid");
         selectedObject = scene.getSelectedObject();
@@ -105,7 +110,7 @@ public class HexEditor extends ImGuiWindow{
         ImGui.separator();
         ImGui.setNextItemOpen(true);
         if (ImGui.treeNode("Grid", "Desert")) {
-            if (GuiUtils.createTerrainGrid(1, 5, desertTileNames, scene, this)) {
+            if (GuiUtils.createTerrainGrid(2, 5, desertTileNames, scene, this)) {
                 //selectedIconTexture = scene.getTextureCache().getTexture("default_texture");
                 isTerrainSelected = true;
             }
