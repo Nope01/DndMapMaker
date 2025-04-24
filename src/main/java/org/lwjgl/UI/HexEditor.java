@@ -25,31 +25,17 @@ public class HexEditor extends ImGuiWindow{
     private Vector3i distance;
     //Grid uses this to populate tile selection
 
-    private String[] grassTileNames = new String[] {
+    private String[] tileNames = new String[]{
+            "dead_forest_01",
             "grass_05",
-            "grass_10",
-            "grass_11",
-            "grass_12",
-            "grass_13",
-    };
-
-    private String[] desertTileNames = new String[] {
-            "sand_07",
-            "sand_12",
-            "sand_13",
-            "sand_14",
-            "sand_15",
-            "water_01",
-            "snow_01",
             "jungle_01",
-            "mountain_01",
-            "swamp_01",
+            "sand_07",
+            "snow_01",
+            "water_01",
     };
 
     private String[] iconNames = new String[] {
             "tavern",
-            "soda",
-            "tavern (2)",
             "caravel",
             "castle",
             "anchor",
@@ -101,16 +87,7 @@ public class HexEditor extends ImGuiWindow{
         ImGui.separator();
         ImGui.setNextItemOpen(true);
         if (ImGui.treeNode("Grid", "Forest")) {
-            if (GuiUtils.createTerrainGrid(1, 5, grassTileNames, scene, this)) {
-                //selectedIconTexture = scene.getTextureCache().getTexture("default_texture");
-                isTerrainSelected = true;
-            }
-        }
-
-        ImGui.separator();
-        ImGui.setNextItemOpen(true);
-        if (ImGui.treeNode("Grid", "Desert")) {
-            if (GuiUtils.createTerrainGrid(2, 5, desertTileNames, scene, this)) {
+            if (GuiUtils.createTerrainGrid(2, 3, tileNames, scene, this)) {
                 //selectedIconTexture = scene.getTextureCache().getTexture("default_texture");
                 isTerrainSelected = true;
             }
@@ -120,7 +97,7 @@ public class HexEditor extends ImGuiWindow{
         ImGui.separator();
         ImGui.setNextItemOpen(true);
         if (ImGui.treeNode("Grid", "Icons")) {
-            if(GuiUtils.creatIconGrid(2, 4, iconNames, scene, this)) {
+            if(GuiUtils.creatIconGrid(2, 3, iconNames, scene, this)) {
                 //selectedTerrainTexture = scene.getTextureCache().getTexture("default_texture");
                 isTerrainSelected = false;
             }
@@ -134,6 +111,17 @@ public class HexEditor extends ImGuiWindow{
             }
             else {
                 ((Hexagon) selectedObject).setIconTexture(selectedIconTexture);
+            }
+        }
+
+        //Erase the tile based on whether a tile or icon was last selected
+        if (inputHandler.isRightClicked() && selectedObject != null) {
+            ((Hexagon) selectedObject).clearType();
+            if (isTerrainSelected) {
+                selectedObject.setTexture(scene.getTextureCache().getTexture("default_tile"));
+            }
+            else {
+                ((Hexagon) selectedObject).setIconTexture(scene.getTextureCache().getTexture("empty"));
             }
         }
 

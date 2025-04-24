@@ -60,11 +60,11 @@ public class Camera {
         if (input.isKeyPressed(GLFW_KEY_RIGHT)) rotation.y -= rotateSpeed;
 
         // Mouse rotation (only when captured)
-        if (input.isRightClicked()) {
-            Vector2f delta = input.getMouseDelta();
-            this.addRotation((float) Math.toRadians(delta.y * mouseSensitivity),
-                    (float) Math.toRadians(delta.x * mouseSensitivity));
-        }
+//        if (input.isRightClicked()) {
+//            Vector2f delta = input.getMouseDelta();
+//            this.addRotation((float) Math.toRadians(delta.y * mouseSensitivity),
+//                    (float) Math.toRadians(delta.x * mouseSensitivity));
+//        }
 
         //Middle click pan
         if (input.isMiddleClicked()) {

@@ -269,6 +269,10 @@ public class Hexagon extends SceneObject implements Serializable {
         //setColor(type);
     }
 
+    public void clearType() {
+        this.type = -1;
+    }
+
     public void setIconTexture(Texture texture) {
         this.iconTexture = texture;
     }

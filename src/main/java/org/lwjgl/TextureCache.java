@@ -1,24 +1,50 @@
 package org.lwjgl;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TextureCache {
-    public static final String DEFAULT_PATH = "src/main/resources/textures/";
-    public static String EXE_PATH = "textures/";
-    public static final String TILE_PATH = EXE_PATH + "tiles/";
-    public static final String DEFAULT_TEXTURE = EXE_PATH + "default_texture.png";
-    public static final String SANDVICH = EXE_PATH + "sandvich.png";
-    public static final String MAP = EXE_PATH + "map.png";
+    public static String DEFAULT_PATH = "textures/";
+    public static final String DEFAULT_TEXTURE = DEFAULT_PATH + "default_texture.png";
+
     private Map<String, Texture> textureMap;
+    private static final String[] directories = new String[]{
+            "default/",
+            "icons/",
+            "misc/",
+            "tiles/",
+    };
+
+    private static final String[] defaultTextures = new String[]{
+            "default_texture",
+            "default_tile",
+            "empty",
+    };
+
+    private static final String[] iconTextures = new String[]{
+            "anchor",
+            "anvil",
+            "caravel",
+            "castle",
+            "coffer",
+            "old-key",
+            "soda",
+            "tavern",
+    };
+
+    private static final String[] miscTextures = new String[]{
+            "ponder",
+            "sandvich",
+    };
+
+    private static final String[] tilesTextures = new String[]{
+            "dead_forest_01",
+            "grass_05",
+            "jungle_01",
+            "sand_07",
+            "snow_01",
+            "water_01",
+    };
 
     public TextureCache() {
         textureMap = new HashMap<String, Texture>();
@@ -34,7 +60,7 @@ public class TextureCache {
     }
 
     public void addNewTexture(String name) {
-        addNewTexture(EXE_PATH + name + ".png", name);
+        addNewTexture(DEFAULT_PATH + name + ".png", name);
     }
 
     public Texture getTexture(String path) {
@@ -49,39 +75,59 @@ public class TextureCache {
     }
 
     public void initTextures() {
-        addNewTexture(DEFAULT_TEXTURE, "default_texture");
-        addNewTexture("default_tile");
-        addNewTexture(EXE_PATH + "empty.png", "empty");
-        addNewTexture(SANDVICH, "sandvich");
-
-        //Life is pain
-        addNewTexture(EXE_PATH + "grass_05.png", "grass_05");
-        addNewTexture(EXE_PATH + "grass_10.png", "grass_10");
-        addNewTexture(EXE_PATH + "grass_11.png", "grass_11");
-        addNewTexture(EXE_PATH + "grass_12.png", "grass_12");
-        addNewTexture(EXE_PATH + "grass_13.png", "grass_13");
-
-        addNewTexture(EXE_PATH + "sand_07.png", "sand_07");
-        addNewTexture(EXE_PATH + "sand_12.png", "sand_12");
-        addNewTexture(EXE_PATH + "sand_13.png", "sand_13");
-        addNewTexture(EXE_PATH + "sand_14.png", "sand_14");
-        addNewTexture(EXE_PATH + "sand_15.png", "sand_15");
-        addNewTexture(EXE_PATH + "tavern.png", "tavern");
-        addNewTexture(EXE_PATH + "soda.png", "soda");
-
-        addNewTexture("tavern (2)");
-        addNewTexture("caravel");
-        addNewTexture("castle");
-        addNewTexture("anchor");
-        addNewTexture("anvil");
-        addNewTexture("coffer");
-
-        addNewTexture("water_01");
-        addNewTexture("snow_01");
-        addNewTexture("volcanic_mountain_01");
-        addNewTexture("jungle_01");
-        addNewTexture("mountain_01");
-        addNewTexture("swamp_01");
+        for (String directory : directories) {
+            switch (directory) {
+                case "default/": for (String textureName : defaultTextures) {
+                    String path = DEFAULT_PATH + "default/" + textureName + ".png";
+                    addNewTexture(path, textureName);
+                }
+                case "icons/": for (String textureName : iconTextures) {
+                    String path = DEFAULT_PATH + "icons/" + textureName + ".png";
+                    addNewTexture(path, textureName);
+                }
+                case "misc/": for (String textureName : miscTextures) {
+                    String path = DEFAULT_PATH + "misc/" + textureName + ".png";
+                    addNewTexture(path, textureName);
+                }
+                case "tiles/": for (String textureName : tilesTextures) {
+                    String path = DEFAULT_PATH + "tiles/" + textureName + ".png";
+                    addNewTexture(path, textureName);
+                }
+                default: System.out.println("texture not found");
+            }
+        }
+//        addNewTexture(DEFAULT_TEXTURE, "default_texture");
+//        addNewTexture("default_tile");
+//        addNewTexture(DEFAULT_PATH + "empty.png", "empty");
+//
+//        //Life is pain
+//        addNewTexture(DEFAULT_PATH + "grass_05.png", "grass_05");
+//        addNewTexture(DEFAULT_PATH + "grass_10.png", "grass_10");
+//        addNewTexture(DEFAULT_PATH + "grass_11.png", "grass_11");
+//        addNewTexture(DEFAULT_PATH + "grass_12.png", "grass_12");
+//        addNewTexture(DEFAULT_PATH + "grass_13.png", "grass_13");
+//
+//        addNewTexture(DEFAULT_PATH + "sand_07.png", "sand_07");
+//        addNewTexture(DEFAULT_PATH + "sand_12.png", "sand_12");
+//        addNewTexture(DEFAULT_PATH + "sand_13.png", "sand_13");
+//        addNewTexture(DEFAULT_PATH + "sand_14.png", "sand_14");
+//        addNewTexture(DEFAULT_PATH + "sand_15.png", "sand_15");
+//        addNewTexture(DEFAULT_PATH + "tavern.png", "tavern");
+//        addNewTexture(DEFAULT_PATH + "soda.png", "soda");
+//
+//        addNewTexture("tavern (2)");
+//        addNewTexture("caravel");
+//        addNewTexture("castle");
+//        addNewTexture("anchor");
+//        addNewTexture("anvil");
+//        addNewTexture("coffer");
+//
+//        addNewTexture("water_01");
+//        addNewTexture("snow_01");
+//        addNewTexture("volcanic_mountain_01");
+//        addNewTexture("jungle_01");
+//        addNewTexture("mountain_01");
+//        addNewTexture("swamp_01");
 
         //Open main tile folder
 //        Path tileFolder = Paths.get(TILE_PATH);

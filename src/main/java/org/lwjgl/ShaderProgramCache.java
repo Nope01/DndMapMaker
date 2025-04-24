@@ -16,7 +16,6 @@ import static org.lwjgl.opengl.GL20.glDeleteShader;
 public class ShaderProgramCache {
     Map<String, Integer> shaderMap;
     private static String DEFAULT_PATH = "shaders/";
-    private static String EXE_PATH = "shaders/";
 
     public ShaderProgramCache() {
         shaderMap = new HashMap<>();
