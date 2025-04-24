@@ -2,7 +2,6 @@ package org.lwjgl.UI;
 
 import imgui.ImGui;
 import org.lwjgl.Scene;
-import org.lwjgl.Texture;
 
 public class GuiUtils {
 
@@ -61,5 +60,18 @@ public class GuiUtils {
         ImGui.treePop();
 
         return result;
+    }
+
+
+    public static void setNextCenterOfWindow(String text) {
+        float windowWidth = ImGui.getWindowWidth();
+        float textWidth = ImGui.calcTextSizeX(text);
+
+        ImGui.newLine();
+        ImGui.sameLine((windowWidth/2) - (textWidth/2));
+    }
+    public static void textCentered(String text) {
+        setNextCenterOfWindow(text);
+        ImGui.text(text);
     }
 }

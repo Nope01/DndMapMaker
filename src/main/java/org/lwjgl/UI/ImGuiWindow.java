@@ -1,8 +1,6 @@
 package org.lwjgl.UI;
 
-import imgui.flag.ImGuiWindowFlags;
-
-import static imgui.ImGui.*;
+import org.lwjgl.Scene;
 
 public abstract class ImGuiWindow {
     protected String title;
@@ -17,6 +15,7 @@ public abstract class ImGuiWindow {
         //end();
     }
 
+    protected abstract void init(Scene scene);
     protected abstract void update();
 
     protected abstract void renderContent();

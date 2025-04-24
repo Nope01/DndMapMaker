@@ -88,7 +88,7 @@ public class Main {
         //UI init
         try {
             imGuiManager = new ImGuiManager(window, width, height);
-            imGuiManager.initUiPanels(imGuiManager, scene, inputHandler);
+            imGuiManager.initMainMenu(imGuiManager, scene, inputHandler);
         }
         catch (Exception e) {
             System.err.println("Failed to load imGuiManager: " + e.getMessage());
@@ -164,6 +164,4 @@ public class Main {
         glfwDestroyWindow(window);
         glfwTerminate();
     }
-
-
 }

@@ -42,8 +42,7 @@ public class Scene {
         camera.setRotation(1.5f, 0.0f);
         camera.resize(width, height);
         
-        this.grid = new Grid(this, 70, 50);
-        addObject(grid);
+
 
 //        ImageQuad background = new ImageQuad();
 //        background.setId("background");
@@ -54,6 +53,11 @@ public class Scene {
 //        background.setTexture(textureCache.getTexture("map"));
 //        addObject(background);
 
+    }
+
+    public void initContinentScene() {
+        this.grid = new Grid(this, 70, 50);
+        addObject(grid);
     }
 
     public void addObject(SceneObject object) {
@@ -127,6 +131,13 @@ public class Scene {
 
     public Camera getCamera() {
         return camera;
+    }
+
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+    public int getScreenHeight() {
+        return screenHeight;
     }
 
     public SceneObject getSelectedObject() {

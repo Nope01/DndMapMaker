@@ -1,6 +1,5 @@
 package org.lwjgl.UI;
 
-import imgui.ImFontAtlas;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector3f;
@@ -36,6 +35,10 @@ public class TestWindow extends ImGuiWindow {
         if (selectedObject instanceof Hexagon) {
             type = ((Hexagon) selectedObject).getTypeAsString();
         }
+    }
+
+    @Override
+    protected void init(Scene scene) {
 
     }
 

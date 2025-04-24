@@ -64,6 +64,11 @@ public class HexEditor extends ImGuiWindow{
     }
 
     @Override
+    protected void init(Scene scene) {
+
+    }
+
+    @Override
     protected void update() {
         selectedObject = scene.getSelectedObject();
         grid = scene.getObject("grid") instanceof Grid ? (Grid) scene.getObject("grid") : null;

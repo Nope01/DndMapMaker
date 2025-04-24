@@ -20,6 +20,11 @@ public class MenuBar extends ImGuiWindow {
     }
 
     @Override
+    protected void init(Scene scene) {
+
+    }
+
+    @Override
     protected void update() {
 
     }
