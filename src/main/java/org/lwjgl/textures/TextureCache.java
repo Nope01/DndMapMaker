@@ -33,7 +33,6 @@ public class TextureCache {
     };
 
     private static final String[] miscTextures = new String[]{
-            "ponder",
             "sandvich",
     };
 
