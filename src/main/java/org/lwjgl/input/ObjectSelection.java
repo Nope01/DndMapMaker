@@ -1,9 +1,9 @@
-package org.lwjgl;
+package org.lwjgl.input;
 
 
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.continentMap.ContinentHexagon;
+import org.lwjgl.Scene;
 import org.lwjgl.objects.SceneObject;
 
 import java.util.List;

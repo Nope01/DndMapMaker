@@ -2,24 +2,14 @@ package org.lwjgl.continentMap;
 
 import org.joml.*;
 import org.lwjgl.*;
-import org.lwjgl.objects.Hexagon;
-import org.lwjgl.objects.ObjectUtils;
-import org.lwjgl.objects.SceneObject;
+import org.lwjgl.input.InputHandler;
 
 import static java.lang.Math.abs;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
 
 import java.io.Serializable;
-import java.lang.Math;
 
-public class ContinentHexagon extends Hexagon implements Serializable {
+public class ContinentHexagon extends org.lwjgl.objects.Hexagon implements Serializable {
     private int type;
-
-
-
 
     public static final int FOREST = 0;
     public static final int PLAINS = 1;

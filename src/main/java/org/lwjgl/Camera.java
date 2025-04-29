@@ -3,6 +3,8 @@ package org.lwjgl;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.lwjgl.input.InputHandler;
+
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Camera {

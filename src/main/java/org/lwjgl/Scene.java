@@ -3,12 +3,18 @@ package org.lwjgl;
 import org.lwjgl.data.ImageGeneration;
 import org.lwjgl.data.MapSaveLoad;
 import org.lwjgl.continentMap.ContinentHexagon;
+import org.lwjgl.input.InputHandler;
+import org.lwjgl.input.ObjectSelection;
+import org.lwjgl.objects.Grid;
 import org.lwjgl.objects.SceneObject;
+import org.lwjgl.objects.Trap;
+import org.lwjgl.shaders.ShaderProgramCache;
+import org.lwjgl.textures.TextureCache;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Scene {
+public class Scene extends SceneObject {
     private Camera camera;
     private List<SceneObject> rootObjects;
     private Grid grid;
@@ -37,14 +43,30 @@ public class Scene {
 
     private void setupScene(int width, int height) {
         camera = new Camera(width, height);
-        camera.setPosition(50f, 40.0f, 50f);
+        camera.setPosition(0f, 20.0f, 0f);
         camera.setRotation(1.5f, 0.0f);
         camera.resize(width, height);
     }
 
     public void initContinentScene() {
         this.grid = new Grid(this, 70, 50);
+        grid.makeContinentGrid(this);
         addObject(grid);
+    }
+
+    public void initCityScene() {
+        this.grid = new Grid(this, 70, 50);
+        grid.makeCityGrid(this);
+        //grid.setPosition(0f, 0.0f, 2f);
+        addObject(grid);
+
+        Trap trap = new Trap(5);
+        trap.setShaderProgram(this.getShaderCache().getShader("default"));
+        trap.setId("trap");
+        trap.setParent(grid.getHexagonAt(4, 4));
+        trap.setPosition(0.0f, 0.1f, 0.0f);
+        trap.setTexture(this.getTextureCache().getTexture("sandvich"));
+        addObject(trap);
     }
 
     public void addObject(SceneObject object) {
@@ -93,6 +115,11 @@ public class Scene {
         for (SceneObject root : rootObjects) {
             root.render();
         }
+    }
+
+    @Override
+    public void update(Scene scene, float deltaTime, InputHandler inputHandler) {
+
     }
 
     public void cleanup() {

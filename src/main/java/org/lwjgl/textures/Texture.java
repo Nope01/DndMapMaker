@@ -1,7 +1,6 @@
-package org.lwjgl;
+package org.lwjgl.textures;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
-import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,7 +8,6 @@ import java.io.Serializable;
 import java.nio.*;
 
 import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.stb.STBImage.*;
 
 public class Texture implements Serializable {
 

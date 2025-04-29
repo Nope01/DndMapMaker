@@ -2,29 +2,23 @@ package org.lwjgl.UI;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
-import org.joml.Vector3i;
 import org.lwjgl.*;
 import org.lwjgl.continentMap.ContinentHexagon;
+import org.lwjgl.input.InputHandler;
+import org.lwjgl.objects.Grid;
 import org.lwjgl.objects.SceneObject;
+import org.lwjgl.textures.Texture;
 
-public class HexEditor extends ImGuiWindow{
-    private ImGuiManager imGuiManager;
-    private Scene scene;
-    private InputHandler inputHandler;
+public class ContinentEditor extends ImGuiWindow{
 
     private SceneObject selectedObject;
     private int selectedType;
     private Texture selectedTerrainTexture;
     private Texture selectedIconTexture;
     private boolean isTerrainSelected = true;
-    private int[] gridColumns;
-    private int[] gridRows;
-    private int oldCols;
-    private int oldRows;
-    private Grid grid;
-    private Vector3i distance;
-    //Grid uses this to populate tile selection
 
+
+    //Grid uses this to populate tile selection
     private String[] tileNames = new String[]{
             "dead_forest_01",
             "grass_05",
@@ -53,39 +47,51 @@ public class HexEditor extends ImGuiWindow{
     };
 
 
-    public HexEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
-        super("Hex Editor");
-        this.imGuiManager = imGuiManager;
-        this.scene = scene;
-        this.inputHandler = inputHandler;
+    public ContinentEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
+        super(imGuiManager, scene, inputHandler, "Continent Editor");
+        uiWidth = 400;
+        uiHeight = 600;
+        uiXPos = 0;
+        uiYPos = 20;
+
         this.selectedTerrainTexture = scene.getTextureCache().getTexture("default_tile");
         this.selectedIconTexture = scene.getTextureCache().getTexture("empty");
 
         Grid grid = (Grid) scene.getObject("grid");
         selectedObject = scene.getSelectedObject();
-        selectedType = 99;
-        gridColumns = new int[]{grid.columns};
-        gridRows = new int[]{grid.rows};
-        oldCols = gridColumns[0];
-        oldRows = gridRows[0];
-        this.grid = scene.getObject("grid") instanceof Grid ? (Grid) scene.getObject("grid") : null;
-        distance = new Vector3i();
+        selectedType = -1;
     }
 
     @Override
     protected void init(Scene scene) {
-
+        ImGui.setNextWindowPos(uiXPos, uiYPos);
+        ImGui.setNextWindowSize(uiWidth, uiHeight);
+        renderContent();
     }
 
     @Override
     protected void update() {
         selectedObject = scene.getSelectedObject();
-        grid = scene.getObject("grid") instanceof Grid ? (Grid) scene.getObject("grid") : null;
-        if (selectedObject instanceof ContinentHexagon) {
-            distance =
-                    ContinentHexagon.cubeDistance(grid.getGrid()[0][0].getCubeCoords(),
-                            ((ContinentHexagon) selectedObject).getCubeCoords());
 
+        if (inputHandler.isLeftClicked() && selectedObject != null) {
+            ((ContinentHexagon) selectedObject).setType(selectedType);
+            if (isTerrainSelected) {
+                selectedObject.setTexture(selectedTerrainTexture);
+            }
+            else {
+                ((ContinentHexagon) selectedObject).setIconTexture(selectedIconTexture);
+            }
+        }
+
+        //Erase the tile based on whether a tile or icon was last selected
+        if (inputHandler.isRightClicked() && selectedObject != null) {
+            if (isTerrainSelected) {
+                ((ContinentHexagon) selectedObject).clearType();
+                selectedObject.setTexture(scene.getTextureCache().getTexture("default_tile"));
+            }
+            else {
+                ((ContinentHexagon) selectedObject).setIconTexture(scene.getTextureCache().getTexture("empty"));
+            }
         }
     }
 
@@ -116,50 +122,6 @@ public class HexEditor extends ImGuiWindow{
                 isTerrainSelected = false;
             }
         }
-
-        if (inputHandler.isLeftClicked() && selectedObject != null) {
-            ((ContinentHexagon) selectedObject).setType(selectedType);
-            if (isTerrainSelected) {
-                selectedObject.setTexture(selectedTerrainTexture);
-            }
-            else {
-                ((ContinentHexagon) selectedObject).setIconTexture(selectedIconTexture);
-            }
-        }
-
-        //Erase the tile based on whether a tile or icon was last selected
-        if (inputHandler.isRightClicked() && selectedObject != null) {
-            if (isTerrainSelected) {
-                ((ContinentHexagon) selectedObject).clearType();
-                selectedObject.setTexture(scene.getTextureCache().getTexture("default_tile"));
-            }
-            else {
-                ((ContinentHexagon) selectedObject).setIconTexture(scene.getTextureCache().getTexture("empty"));
-            }
-        }
-
-
-//        if (ImGui.sliderInt("Grid columns", gridColumns, 0, 100)) {
-//            if (oldCols > gridColumns[0]) {
-//                grid.removeColumn(oldCols, gridColumns[0]);
-//            }
-//            if (oldCols < gridColumns[0]) {
-//                grid.addColumn(oldCols, gridColumns[0]);
-//            }
-//            oldCols = gridColumns[0];
-//        }
-//
-//        if (ImGui.sliderInt("Grid rows", gridRows, 0, 100)) {
-//            if (oldRows > gridRows[0]) {
-//                grid.removeRow(oldRows, gridRows[0]);
-//            }
-//            else {
-//                if (oldRows < gridRows[0]) {
-//                    grid.addRow(oldRows, gridRows[0]);
-//                }
-//            }
-//            oldRows = gridRows[0];
-//        }
         ImGui.end();
     }
 

@@ -2,10 +2,9 @@ package org.lwjgl.UI;
 
 import imgui.ImGui;
 import imgui.ImGuiIO;
-import imgui.flag.ImGuiCond;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.*;
-import org.lwjgl.InputHandler;
+import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.opengl.GL;
 
@@ -101,16 +100,29 @@ public class ImGuiManager {
 
     public void initContinentMap(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         scene.initContinentScene();
-        MenuBar menuBar = new MenuBar(imGuiManager, scene, inputHandler);
-        TestWindow testWindow = new TestWindow(imGuiManager, scene, inputHandler);
-        HexEditor hexEditor = new HexEditor(imGuiManager, scene, inputHandler);
-
         //Clear the windows before adding new ones because arrays are annoying
         windows = new ArrayList<>();
 
+        MenuBar menuBar = new MenuBar(imGuiManager, scene, inputHandler);
+        //TestWindow testWindow = new TestWindow(imGuiManager, scene, inputHandler);
+        ContinentEditor continentEditor = new ContinentEditor(imGuiManager, scene, inputHandler);
+
         imGuiManager.addWindow(menuBar);
-        imGuiManager.addWindow(testWindow);
-        imGuiManager.addWindow(hexEditor);
+        //imGuiManager.addWindow(testWindow);
+        imGuiManager.addWindow(continentEditor);
+        firstFrame = true;
+    }
+
+    public void initCityMap(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
+        scene.initCityScene();
+        windows = new ArrayList<>();
+
+        MenuBar menuBar = new MenuBar(imGuiManager, scene, inputHandler);
+        CityEditor cityEditor = new CityEditor(imGuiManager, scene, inputHandler);
+
+        imGuiManager.addWindow(menuBar);
+        imGuiManager.addWindow(cityEditor);
+        firstFrame = true;
     }
 
     public void initMainMenu(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {

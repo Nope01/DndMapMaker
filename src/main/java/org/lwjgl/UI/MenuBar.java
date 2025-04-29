@@ -2,7 +2,7 @@ package org.lwjgl.UI;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
-import org.lwjgl.InputHandler;
+import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.data.MapSaveLoad;
 
@@ -13,10 +13,7 @@ public class MenuBar extends ImGuiWindow {
     private InputHandler inputHandler;
 
     public MenuBar(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
-        super("Menu Bar");
-        this.imGuiManager = imGuiManager;
-        this.scene = scene;
-        this.inputHandler = inputHandler;
+        super(imGuiManager, scene, inputHandler, "Menu Bar");
     }
 
     @Override

@@ -5,17 +5,14 @@ import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector3f;
 import org.lwjgl.*;
 import org.lwjgl.continentMap.ContinentHexagon;
+import org.lwjgl.input.InputHandler;
 import org.lwjgl.objects.SceneObject;
 
 import java.text.DecimalFormat;
 
 public class TestWindow extends ImGuiWindow {
-    private ImGuiManager imGuiManager;
     private Camera camera;
-    private Scene scene;
-    private InputHandler inputHandler;
     private static final DecimalFormat df = new DecimalFormat("0.00");
-
     private Vector3f worldPos;
     private Vector3f cameraPos;
     private SceneObject selectedObject;
@@ -23,10 +20,11 @@ public class TestWindow extends ImGuiWindow {
 
 
     public TestWindow(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
-        super("Test UI Window"); // Window title
-        this.imGuiManager = imGuiManager;
-        this.scene = scene;
-        this.inputHandler = inputHandler;
+        super(imGuiManager, scene, inputHandler, "Test Window");
+        uiWidth = 400;
+        uiHeight = 250;
+        uiXPos = 0;
+        uiYPos = 20;
 
         worldPos = inputHandler.getWorldPos(scene);
         camera = scene.getCamera();
@@ -39,7 +37,9 @@ public class TestWindow extends ImGuiWindow {
 
     @Override
     protected void init(Scene scene) {
-
+        ImGui.setNextWindowPos(uiXPos, uiYPos);
+        ImGui.setNextWindowSize(uiWidth, uiHeight);
+        renderContent();
     }
 
     @Override

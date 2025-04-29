@@ -1,6 +1,6 @@
 package org.lwjgl.data;
 
-import org.lwjgl.Grid;
+import org.lwjgl.objects.Grid;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;

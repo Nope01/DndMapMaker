@@ -1,7 +1,8 @@
-package org.lwjgl;
+package org.lwjgl.input;
 
 import imgui.ImGui;
 import org.joml.*;
+import org.lwjgl.Scene;
 
 import static org.lwjgl.glfw.GLFW.*;
 

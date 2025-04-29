@@ -4,9 +4,9 @@ import org.joml.Matrix3f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
-import org.lwjgl.InputHandler;
+import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
-import org.lwjgl.Texture;
+import org.lwjgl.textures.Texture;
 
 import static java.lang.Math.TAU;
 import static java.lang.Math.abs;
@@ -120,8 +120,7 @@ public abstract class Hexagon extends SceneObject {
 
     protected void initGeometry() {
         // Hexagon vertices (6 vertices forming a regular hexagon)
-        float[] vertices = new float[numFloats];
-        this.verticesFloats = vertices;
+        float[] verticesFloats = new float[numFloats];
 
         Vector3f[] vecs = new Vector3f[7];
         //Rotates a point to create a circle with 6 points (hexagon)
@@ -137,15 +136,15 @@ public abstract class Hexagon extends SceneObject {
 
         int count = 0;
         for (Vector3f vec : vecs) {
-            vertices[count++] = vec.x;
-            vertices[count++] = vec.y;
-            vertices[count++] = vec.z;
+            verticesFloats[count++] = vec.x;
+            verticesFloats[count++] = vec.y;
+            verticesFloats[count++] = vec.z;
         }
 
         Vector3f[] verticesVecs = new Vector3f[numFloats / 3];
         count = 0;
-        for (int i = 0; i < vertices.length; i += 3) {
-            verticesVecs[count] = new Vector3f(vertices[i], vertices[i + 1], vertices[i + 2]);
+        for (int i = 0; i < verticesFloats.length; i += 3) {
+            verticesVecs[count] = new Vector3f(verticesFloats[i], verticesFloats[i + 1], verticesFloats[i + 2]);
             count++;
         }
         this.verticesVecs = verticesVecs;

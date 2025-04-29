@@ -3,22 +3,14 @@ package org.lwjgl.UI;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector2f;
-import org.lwjgl.InputHandler;
-import org.lwjgl.Main;
+import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.Utils;
 
 public class MainMenu extends ImGuiWindow {
-    private ImGuiManager imGuiManager;
-    private Scene scene;
-    private InputHandler inputHandler;
-    private int uiWidth;
-    private int uiHeight;
+
     public MainMenu(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
-        super("Main Menu");
-        this.imGuiManager = imGuiManager;
-        this.scene = scene;
-        this.inputHandler = inputHandler;
+        super(imGuiManager, scene, inputHandler, "Main Menu");
 
         uiWidth = 500;
         uiHeight = 500;
@@ -48,6 +40,11 @@ public class MainMenu extends ImGuiWindow {
         if (ImGui.button("Continent map")) {
             imGuiManager.queueCleanup = true;
             imGuiManager.initContinentMap(imGuiManager, scene, inputHandler);
+        }
+        GuiUtils.setNextCenterOfWindow("City map");
+        if (ImGui.button("City map")) {
+            imGuiManager.queueCleanup = true;
+            imGuiManager.initCityMap(imGuiManager, scene, inputHandler);
         }
 
         ImGui.end();

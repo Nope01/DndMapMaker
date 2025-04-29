@@ -5,7 +5,6 @@ out vec4 FragColor;
 
 uniform vec3 color;
 uniform int selected;
-uniform int inLine;
 
 uniform sampler2D textureSampler;
 
@@ -18,9 +17,5 @@ void main() {
 
     if (selected > 0) {
         FragColor = vec4(selectedColour, 1.0);
-    }
-
-    if (inLine > 0) {
-        FragColor = vec4(lineColour, 1.0);
     }
 }

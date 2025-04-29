@@ -14,7 +14,7 @@ public class GuiUtils {
     Output: selectedTexture - selected texture based on chosen tile
             several imageButtons laid out in a grid
      */
-    public static boolean createTerrainGrid(int cols, int rows, String[] tileNames, int[] tileTypes, Scene scene, HexEditor editor) {
+    public static boolean createTerrainGrid(int cols, int rows, String[] tileNames, int[] tileTypes, Scene scene, ContinentEditor editor) {
         int tileNameIncrement = 0;
         boolean result = false;
 
@@ -39,7 +39,7 @@ public class GuiUtils {
         return result;
     }
 
-    public static boolean creatIconGrid(int cols, int rows, String[] tileNames, Scene scene, HexEditor editor) {
+    public static boolean creatIconGrid(int cols, int rows, String[] tileNames, Scene scene, ContinentEditor editor) {
         int tileNameIncrement = 0;
         boolean result = false;
 

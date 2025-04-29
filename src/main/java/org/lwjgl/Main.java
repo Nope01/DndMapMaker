@@ -2,7 +2,9 @@ package org.lwjgl;
 
 import org.lwjgl.UI.ImGuiManager;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.input.InputHandler;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.shaders.ShaderProgramCache;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;

@@ -3,9 +3,9 @@ package org.lwjgl.objects;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.InputHandler;
+import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
-import org.lwjgl.Texture;
+import org.lwjgl.textures.Texture;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,6 +22,7 @@ public abstract class SceneObject implements Serializable {
     protected Matrix4f worldMatrix; // World transformation matrix
     protected float[] verticesFloats;
     protected Vector3f[] verticesVecs;
+    protected int numFloats;
     protected int[] indices;
     public boolean selected;
     protected Vector3f colour;
@@ -50,11 +51,13 @@ public abstract class SceneObject implements Serializable {
         worldMatrix = new Matrix4f();
         children = new ArrayList<>();
         verticesFloats = new float[16];
+        colour = new Vector3f(0, 0, 0);
         selected = false;
     }
 
     public SceneObject() {
         this("default", 3);
+
     }
 
     // Update transformation matrices
@@ -116,7 +119,20 @@ public abstract class SceneObject implements Serializable {
     public float[] getVerticesFloats() { return verticesFloats; }
     public void setPosition(float x, float y, float z) {
         position.set(x, y, z);
-        setAabb(new Vector3f(x, y, z));
+
+        if (parent != null) {
+            setAabb(new Vector3f(x + parent.position.x, y + parent.position.y, z + parent.position.z));
+        }
+        else {
+            setAabb(new Vector3f(x, y, z));
+        }
+
+        if (children != null) {
+            for (SceneObject child : children) {
+                child.setAabb(new Vector3f(x, y, z));
+            }
+        }
+
     }
     public void setPosition(Vector3f pos) {
         position.set(pos);
