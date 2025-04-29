@@ -3,7 +3,7 @@ package org.lwjgl;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
-import org.lwjgl.objects.Hexagon;
+import org.lwjgl.continentMap.ContinentHexagon;
 import org.lwjgl.objects.SceneObject;
 
 
@@ -11,7 +11,7 @@ public class Grid extends SceneObject {
 
     public int columns;
     public int rows;
-    private Hexagon[][] grid;
+    private ContinentHexagon[][] grid;
 
     public Grid(Scene scene, int columns, int rows) {
         this.id = "grid";
@@ -24,33 +24,33 @@ public class Grid extends SceneObject {
         this(scene, 2, 2);
     }
 
-    public Hexagon[][] makeGrid(Scene scene) {
-        Hexagon[][] grid = new Hexagon[rows][columns];
+    public ContinentHexagon[][] makeGrid(Scene scene) {
+        ContinentHexagon[][] grid = new ContinentHexagon[rows][columns];
 
         for (int col = 0; col < columns; col++) {
             for (int row = 0; row < rows; row++) {
-                Hexagon hexagon = createHexagon(row, col);
-                hexagon.setShaderProgram(scene.getShaderCache().getShader("default"));
-                grid[row][col] = hexagon;
-                hexagon.setTexture(scene.getTextureCache().getTexture("default_tile"));
-                hexagon.setIconTexture(scene.getTextureCache().getTexture("empty"));
-                this.addChild(hexagon);
+                ContinentHexagon continentHexagon = createHexagon(row, col);
+                continentHexagon.setShaderProgram(scene.getShaderCache().getShader("default"));
+                grid[row][col] = continentHexagon;
+                continentHexagon.setTexture(scene.getTextureCache().getTexture("default_tile"));
+                continentHexagon.setIconTexture(scene.getTextureCache().getTexture("empty"));
+                this.addChild(continentHexagon);
             }
         }
         this.grid = grid;
         return grid;
     }
 
-    public Hexagon createHexagon(int row, int col) {
+    public ContinentHexagon createHexagon(int row, int col) {
         Vector3f pos = calculatePosition(row, col);
-        Hexagon hexagon = new Hexagon(new Vector2i(col, row));
-        hexagon.setId("hex-" + row + "-" + col);
-        hexagon.setPosition(pos.x, pos.y, pos.z);
-        hexagon.setParent(this);
-        return hexagon;
+        ContinentHexagon continentHexagon = new ContinentHexagon(new Vector2i(col, row));
+        continentHexagon.setId("hex-" + row + "-" + col);
+        continentHexagon.setPosition(pos.x, pos.y, pos.z);
+        continentHexagon.setParent(this);
+        return continentHexagon;
     }
     public Vector3f calculatePosition(int row, int col) {
-        float width = 2*Hexagon.SIZE;
+        float width = 2* ContinentHexagon.SIZE;
         float height = (float) (width * Math.sqrt(3) / 2);
 
         float horizSpacing = 0.75f * width;
@@ -89,19 +89,19 @@ public class Grid extends SceneObject {
     public void render() {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
-                Hexagon hexagon = grid[row][col];
-                hexagon.render();
+                ContinentHexagon continentHexagon = grid[row][col];
+                continentHexagon.render();
             }
         }
     }
 
-    public Hexagon[][] getGrid() {
+    public ContinentHexagon[][] getGrid() {
         return grid;
     }
-    public void setGrid(Hexagon[][] grid) {
+    public void setGrid(ContinentHexagon[][] grid) {
         this.grid = grid;
     }
-    public void setGridFromLoad(Hexagon[][] newGrid, int rows, int cols) {
+    public void setGridFromLoad(ContinentHexagon[][] newGrid, int rows, int cols) {
         //This logic might help with resizing the grid bug?
         this.grid = newGrid;
         for (int col = 0; col < cols; col++) {
@@ -111,7 +111,7 @@ public class Grid extends SceneObject {
         }
     }
 
-    public Hexagon getHexagonAt(int row, int col) {
+    public ContinentHexagon getHexagonAt(int row, int col) {
         return grid[row][col];
     }
 
@@ -141,8 +141,8 @@ public class Grid extends SceneObject {
     }
 
     public void addColumn(int old, int current) {
-        Hexagon[][] oldGrid = grid;
-        this.grid = new Hexagon[rows][current];
+        ContinentHexagon[][] oldGrid = grid;
+        this.grid = new ContinentHexagon[rows][current];
         
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
@@ -152,17 +152,17 @@ public class Grid extends SceneObject {
 
         for (int row = 0; row < rows; row++) {
             for (int col = old; col < current; col++) {
-                Hexagon hexagon = createHexagon(row, col);
-                grid[row][col] = hexagon;
-                this.addChild(hexagon);
+                ContinentHexagon continentHexagon = createHexagon(row, col);
+                grid[row][col] = continentHexagon;
+                this.addChild(continentHexagon);
             }
         }
         columns = current;
     }
 
     public void addRow(int old, int current) {
-        Hexagon[][] oldGrid = grid;
-        this.grid = new Hexagon[current][columns];
+        ContinentHexagon[][] oldGrid = grid;
+        this.grid = new ContinentHexagon[current][columns];
 
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
@@ -172,9 +172,9 @@ public class Grid extends SceneObject {
 
         for (int row = old; row < current; row++) {
             for (int col = 0; col < columns; col++) {
-                Hexagon hexagon = createHexagon(row, col);
-                grid[row][col] = hexagon;
-                this.addChild(hexagon);
+                ContinentHexagon continentHexagon = createHexagon(row, col);
+                grid[row][col] = continentHexagon;
+                this.addChild(continentHexagon);
             }
         }
         rows = current;
@@ -182,15 +182,15 @@ public class Grid extends SceneObject {
 
     public void lineDraw(Scene scene) {
         if (scene.getSelectedObject() != null) {
-            Vector3i[] results = Hexagon.cubeLineDraw(grid[0][0].getCubeCoords(),
-                    ((Hexagon) scene.getSelectedObject()).getCubeCoords());
+            Vector3i[] results = ContinentHexagon.cubeLineDraw(grid[0][0].getCubeCoords(),
+                    ((ContinentHexagon) scene.getSelectedObject()).getCubeCoords());
 
             for (Vector3i vec : results) {
-                Vector2i offset = Hexagon.cubeToOffsetCoords(vec);
+                Vector2i offset = ContinentHexagon.cubeToOffsetCoords(vec);
                 if (offset.x < 0 || offset.y < 0) {
                     continue;
                 }
-                Hexagon lineHex = getHexagonAt(offset.y, offset.x);
+                ContinentHexagon lineHex = getHexagonAt(offset.y, offset.x);
                 lineHex.inLine = true;
             }
         }

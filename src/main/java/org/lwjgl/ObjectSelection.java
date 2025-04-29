@@ -3,7 +3,7 @@ package org.lwjgl;
 
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.objects.Hexagon;
+import org.lwjgl.continentMap.ContinentHexagon;
 import org.lwjgl.objects.SceneObject;
 
 import java.util.List;
@@ -16,18 +16,17 @@ public class ObjectSelection {
         Vector3f camera = scene.getCamera().getPosition();
         Vector4f mouseDir = inputHandler.getMouseDir(scene);
 
-        if (object instanceof Hexagon) {
-            if (((Hexagon) object).rayIntersect(worldPos, mouseDir, camera)) {
-                if (scene.getSelectedObject() != null) {
-                    scene.getSelectedObject().selected = false;
-                }
-                return true;
+
+        if (object.rayIntersect(worldPos, mouseDir, camera)) {
+            if (scene.getSelectedObject() != null) {
+                scene.getSelectedObject().selected = false;
             }
-            else {
-                return false;
-            }
+            return true;
         }
-        return false;
+        else {
+            return false;
+        }
+
     }
 
     public static void selectObject(Scene scene,

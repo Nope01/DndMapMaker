@@ -4,7 +4,7 @@ import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector3f;
 import org.lwjgl.*;
-import org.lwjgl.objects.Hexagon;
+import org.lwjgl.continentMap.ContinentHexagon;
 import org.lwjgl.objects.SceneObject;
 
 import java.text.DecimalFormat;
@@ -32,8 +32,8 @@ public class TestWindow extends ImGuiWindow {
         camera = scene.getCamera();
         cameraPos = camera.getPosition();
         selectedObject = scene.getSelectedObject();
-        if (selectedObject instanceof Hexagon) {
-            type = ((Hexagon) selectedObject).getTypeAsString();
+        if (selectedObject instanceof ContinentHexagon) {
+            type = ((ContinentHexagon) selectedObject).getTypeAsString();
         }
     }
 
@@ -47,8 +47,8 @@ public class TestWindow extends ImGuiWindow {
         worldPos = inputHandler.getWorldPos(scene);
         cameraPos = camera.getPosition();
         selectedObject = scene.getSelectedObject();
-        if (selectedObject instanceof Hexagon) {
-            type = ((Hexagon) selectedObject).getTypeAsString();
+        if (selectedObject instanceof ContinentHexagon) {
+            type = ((ContinentHexagon) selectedObject).getTypeAsString();
         }
     }
 
@@ -70,12 +70,12 @@ public class TestWindow extends ImGuiWindow {
             ImGui.textUnformatted("Null");
         }
         else {
-            if (selectedObject instanceof Hexagon)
-            ImGui.textUnformatted("Cube coords: " + ((Hexagon) selectedObject).getCubeCoords().x + ", "
-                    + ((Hexagon) selectedObject).getCubeCoords().y + " ,"
-                    + ((Hexagon) selectedObject).getCubeCoords().z);
-            ImGui.textUnformatted("Offset coords: " + ((Hexagon) selectedObject).getOffsetCoords().x + ", "
-                    + ((Hexagon) selectedObject).getOffsetCoords().y);
+            if (selectedObject instanceof ContinentHexagon)
+            ImGui.textUnformatted("Cube coords: " + ((ContinentHexagon) selectedObject).getCubeCoords().x + ", "
+                    + ((ContinentHexagon) selectedObject).getCubeCoords().y + " ,"
+                    + ((ContinentHexagon) selectedObject).getCubeCoords().z);
+            ImGui.textUnformatted("Offset coords: " + ((ContinentHexagon) selectedObject).getOffsetCoords().x + ", "
+                    + ((ContinentHexagon) selectedObject).getOffsetCoords().y);
             ImGui.textUnformatted("Tile type: " + type);
             ImGui.textUnformatted("ID: " + selectedObject.getId());
             ImGui.textUnformatted("Colour: " + selectedObject.getColour().x + ", "

@@ -1,34 +1,35 @@
 package org.lwjgl.objects;
 
-import org.joml.*;
-import org.lwjgl.*;
+import org.joml.Matrix3f;
+import org.joml.Vector2i;
+import org.joml.Vector3f;
+import org.joml.Vector3i;
+import org.lwjgl.InputHandler;
+import org.lwjgl.Scene;
+import org.lwjgl.Texture;
 
+import static java.lang.Math.TAU;
 import static java.lang.Math.abs;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
-import java.io.Serializable;
-import java.lang.Math;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
-public class Hexagon extends SceneObject implements Serializable {
-    //private int vaoId, vboId; // Vertex Array Object and Vertex Buffer Object
-       // Random color for the hexagon
-    private static final float TAU = 6.283185307179586f;
-    private Vector3i[] cubeDirectionVectors;
-    private Vector2i offsetCoords;
-    private Vector3i cubeCoords;
-    private Vector2i axialCoords;
-    public static final float SIZE = 1.0f;
-    private int numFloats = 7 * 3;
-
-    private int type;
+public abstract class Hexagon extends SceneObject {
     public boolean inLine;
-    private Texture iconTexture;
+    protected Texture iconTexture;
+    protected int numFloats = 7 * 3;
+    protected Vector3i[] cubeDirectionVectors;
+    protected Vector2i offsetCoords;
+    protected Vector3i cubeCoords;
+    protected Vector2i axialCoords;
 
+    public static final float SIZE = 1.0f;
     public static final int N = 0;
     public static final int NE = 1;
     public static final int SE = 2;
@@ -36,22 +37,9 @@ public class Hexagon extends SceneObject implements Serializable {
     public static final int SW = 4;
     public static final int NW = 5;
 
-    public static final int FOREST = 0;
-    public static final int PLAINS = 1;
-    public static final int DESERT = 2;
-    public static final int HILL = 3;
-    public static final int WATER = 4;
-    public static final int WALL = 5;
 
-    public static final Vector3f FOREST_COLOR = new Vector3f(0.5f, 0.8f, 0.4f);
-    public static final Vector3f PLAINS_COLOR = new Vector3f(0.93f, 0.93f, 0.82f);
-    public static final Vector3f DESERT_COLOR = new Vector3f(0.71f, 0.65f, 0.26f);
-    public static final Vector3f HILL_COLOR = new Vector3f(0.28f, 0.28f, 0.28f);
-    public static final Vector3f WATER_COLOR = new Vector3f(0.26f, 0.75f, 0.98f);
-    public static final Vector3f WALL_COLOR = Utils.RGBToVec3(252, 126, 66);
 
     public Hexagon(Vector2i offsetPos) {
-        super();
         colour = new Vector3f(0.2f, 0.2f, 0.2f);
         initGeometry();
         initAabb();
@@ -74,10 +62,63 @@ public class Hexagon extends SceneObject implements Serializable {
                4  3  2
                  */
         };
-        type = 99;
     }
 
-    private void initGeometry() {
+    @Override
+    public void render() {
+        // Bind shader and set uniforms
+        glUseProgram(shaderProgram);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        int modelLoc = glGetUniformLocation(shaderProgram, "model");
+        glUniformMatrix4fv(modelLoc, false, worldMatrix.get(new float[16]));
+        int colorLoc = glGetUniformLocation(shaderProgram, "color");
+        glUniform3f(colorLoc, colour.x, colour.y, colour.z);
+        int selected = glGetUniformLocation(shaderProgram, "selected");
+        glUniform1i(selected, this.selected ? 1 : 0);
+        int inLine = glGetUniformLocation(shaderProgram, "inLine");
+        glUniform1i(inLine, this.inLine ? 1 : 0);
+        int texCoords = glGetUniformLocation(shaderProgram, "texCoords");
+        glUniform2f(texCoords, this.texCoords[0], this.texCoords[1]);
+
+        glActiveTexture(GL_TEXTURE0);
+        if (texture != null) {
+            texture.bind();
+        }
+        glActiveTexture(GL_TEXTURE1);
+        if (iconTexture != null) {
+            iconTexture.bind();
+        }
+
+        glUniform1i(glGetUniformLocation(shaderProgram, "terrainTexture"), 0);
+        glUniform1i(glGetUniformLocation(shaderProgram, "iconTexture"), 1);
+
+        // Render hexagon
+        glBindVertexArray(vaoId);
+        glDrawElements(GL_TRIANGLES, numFloats, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+
+
+        // Render children
+        for (SceneObject child : children) {
+            child.render();
+
+        }
+    }
+
+    @Override
+    public void update(Scene scene, float deltaTime, InputHandler inputHandler) {
+
+    }
+
+    @Override
+    public void cleanup() {
+        glDeleteBuffers(vboId);
+        glDeleteVertexArrays(vaoId);
+    }
+
+    protected void initGeometry() {
         // Hexagon vertices (6 vertices forming a regular hexagon)
         float[] vertices = new float[numFloats];
         this.verticesFloats = vertices;
@@ -150,7 +191,7 @@ public class Hexagon extends SceneObject implements Serializable {
         glBindVertexArray(0);
     }
 
-    private void initAabb() {
+    protected void initAabb() {
         for (Vector3f vertex : verticesVecs) {
             min.x = Math.min(min.x, vertex.x);
             min.y = Math.min(min.y, vertex.y);
@@ -177,120 +218,12 @@ public class Hexagon extends SceneObject implements Serializable {
         aabbMax = max;
     }
 
-    @Override
-    public void render() {
-        // Bind shader and set uniforms
-
-        glUseProgram(shaderProgram);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        int modelLoc = glGetUniformLocation(shaderProgram, "model");
-        glUniformMatrix4fv(modelLoc, false, worldMatrix.get(new float[16]));
-        int colorLoc = glGetUniformLocation(shaderProgram, "color");
-        glUniform3f(colorLoc, colour.x, colour.y, colour.z);
-        int selected = glGetUniformLocation(shaderProgram, "selected");
-        glUniform1i(selected, this.selected ? 1 : 0);
-        int inLine = glGetUniformLocation(shaderProgram, "inLine");
-        glUniform1i(inLine, this.inLine ? 1 : 0);
-        int texCoords = glGetUniformLocation(shaderProgram, "texCoords");
-        glUniform2f(texCoords, this.texCoords[0], this.texCoords[1]);
-
-        glActiveTexture(GL_TEXTURE0);
-        if (texture != null) {
-            texture.bind();
-        }
-        glActiveTexture(GL_TEXTURE1);
-        if (iconTexture != null) {
-            iconTexture.bind();
-        }
-
-        glUniform1i(glGetUniformLocation(shaderProgram, "terrainTexture"), 0);
-        glUniform1i(glGetUniformLocation(shaderProgram, "iconTexture"), 1);
-
-        // Render hexagon
-        glBindVertexArray(vaoId);
-        glDrawElements(GL_TRIANGLES, numFloats, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
-
-
-        // Render children
-        for (SceneObject child : children) {
-            child.render();
-
-        }
-    }
-
-    @Override
-    public void update(Scene scene, float deltaTime, InputHandler input) {
-    }
-
-
-    // Cleanup method (call when done)
-    public void cleanup() {
-        glDeleteBuffers(vboId);
-        glDeleteVertexArrays(vaoId);
-    }
-
-    public float[] getVerticesFloats() {
-        return verticesFloats;
-    }
-
-    public String getTypeAsString() {
-        return switch (type) {
-            case 0 -> "Forest";
-            case 1 -> "Plains";
-            case 2 -> "Desert";
-            case 3 -> "Hill";
-            case 4 -> "Water";
-            case 5 -> "Wall";
-            default -> "Unknown";
-        };
-    }
-
-    public static String getTypeAsString(int type) {
-        return switch (type) {
-            case 0 -> "Forest";
-            case 1 -> "Plains";
-            case 2 -> "Desert";
-            case 3 -> "Hill";
-            case 4 -> "Water";
-            case 5 -> "Wall";
-            default -> "Unknown";
-        };
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-        //setColor(type);
-    }
-
-    public void clearType() {
-        this.type = -1;
-    }
-
     public void setIconTexture(Texture texture) {
         this.iconTexture = texture;
     }
 
     public Texture getIconTexture() {
         return iconTexture;
-    }
-
-
-    public void setColor(int type) {
-        switch (type) {
-            case 0 -> this.colour = FOREST_COLOR;
-            case 1 -> this.colour = PLAINS_COLOR;
-            case 2 -> this.colour = DESERT_COLOR;
-            case 3 -> this.colour = HILL_COLOR;
-            case 4 -> this.colour = WATER_COLOR;
-            case 5 -> this.colour = WALL_COLOR;
-        };
     }
 
     public Vector2i getOffsetCoords() {
@@ -357,46 +290,9 @@ public class Hexagon extends SceneObject implements Serializable {
         return cubeAddDirection(hex, cubeDirection(direction));
     }
 
-    //Hit detection
+
     public Vector3i getCubeNeighbour(int direction) {
         return cubeAddDirection(cubeCoords, cubeDirection(direction));
-    }
-
-    public boolean rayIntersect(Vector3f worldPos, Vector4f mouseDir, Vector3f cameraPos) {
-        float tMin = Float.MIN_VALUE;
-        float tMax = Float.MAX_VALUE;
-        Vector3f rayDirection = new Vector3f(mouseDir.x, mouseDir.y, mouseDir.z);
-
-        for (int i = 0; i < 3; i++) {  // Iterate over x, y, z axes
-            float rayDirComponent = rayDirection.get(i);
-            float rayOriginComponent = cameraPos.get(i);
-            float aabbMinComponent = aabbMin.get(i);
-            float aabbMaxComponent = aabbMax.get(i);
-
-            if (Math.abs(rayDirComponent) < 1E-6) {  // Ray is parallel to the slab
-                if (rayOriginComponent < aabbMinComponent || rayOriginComponent > aabbMaxComponent) {
-                    return false;  // Ray is outside the slab
-                }
-            } else {
-                float invDir = 1.0f / rayDirComponent;
-                float t1 = (aabbMinComponent - rayOriginComponent) * invDir;
-                float t2 = (aabbMaxComponent - rayOriginComponent) * invDir;
-
-                if (t1 > t2) {  // Swap t1 and t2 if t1 > t2
-                    float temp = t1;
-                    t1 = t2;
-                    t2 = temp;
-                }
-
-                tMin = Math.max(tMin, t1);  // Update tMin
-                tMax = Math.min(tMax, t2);  // Update tMax
-
-                if (tMin > tMax) {  // No intersection
-                    return false;
-                }
-            }
-        }
-        return true;  // Intersection found
     }
 
     //Distances

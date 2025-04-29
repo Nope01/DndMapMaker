@@ -2,10 +2,9 @@ package org.lwjgl;
 
 import org.lwjgl.data.ImageGeneration;
 import org.lwjgl.data.MapSaveLoad;
-import org.lwjgl.objects.Hexagon;
+import org.lwjgl.continentMap.ContinentHexagon;
 import org.lwjgl.objects.SceneObject;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,18 +40,6 @@ public class Scene {
         camera.setPosition(50f, 40.0f, 50f);
         camera.setRotation(1.5f, 0.0f);
         camera.resize(width, height);
-        
-
-
-//        ImageQuad background = new ImageQuad();
-//        background.setId("background");
-//        background.setPosition(50.0f, 1.0f, 50.0f);
-//        background.setScale(100f);
-//        background.setColour(0.0f, 0.0f, 0.0f);
-//        background.setShaderProgram(shaderCache.getShaderMap().get("transparent"));
-//        background.setTexture(textureCache.getTexture("map"));
-//        addObject(background);
-
     }
 
     public void initContinentScene() {
@@ -110,8 +97,8 @@ public class Scene {
 
     public void cleanup() {
         for (SceneObject root : rootObjects) {
-            if (root instanceof Hexagon) {
-                ((Hexagon) root).cleanup();
+            if (root instanceof ContinentHexagon) {
+                ((ContinentHexagon) root).cleanup();
             }
             // Recursively clean up children if needed
             cleanupChildren(root);

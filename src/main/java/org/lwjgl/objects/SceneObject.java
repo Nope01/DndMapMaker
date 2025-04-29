@@ -2,6 +2,7 @@ package org.lwjgl.objects;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.Texture;
@@ -153,6 +154,44 @@ public abstract class SceneObject implements Serializable {
     }
 
     public Texture getTexture() { return texture; }
+
+    //Hit detection
+    public boolean rayIntersect(Vector3f worldPos, Vector4f mouseDir, Vector3f cameraPos) {
+        float tMin = Float.MIN_VALUE;
+        float tMax = Float.MAX_VALUE;
+        Vector3f rayDirection = new Vector3f(mouseDir.x, mouseDir.y, mouseDir.z);
+
+        for (int i = 0; i < 3; i++) {  // Iterate over x, y, z axes
+            float rayDirComponent = rayDirection.get(i);
+            float rayOriginComponent = cameraPos.get(i);
+            float aabbMinComponent = aabbMin.get(i);
+            float aabbMaxComponent = aabbMax.get(i);
+
+            if (Math.abs(rayDirComponent) < 1E-6) {  // Ray is parallel to the slab
+                if (rayOriginComponent < aabbMinComponent || rayOriginComponent > aabbMaxComponent) {
+                    return false;  // Ray is outside the slab
+                }
+            } else {
+                float invDir = 1.0f / rayDirComponent;
+                float t1 = (aabbMinComponent - rayOriginComponent) * invDir;
+                float t2 = (aabbMaxComponent - rayOriginComponent) * invDir;
+
+                if (t1 > t2) {  // Swap t1 and t2 if t1 > t2
+                    float temp = t1;
+                    t1 = t2;
+                    t2 = temp;
+                }
+
+                tMin = Math.max(tMin, t1);  // Update tMin
+                tMax = Math.min(tMax, t2);  // Update tMax
+
+                if (tMin > tMax) {  // No intersection
+                    return false;
+                }
+            }
+        }
+        return true;  // Intersection found
+    }
 
     // Abstract render method to be implemented by subclasses
     public abstract void render();

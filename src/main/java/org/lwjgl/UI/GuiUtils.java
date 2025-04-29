@@ -14,7 +14,7 @@ public class GuiUtils {
     Output: selectedTexture - selected texture based on chosen tile
             several imageButtons laid out in a grid
      */
-    public static boolean createTerrainGrid(int cols, int rows, String[] tileNames, Scene scene, HexEditor editor) {
+    public static boolean createTerrainGrid(int cols, int rows, String[] tileNames, int[] tileTypes, Scene scene, HexEditor editor) {
         int tileNameIncrement = 0;
         boolean result = false;
 
@@ -27,6 +27,7 @@ public class GuiUtils {
                 if (ImGui.imageButton(scene.getTextureCache().getTexture(tileNames[tileNameIncrement]).getTextureId(),
                         75.0f, 75.0f)) {
                     editor.setSelectedTerrainTexture(scene.getTextureCache().getTexture(tileNames[tileNameIncrement]));
+                    editor.setSelectedType(tileTypes[tileNameIncrement]);
                     result = true;
                 }
                 ImGui.popID();

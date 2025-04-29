@@ -4,7 +4,7 @@ import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector3i;
 import org.lwjgl.*;
-import org.lwjgl.objects.Hexagon;
+import org.lwjgl.continentMap.ContinentHexagon;
 import org.lwjgl.objects.SceneObject;
 
 public class HexEditor extends ImGuiWindow{
@@ -32,6 +32,15 @@ public class HexEditor extends ImGuiWindow{
             "sand_07",
             "snow_01",
             "water_01",
+    };
+
+    private int[] tileTypes = new int[]{
+            0,
+            1,
+            0,
+            2,
+            3,
+            4
     };
 
     private String[] iconNames = new String[] {
@@ -72,10 +81,10 @@ public class HexEditor extends ImGuiWindow{
     protected void update() {
         selectedObject = scene.getSelectedObject();
         grid = scene.getObject("grid") instanceof Grid ? (Grid) scene.getObject("grid") : null;
-        if (selectedObject instanceof Hexagon) {
+        if (selectedObject instanceof ContinentHexagon) {
             distance =
-                    Hexagon.cubeDistance(grid.getGrid()[0][0].getCubeCoords(),
-                            ((Hexagon) selectedObject).getCubeCoords());
+                    ContinentHexagon.cubeDistance(grid.getGrid()[0][0].getCubeCoords(),
+                            ((ContinentHexagon) selectedObject).getCubeCoords());
 
         }
     }
@@ -84,15 +93,15 @@ public class HexEditor extends ImGuiWindow{
     protected void renderContent() {
         ImGui.begin("Hex Editor", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
 
-        ImGui.text("Selected Type: " + Hexagon.getTypeAsString(selectedType));
+        ImGui.text("Selected Type: " + ContinentHexagon.getTypeAsString(selectedType));
         ImGui.text("Selected Texture: " + selectedTerrainTexture.getTextureName());
         ImGui.text("Selected Icon: " + selectedIconTexture.getTextureName());
 
         //Tiles
         ImGui.separator();
         ImGui.setNextItemOpen(true);
-        if (ImGui.treeNode("Grid", "Forest")) {
-            if (GuiUtils.createTerrainGrid(2, 3, tileNames, scene, this)) {
+        if (ImGui.treeNode("Grid", "Terrain")) {
+            if (GuiUtils.createTerrainGrid(2, 3, tileNames, tileTypes, scene, this)) {
                 //selectedIconTexture = scene.getTextureCache().getTexture("default_texture");
                 isTerrainSelected = true;
             }
@@ -109,24 +118,23 @@ public class HexEditor extends ImGuiWindow{
         }
 
         if (inputHandler.isLeftClicked() && selectedObject != null) {
-            ((Hexagon) selectedObject).setType(selectedType);
-            ((Hexagon) selectedObject).setType(Hexagon.FOREST);
+            ((ContinentHexagon) selectedObject).setType(selectedType);
             if (isTerrainSelected) {
                 selectedObject.setTexture(selectedTerrainTexture);
             }
             else {
-                ((Hexagon) selectedObject).setIconTexture(selectedIconTexture);
+                ((ContinentHexagon) selectedObject).setIconTexture(selectedIconTexture);
             }
         }
 
         //Erase the tile based on whether a tile or icon was last selected
         if (inputHandler.isRightClicked() && selectedObject != null) {
-            ((Hexagon) selectedObject).clearType();
             if (isTerrainSelected) {
+                ((ContinentHexagon) selectedObject).clearType();
                 selectedObject.setTexture(scene.getTextureCache().getTexture("default_tile"));
             }
             else {
-                ((Hexagon) selectedObject).setIconTexture(scene.getTextureCache().getTexture("empty"));
+                ((ContinentHexagon) selectedObject).setIconTexture(scene.getTextureCache().getTexture("empty"));
             }
         }
 
@@ -166,5 +174,11 @@ public class HexEditor extends ImGuiWindow{
     }
     public Texture getSelectedIconTexture() {
         return selectedIconTexture;
+    }
+    public void setSelectedType(int type) {
+        selectedType = type;
+    }
+    public int getSelectedType() {
+        return selectedType;
     }
 }
