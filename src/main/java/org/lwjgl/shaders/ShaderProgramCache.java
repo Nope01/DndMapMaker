@@ -16,8 +16,9 @@ public class ShaderProgramCache {
     public ShaderProgramCache() {
         shaderMap = new HashMap<>();
         shaderMap.put("default", createShaderProgram("default"));
-        shaderMap.put("background", createShaderProgram("background"));
-        shaderMap.put("transparent", createShaderProgram("transparent"));
+        shaderMap.put("continentHex", createShaderProgram("continentHex"));
+        shaderMap.put("cityHex", createShaderProgram("cityHex"));
+        shaderMap.put("trap", createShaderProgram("trap"));
     }
 
     public Map<String, Integer> getShaderMap() {
@@ -38,6 +39,7 @@ public class ShaderProgramCache {
     public int createShaderProgram(String name) {
         String vertexPath = DEFAULT_PATH + name + "/vertex.glsl";
         String fragmentPath = DEFAULT_PATH + name + "/fragment.glsl";
+        System.out.println("Creating shader program: " + vertexPath + "\n" + fragmentPath);
 
         int vertexShader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShader, loadShaderSource(vertexPath));

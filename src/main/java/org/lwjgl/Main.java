@@ -113,8 +113,6 @@ public class Main {
         IntBuffer heightBuf = BufferUtils.createIntBuffer(1);
 
         while (!glfwWindowShouldClose(window)) {
-
-
             glfwGetFramebufferSize(window, widthBuf, heightBuf);
             int width = widthBuf.get(0);
             int height = heightBuf.get(0);
@@ -130,7 +128,6 @@ public class Main {
             float deltaTime = (time - oldTime) / 1000f;
             oldTime = time;
 
-
             // Render scene
             scene.render();
 
@@ -138,7 +135,6 @@ public class Main {
             inputHandler.update(width, height);
             scene.getCamera().update(inputHandler);
             scene.update(deltaTime);
-
 
             //For each shader, set it as active then set uniforms
             //Either do it once here or for each sceneObject

@@ -14,6 +14,9 @@ import org.lwjgl.textures.TextureCache;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
+import static org.lwjgl.opengl.GL11.glGetError;
+
 public class Scene extends SceneObject {
     private Camera camera;
     private List<SceneObject> rootObjects;
@@ -43,7 +46,8 @@ public class Scene extends SceneObject {
 
     private void setupScene(int width, int height) {
         camera = new Camera(width, height);
-        camera.setPosition(0f, 20.0f, 0f);
+        //camera.setPosition(50f, 40.0f, 50f);
+        camera.setPosition(0, 10f, 0);
         camera.setRotation(1.5f, 0.0f);
         camera.resize(width, height);
     }
@@ -55,17 +59,18 @@ public class Scene extends SceneObject {
     }
 
     public void initCityScene() {
-        this.grid = new Grid(this, 70, 50);
+        this.grid = new Grid(this, 2, 3);
         grid.makeCityGrid(this);
         //grid.setPosition(0f, 0.0f, 2f);
         addObject(grid);
 
         Trap trap = new Trap(5);
-        trap.setShaderProgram(this.getShaderCache().getShader("default"));
+        trap.setShaderProgram(this.getShaderCache().getShader("trap"));
         trap.setId("trap");
-        trap.setParent(grid.getHexagonAt(4, 4));
-        trap.setPosition(0.0f, 0.1f, 0.0f);
+        trap.setParent(grid.getHexagonAt(0, 0));
+        trap.setPosition(0.0f, 0.2f, 0.0f);
         trap.setTexture(this.getTextureCache().getTexture("sandvich"));
+        trap.setIsHidden(false);
         addObject(trap);
     }
 

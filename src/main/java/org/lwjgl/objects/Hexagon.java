@@ -67,6 +67,10 @@ public abstract class Hexagon extends SceneObject {
     @Override
     public void render() {
         // Bind shader and set uniforms
+        int e = glGetError();
+        if (e != GL_NO_ERROR) {
+            System.out.println("Error hex: " + offsetCoords.x + "," + offsetCoords.y + "-" + e);
+        }
         glUseProgram(shaderProgram);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -91,6 +95,7 @@ public abstract class Hexagon extends SceneObject {
             iconTexture.bind();
         }
 
+
         glUniform1i(glGetUniformLocation(shaderProgram, "terrainTexture"), 0);
         glUniform1i(glGetUniformLocation(shaderProgram, "iconTexture"), 1);
 
@@ -99,11 +104,9 @@ public abstract class Hexagon extends SceneObject {
         glDrawElements(GL_TRIANGLES, numFloats, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
-
         // Render children
         for (SceneObject child : children) {
             child.render();
-
         }
     }
 

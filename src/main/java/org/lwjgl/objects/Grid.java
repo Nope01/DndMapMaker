@@ -7,6 +7,9 @@ import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.continentMap.ContinentHexagon;
 import org.lwjgl.input.InputHandler;
 
+import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
+import static org.lwjgl.opengl.GL11.glGetError;
+
 
 public class Grid extends SceneObject {
 
@@ -30,7 +33,7 @@ public class Grid extends SceneObject {
         for (int col = 0; col < columns; col++) {
             for (int row = 0; row < rows; row++) {
                 ContinentHexagon continentHexagon = createContinentHexagon(row, col);
-                continentHexagon.setShaderProgram(scene.getShaderCache().getShader("default"));
+                continentHexagon.setShaderProgram(scene.getShaderCache().getShader("continentHex"));
                 grid[row][col] = continentHexagon;
                 continentHexagon.setTexture(scene.getTextureCache().getTexture("default_tile"));
                 continentHexagon.setIconTexture(scene.getTextureCache().getTexture("empty"));
@@ -46,7 +49,7 @@ public class Grid extends SceneObject {
         for (int col = 0; col < columns; col++) {
             for (int row = 0; row < rows; row++) {
                 CityHexagon cityHexagon = createCityHexagon(row, col);
-                cityHexagon.setShaderProgram(scene.getShaderCache().getShader("default"));
+                cityHexagon.setShaderProgram(scene.getShaderCache().getShader("cityHex"));
                 grid[row][col] = cityHexagon;
                 cityHexagon.setTexture(scene.getTextureCache().getTexture("default_tile"));
                 cityHexagon.setIconTexture(scene.getTextureCache().getTexture("empty"));
@@ -112,10 +115,10 @@ public class Grid extends SceneObject {
 
     @Override
     public void render() {
+        int e = glGetError();
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
-                Hexagon continentHexagon = grid[row][col];
-                continentHexagon.render();
+                grid[row][col].render();
             }
         }
     }

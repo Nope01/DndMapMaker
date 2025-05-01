@@ -65,6 +65,7 @@ public class Texture implements Serializable {
 
     public void bind() {
         glBindTexture(GL_TEXTURE_2D, textureId);
+        //System.out.println("Binding texture: " + textureName);
     }
 
     public void cleanup() {

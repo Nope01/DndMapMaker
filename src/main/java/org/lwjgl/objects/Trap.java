@@ -52,7 +52,6 @@ public class Trap extends TileTrigger{
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
         initAabb();
-
     }
 
     protected void initAabb() {
@@ -85,29 +84,36 @@ public class Trap extends TileTrigger{
     @Override
     public void render() {
         glUseProgram(shaderProgram);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         int modelLoc = glGetUniformLocation(shaderProgram, "model");
         glUniformMatrix4fv(modelLoc, false, worldMatrix.get(new float[16]));
-        int colorLoc = glGetUniformLocation(shaderProgram, "color");
-        glUniform3f(colorLoc, colour.x, colour.y, colour.z);
         int selected = glGetUniformLocation(shaderProgram, "selected");
         glUniform1i(selected, this.selected ? 1 : 0);
         int texCoords = glGetUniformLocation(shaderProgram, "texCoords");
         glUniform2f(texCoords, this.texCoords[0], this.texCoords[1]);
+        int isHidden = glGetUniformLocation(shaderProgram, "isHidden");
+        glUniform1i(isHidden, this.getIsHidden() ? 1 : 0);
 
         glActiveTexture(GL_TEXTURE0);
         if (texture != null) {
             texture.bind();
         }
 
+        //glUniform1i(glGetUniformLocation(shaderProgram, "iconTexture"), 0);
+
         // Render hexagon
         glBindVertexArray(vaoId);
         glDrawElements(GL_TRIANGLES, 4*3, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
+        int e = glGetError();
+        if (e != GL_NO_ERROR) {
+            System.out.println("Error trap: " + e);
+        }
 
         for (SceneObject child : children) {
             child.render();
-
         }
     }
 
