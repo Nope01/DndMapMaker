@@ -46,28 +46,27 @@ public class Scene extends SceneObject {
 
     private void setupScene(int width, int height) {
         camera = new Camera(width, height);
-        //camera.setPosition(50f, 40.0f, 50f);
-        camera.setPosition(0, 10f, 0);
+        camera.setPosition(60f, 50.0f, 40f);
+        //camera.setPosition(0, 10f, 0);
         camera.setRotation(1.5f, 0.0f);
         camera.resize(width, height);
     }
 
     public void initContinentScene() {
-        this.grid = new Grid(this, 70, 50);
+        this.grid = new Grid(this, 80, 40);
         grid.makeContinentGrid(this);
         addObject(grid);
     }
 
     public void initCityScene() {
-        this.grid = new Grid(this, 2, 3);
+        this.grid = new Grid(this, 80, 40);
         grid.makeCityGrid(this);
-        //grid.setPosition(0f, 0.0f, 2f);
         addObject(grid);
 
         Trap trap = new Trap(5);
         trap.setShaderProgram(this.getShaderCache().getShader("trap"));
         trap.setId("trap");
-        trap.setParent(grid.getHexagonAt(0, 0));
+        trap.setParent(grid.getHexagonAt(20, 40));
         trap.setPosition(0.0f, 0.2f, 0.0f);
         trap.setTexture(this.getTextureCache().getTexture("sandvich"));
         trap.setIsHidden(false);
@@ -145,6 +144,28 @@ public class Scene extends SceneObject {
 
     public List<SceneObject> getRootObjects() {
         return rootObjects;
+    }
+
+    //Recursively get all objects
+    public List<SceneObject> getAllObjects() {
+        List<SceneObject> objects = new ArrayList<>();
+
+        for (SceneObject object : rootObjects) {
+            objects.add(search(object, objects));
+        }
+        return objects;
+    }
+
+    public SceneObject search(SceneObject object, List<SceneObject> objects) {
+        if (object.children.isEmpty()) {
+            objects.add(object);
+            return object;
+        }
+
+        for (SceneObject child : object.children) {
+            search(child, objects);
+        }
+        return object;
     }
 
     public Camera getCamera() {

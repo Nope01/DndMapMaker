@@ -14,13 +14,11 @@ void main() {
 
     FragColor = vec4(iconTextureColour);
 
+    if (isHidden > 0) {
+        FragColor.a = 0.0f;
+    }
+
     if (selected > 0) {
         FragColor = vec4(selectedColour, 1.0);
     }
-
-    if (isHidden > 0) {
-        FragColor.r = 1.0f;
-    }
-
-    FragColor = vec4(0.0f, 1.0f, 0.0f, 1.0f);
 }

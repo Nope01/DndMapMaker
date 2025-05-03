@@ -22,4 +22,8 @@ public abstract class TileTrigger extends SceneObject {
     public void setIsHidden(boolean isHidden) {
         this.isHidden = isHidden;
     }
+    public boolean swapIsHidden() {
+        isHidden = !isHidden;
+        return isHidden;
+    }
 }

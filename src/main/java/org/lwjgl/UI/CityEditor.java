@@ -6,6 +6,7 @@ import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.objects.SceneObject;
+import org.lwjgl.objects.Trap;
 
 public class CityEditor extends ImGuiWindow {
 
@@ -48,7 +49,15 @@ public class CityEditor extends ImGuiWindow {
             if (selectedObject instanceof CityHexagon) {
                 ImGui.text("Terrain: " + ((CityHexagon) selectedObject).getMovementModifier());
             }
+        }
 
+        if (ImGui.button("Show/hide traps")) {
+            for (SceneObject obj : scene.getAllObjects()) {
+                if (obj instanceof Trap) {
+                    ((Trap) obj).swapIsHidden();
+                    System.out.println(((Trap) obj).getIsHidden());
+                }
+            }
         }
 
         ImGui.end();
