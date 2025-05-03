@@ -1,5 +1,6 @@
 package org.lwjgl.objects;
 
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.Scene;
 import org.lwjgl.input.InputHandler;
@@ -7,13 +8,11 @@ import org.lwjgl.input.InputHandler;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.shaders.ShaderProgramCache.inspectProgramShaders;
-import static org.lwjgl.shaders.ShaderProgramCache.printShaderSource;
 
 public class Trap extends TileTrigger{
 
-    public Trap(int triggerRadius) {
-        super(triggerRadius);
+    public Trap(int triggerRadius, Vector2i offsetPos) {
+        super(triggerRadius, offsetPos);
         numFloats = 4*3;
         verticesFloats = new float[]{
                 -0.5f, 0.0f, -0.5f,

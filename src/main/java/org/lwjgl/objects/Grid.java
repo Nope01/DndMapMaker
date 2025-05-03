@@ -109,6 +109,7 @@ public class Grid extends SceneObject {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 grid[row][col].inLine = false;
+                grid[row][col].update(scene, deltaTime, input);
             }
         }
     }
@@ -141,6 +142,14 @@ public class Grid extends SceneObject {
 
     public Hexagon getHexagonAt(int row, int col) {
         return grid[row][col];
+    }
+
+    public void clearSelectedHexagons() {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
+                grid[row][col].selected = false;
+            }
+        }
     }
 
 //    public void removeColumn(int old, int current) {

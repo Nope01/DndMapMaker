@@ -1,6 +1,8 @@
 package org.lwjgl.cityMap;
 
 import org.joml.Vector2i;
+import org.lwjgl.Scene;
+import org.lwjgl.input.InputHandler;
 import org.lwjgl.objects.Hexagon;
 
 import java.io.Serializable;
@@ -18,6 +20,11 @@ public class CityHexagon extends Hexagon implements Serializable {
         super(offsetPos);
     }
 
+    @Override
+    public void update(Scene scene, float deltaTime, InputHandler input) {
+
+    }
+
     public int getMovementModifier() {
         return movementModifier;
     }
@@ -30,4 +37,6 @@ public class CityHexagon extends Hexagon implements Serializable {
     public void setVisibilityModifier(int visibilityModifier) {
         this.visibilityModifier = visibilityModifier;
     }
+
+
 }

@@ -302,9 +302,13 @@ public abstract class Hexagon extends SceneObject {
         return new Vector3i(a.x - b.x, a.y - b.y, a.z - b.z);
     }
 
-    public static Vector3i cubeDistance(Vector3i a, Vector3i b) {
+    public static int cubeDistance(Vector3i a, Vector3i b) {
         Vector3i vec = cubeSubtract(a, b);
-        return new Vector3i(abs(vec.x) + abs(vec.y) + abs(vec.z)).div(2);
+        return new Vector3i(abs(vec.x) + abs(vec.y) + abs(vec.z)).div(2).x;
+    }
+
+    public int cubeDistance(Vector3i a) {
+        return cubeDistance(a, cubeCoords);
     }
 
     //Line
@@ -320,7 +324,7 @@ public abstract class Hexagon extends SceneObject {
     }
 
     public static Vector3i[] cubeLineDraw(Vector3i a, Vector3i b) {
-        int length = cubeDistance(a, b).x;
+        int length = cubeDistance(a, b);
         Vector3i[] results = new Vector3i[length];
         for (int i = 0; i < length; i++) {
             results[i] = cubeRound(cubeLerp(a, b, (float) (1.0/length * i)));

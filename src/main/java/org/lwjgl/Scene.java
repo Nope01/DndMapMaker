@@ -63,7 +63,7 @@ public class Scene extends SceneObject {
         grid.makeCityGrid(this);
         addObject(grid);
 
-        Trap trap = new Trap(5);
+        Trap trap = new Trap(2, grid.getHexagonAt(20, 40).getOffsetCoords());
         trap.setShaderProgram(this.getShaderCache().getShader("trap"));
         trap.setId("trap");
         trap.setParent(grid.getHexagonAt(20, 40));
@@ -107,11 +107,14 @@ public class Scene extends SceneObject {
             ObjectSelection.resetSelectedObject(selectedObject);
             selectedObject = null;
         }
+        if (grid != null) {
+            grid.clearSelectedHexagons();
+        }
+
         ObjectSelection.selectObject(this, inputHandler, rootObjects);
         if (selectedObject != null) {
             selectedObject.update(this, deltaTime, inputHandler);
         }
-        //grid.lineDraw(this);
     }
 
     public void render() {
