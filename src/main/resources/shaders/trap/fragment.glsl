@@ -21,4 +21,6 @@ void main() {
     if (isHidden > 0) {
         FragColor.r = 1.0f;
     }
+
+    FragColor = vec4(0.0f, 1.0f, 0.0f, 1.0f);
 }

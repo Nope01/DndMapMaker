@@ -18,7 +18,6 @@ public class Main {
     private int width;
     private int height;
     private long oldTime;
-    private int shaderProgram;
     private InputHandler inputHandler;
     private Scene scene;
     private FloatBuffer matrixBuffer;
@@ -83,7 +82,6 @@ public class Main {
 
         // Create and compile shaders
         shaderCache = new ShaderProgramCache();
-        shaderProgram = shaderCache.getShaderMap().get("default");
 
         scene = new Scene(width, height, inputHandler, shaderCache, window);
 
@@ -141,9 +139,9 @@ public class Main {
             shaderCache.getShaderMap().values().forEach(shader -> {
                 // Set shader uniforms
                 glUseProgram(shader);
-                int projLoc = glGetUniformLocation(shaderProgram, "projection");
+                int projLoc = glGetUniformLocation(shader, "projection");
                 glUniformMatrix4fv(projLoc, false, scene.getCamera().getProjectionMatrix().get(matrixBuffer)); matrixBuffer.rewind();
-                int viewLoc = glGetUniformLocation(shaderProgram, "view");
+                int viewLoc = glGetUniformLocation(shader, "view");
                 glUniformMatrix4fv(viewLoc, false, scene.getCamera().getViewMatrix().get(matrixBuffer)); matrixBuffer.rewind();
             });
 
@@ -158,7 +156,6 @@ public class Main {
 
     private void cleanup() {
         scene.cleanup();
-        glDeleteProgram(shaderProgram);
         glfwDestroyWindow(window);
         glfwTerminate();
     }

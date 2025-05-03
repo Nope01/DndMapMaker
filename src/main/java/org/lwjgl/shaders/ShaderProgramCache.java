@@ -1,6 +1,7 @@
 package org.lwjgl.shaders;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,20 +27,24 @@ public class ShaderProgramCache {
     }
 
     public int getShader(String shaderName) {
-        int shader = -1;
-        if (shaderName != null) {
-            shader = shaderMap.get(shaderName);
+        if (!shaderMap.containsKey(shaderName)) {
+            return shaderMap.get("default");
         }
-        if (shader == -1) {
-            shader = shaderMap.get("default");
-        }
-        return shader;
+        return shaderMap.get(shaderName);
     }
 
     public int createShaderProgram(String name) {
         String vertexPath = DEFAULT_PATH + name + "/vertex.glsl";
         String fragmentPath = DEFAULT_PATH + name + "/fragment.glsl";
-        System.out.println("Creating shader program: " + vertexPath + "\n" + fragmentPath);
+
+//        String vertexSource = loadShaderSource(vertexPath);
+//        String fragmentSource = loadShaderSource(fragmentPath);
+//
+//        // Debug: Print shader sources
+//        System.out.println("=== Vertex Shader Source (" + name + ") ===");
+//        System.out.println(vertexSource);
+//        System.out.println("=== Fragment Shader Source (" + name + ") ===");
+//        System.out.println(fragmentSource);
 
         int vertexShader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShader, loadShaderSource(vertexPath));
@@ -61,6 +66,11 @@ public class ShaderProgramCache {
         glLinkProgram(program);
         if (glGetProgrami(program, GL_LINK_STATUS) == GL_FALSE) {
             System.err.println("Shader program linking failed: " + glGetProgramInfoLog(program));
+        }
+
+        glValidateProgram(program);
+        if (glGetProgrami(program, GL_VALIDATE_STATUS) == GL_FALSE) {
+            System.err.println("Shader program validation failed: " + glGetProgramInfoLog(program));
         }
 
         glDeleteShader(vertexShader);
@@ -87,6 +97,39 @@ public class ShaderProgramCache {
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to load shader: " + path, e);
+        }
+    }
+
+    public static void printShaderSource(int shaderID) {
+        int[] length = new int[1];
+        glGetShaderiv(shaderID, GL_SHADER_SOURCE_LENGTH, length);
+        if (length[0] > 0) {
+            String source = glGetShaderSource(shaderID);
+            System.out.println("Shader Source (ID: " + shaderID + "):");
+            System.out.println(source);
+        } else {
+            System.out.println("Shader source not available (may have been optimized out by the driver).");
+        }
+    }
+
+    public static void inspectProgramShaders(int programID) {
+        int[] count = new int[1];
+        glGetProgramiv(programID, GL_ATTACHED_SHADERS, count);
+
+        if (count[0] == 0) {
+            System.out.println("No shaders attached to program " + programID);
+            return;
+        }
+
+        int[] shaders = new int[count[0]];
+        glGetAttachedShaders(programID, count, shaders);
+
+        System.out.println("Shaders attached to program " + programID + ":");
+        for (int shader : shaders) {
+            int shaderType = glGetShaderi(shader, GL_SHADER_TYPE);
+            String typeName = (shaderType == GL_VERTEX_SHADER) ? "Vertex" : "Fragment";
+            System.out.println("- " + typeName + " Shader (ID: " + shader + ")");
+            printShaderSource(shader); // Attempt to print source (if available)
         }
     }
 }

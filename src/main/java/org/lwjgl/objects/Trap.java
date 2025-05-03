@@ -6,8 +6,9 @@ import org.lwjgl.input.InputHandler;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.shaders.ShaderProgramCache.inspectProgramShaders;
+import static org.lwjgl.shaders.ShaderProgramCache.printShaderSource;
 
 public class Trap extends TileTrigger{
 
@@ -21,6 +22,11 @@ public class Trap extends TileTrigger{
                 0.5f, 0.0f, -0.5f,
         };
 
+        indices = new int[] {
+                0, 1, 2,
+                2, 3, 0
+        };
+
         texCoords = new float[]{
                 0.0f, 0.0f,
                 0.0f, 1.0f,
@@ -28,10 +34,6 @@ public class Trap extends TileTrigger{
                 1.0f, 0.0f,
         };
 
-        indices = new int[] {
-                0, 1, 2,
-                2, 3, 0
-        };
 
         Vector3f[] verticesVecs = new Vector3f[numFloats / 3];
         int count = 0;
@@ -101,7 +103,7 @@ public class Trap extends TileTrigger{
             texture.bind();
         }
 
-        //glUniform1i(glGetUniformLocation(shaderProgram, "iconTexture"), 0);
+        glUniform1i(glGetUniformLocation(shaderProgram, "iconTexture"), 0);
 
         // Render hexagon
         glBindVertexArray(vaoId);

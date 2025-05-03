@@ -92,7 +92,7 @@ public class TextureCache {
                     String path = DEFAULT_PATH + "tiles/" + textureName + ".png";
                     addNewTexture(path, textureName);
                 }
-                default: System.out.println("texture not found");
+                default: //System.out.println("texture not found");
             }
         }
 //        addNewTexture(DEFAULT_TEXTURE, "default_texture");

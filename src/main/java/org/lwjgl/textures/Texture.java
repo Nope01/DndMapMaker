@@ -54,7 +54,7 @@ public class Texture implements Serializable {
             decoder.decode(buffer, width*4, PNGDecoder.Format.RGBA);
             buffer.flip();
 
-            System.out.println("Generating texture: " + textureName);
+            //System.out.println("Generating texture: " + textureName);
             generateTexture(width, height, buffer);
 
         }

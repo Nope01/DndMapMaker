@@ -71,7 +71,6 @@ public class Scene extends SceneObject {
         trap.setPosition(0.0f, 0.2f, 0.0f);
         trap.setTexture(this.getTextureCache().getTexture("sandvich"));
         trap.setIsHidden(false);
-        addObject(trap);
     }
 
     public void addObject(SceneObject object) {
