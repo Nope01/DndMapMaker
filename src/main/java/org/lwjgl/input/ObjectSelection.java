@@ -29,9 +29,9 @@ public class ObjectSelection {
 
     }
 
-    public static void selectObject(Scene scene,
-                                           InputHandler inputHandler,
-                                           List<SceneObject> rootObjects) {
+    public static void hoverObject(Scene scene,
+                                   InputHandler inputHandler,
+                                   List<SceneObject> rootObjects) {
         for (SceneObject object : rootObjects) {
             childrenIntersectionChecks(scene, inputHandler, object);
         }

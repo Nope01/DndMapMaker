@@ -7,6 +7,7 @@ out vec4 FragColor;
 uniform vec3 color;
 uniform int hovered;
 uniform int inLine;
+uniform int selected;
 
 uniform sampler2D terrainTexture;
 uniform sampler2D iconTexture;
@@ -32,5 +33,9 @@ void main() {
 
     if (inLine > 0) {
         FragColor = vec4(lineColour, 1.0);
+    }
+
+    if (selected > 0) {
+        FragColor = iconTextureColour + 0.2f;
     }
 }

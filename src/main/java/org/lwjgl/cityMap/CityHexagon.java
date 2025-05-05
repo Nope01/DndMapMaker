@@ -7,6 +7,8 @@ import org.lwjgl.objects.Hexagon;
 
 import java.io.Serializable;
 
+import static org.lwjgl.opengl.GL20.*;
+
 
 public class CityHexagon extends Hexagon implements Serializable {
     public static final float DIFFICULT_TERRAIN = 0.5f;
@@ -23,6 +25,14 @@ public class CityHexagon extends Hexagon implements Serializable {
     @Override
     public void update(Scene scene, float deltaTime, InputHandler input) {
 
+    }
+
+    @Override
+    public void render() {
+        glUseProgram(shaderProgram);
+        int selected = glGetUniformLocation(shaderProgram, "selected");
+        glUniform1i(selected, this.selected ? 1 : 0);
+        super.render();
     }
 
     public int getMovementModifier() {

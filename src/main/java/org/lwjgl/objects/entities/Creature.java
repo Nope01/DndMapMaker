@@ -70,6 +70,8 @@ public abstract class Creature extends SceneObject {
         glUniformMatrix4fv(modelLoc, false, worldMatrix.get(new float[16]));
         int hovered = glGetUniformLocation(shaderProgram, "hovered");
         glUniform1i(hovered, this.hovered ? 1 : 0);
+        int selected = glGetUniformLocation(shaderProgram, "selected");
+        glUniform1i(selected, this.selected ? 1 : 0);
         int texCoords = glGetUniformLocation(shaderProgram, "texCoords");
         glUniform2f(texCoords, this.texCoords[0], this.texCoords[1]);
 

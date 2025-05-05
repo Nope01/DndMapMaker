@@ -117,7 +117,7 @@ public class Scene extends SceneObject {
             grid.clearHoveredHexagons();
         }
 
-        ObjectSelection.selectObject(this, inputHandler, rootObjects);
+        ObjectSelection.hoverObject(this, inputHandler, rootObjects);
         if (hoveredObject != null) {
             hoveredObject.update(this, deltaTime, inputHandler);
         }

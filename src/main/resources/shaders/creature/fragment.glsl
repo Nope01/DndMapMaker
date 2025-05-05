@@ -4,6 +4,7 @@ in vec2 texCoords;
 out vec4 FragColor;
 
 uniform int hovered;
+uniform int selected;
 
 uniform sampler2D iconTexture;
 
@@ -17,8 +18,11 @@ void main() {
         FragColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
-
     if (hovered > 0) {
+        FragColor = iconTextureColour + 0.2f;
+    }
+
+    if (selected > 0) {
         FragColor = iconTextureColour + 0.2f;
     }
 }

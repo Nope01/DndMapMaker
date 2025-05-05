@@ -11,6 +11,7 @@ import org.lwjgl.objects.*;
 public class CityEditor extends ImGuiWindow {
 
     private SceneObject hoveredObject;
+    private SceneObject selectedObject;
     private Grid gridClass;
     private Hexagon[][] grid;
     private int viewRadius = 4;
@@ -40,6 +41,11 @@ public class CityEditor extends ImGuiWindow {
         gridClass = scene.getGrid();
 
         if (inputHandler.isLeftClicked() && hoveredObject != null) {
+            if (selectedObject != null) {
+                selectedObject.selected = false;
+            }
+            selectedObject = hoveredObject;
+            selectedObject.selected = true;
             if (hoveredObject instanceof CityHexagon) {
                 ((CityHexagon) hoveredObject).setMovementModifier(69);
             }
@@ -86,6 +92,10 @@ public class CityEditor extends ImGuiWindow {
             if (distance < trap.getTriggerRadius()) {
                 ImGui.text("Boom");
             }
+        }
+
+        if (selectedObject != null) {
+            ImGui.text(selectedObject.getId());
         }
 
         ImGui.end();
