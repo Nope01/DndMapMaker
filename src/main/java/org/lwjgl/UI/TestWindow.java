@@ -15,7 +15,7 @@ public class TestWindow extends ImGuiWindow {
     private static final DecimalFormat df = new DecimalFormat("0.00");
     private Vector3f worldPos;
     private Vector3f cameraPos;
-    private SceneObject selectedObject;
+    private SceneObject hoveredObject;
     private String type;
 
 
@@ -29,9 +29,9 @@ public class TestWindow extends ImGuiWindow {
         worldPos = inputHandler.getWorldPos(scene);
         camera = scene.getCamera();
         cameraPos = camera.getPosition();
-        selectedObject = scene.getSelectedObject();
-        if (selectedObject instanceof ContinentHexagon) {
-            type = ((ContinentHexagon) selectedObject).getTypeAsString();
+        hoveredObject = scene.getHoveredObject();
+        if (hoveredObject instanceof ContinentHexagon) {
+            type = ((ContinentHexagon) hoveredObject).getTypeAsString();
         }
     }
 
@@ -46,9 +46,9 @@ public class TestWindow extends ImGuiWindow {
     protected void update() {
         worldPos = inputHandler.getWorldPos(scene);
         cameraPos = camera.getPosition();
-        selectedObject = scene.getSelectedObject();
-        if (selectedObject instanceof ContinentHexagon) {
-            type = ((ContinentHexagon) selectedObject).getTypeAsString();
+        hoveredObject = scene.getHoveredObject();
+        if (hoveredObject instanceof ContinentHexagon) {
+            type = ((ContinentHexagon) hoveredObject).getTypeAsString();
         }
     }
 
@@ -66,21 +66,21 @@ public class TestWindow extends ImGuiWindow {
 
         ImGui.separator();
         ImGui.text("Hexagon details");
-        if (selectedObject == null) {
+        if (hoveredObject == null) {
             ImGui.textUnformatted("Null");
         }
         else {
-            if (selectedObject instanceof ContinentHexagon)
-            ImGui.textUnformatted("Cube coords: " + ((ContinentHexagon) selectedObject).getCubeCoords().x + ", "
-                    + ((ContinentHexagon) selectedObject).getCubeCoords().y + " ,"
-                    + ((ContinentHexagon) selectedObject).getCubeCoords().z);
-            ImGui.textUnformatted("Offset coords: " + ((ContinentHexagon) selectedObject).getOffsetCoords().x + ", "
-                    + ((ContinentHexagon) selectedObject).getOffsetCoords().y);
+            if (hoveredObject instanceof ContinentHexagon)
+            ImGui.textUnformatted("Cube coords: " + ((ContinentHexagon) hoveredObject).getCubeCoords().x + ", "
+                    + ((ContinentHexagon) hoveredObject).getCubeCoords().y + " ,"
+                    + ((ContinentHexagon) hoveredObject).getCubeCoords().z);
+            ImGui.textUnformatted("Offset coords: " + ((ContinentHexagon) hoveredObject).getOffsetCoords().x + ", "
+                    + ((ContinentHexagon) hoveredObject).getOffsetCoords().y);
             ImGui.textUnformatted("Tile type: " + type);
-            ImGui.textUnformatted("ID: " + selectedObject.getId());
-            ImGui.textUnformatted("Colour: " + selectedObject.getColour().x + ", "
-                    + selectedObject.getColour().y + ", "
-                    + selectedObject.getColour().z);
+            ImGui.textUnformatted("ID: " + hoveredObject.getId());
+            ImGui.textUnformatted("Colour: " + hoveredObject.getColour().x + ", "
+                    + hoveredObject.getColour().y + ", "
+                    + hoveredObject.getColour().z);
         }
 
 

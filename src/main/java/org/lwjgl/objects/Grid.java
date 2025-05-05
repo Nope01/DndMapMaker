@@ -7,7 +7,6 @@ import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.continentMap.ContinentHexagon;
 import org.lwjgl.input.InputHandler;
 
-import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
 import static org.lwjgl.opengl.GL11.glGetError;
 
 
@@ -144,10 +143,10 @@ public class Grid extends SceneObject {
         return grid[row][col];
     }
 
-    public void clearSelectedHexagons() {
+    public void clearHoveredHexagons() {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
-                grid[row][col].selected = false;
+                grid[row][col].hovered = false;
             }
         }
     }

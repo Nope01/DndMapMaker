@@ -20,6 +20,7 @@ public class ShaderProgramCache {
         shaderMap.put("continentHex", createShaderProgram("continentHex"));
         shaderMap.put("cityHex", createShaderProgram("cityHex"));
         shaderMap.put("trap", createShaderProgram("trap"));
+        shaderMap.put("creature", createShaderProgram("creature"));
     }
 
     public Map<String, Integer> getShaderMap() {

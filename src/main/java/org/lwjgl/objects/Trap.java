@@ -4,6 +4,8 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.Scene;
 import org.lwjgl.input.InputHandler;
+import org.lwjgl.objects.models.opengl.HexagonShape;
+import org.lwjgl.objects.models.opengl.Plane;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -13,35 +15,12 @@ public class Trap extends TileTrigger{
 
     public Trap(int triggerRadius, Vector2i offsetPos) {
         super(triggerRadius, offsetPos);
-        numFloats = 4*3;
-        verticesFloats = new float[]{
-                -0.5f, 0.0f, -0.5f,
-                -0.5f, 0.0f, 0.5f,
-                0.5f, 0.0f, 0.5f,
-                0.5f, 0.0f, -0.5f,
-        };
+        numFloats = 7*3;
 
-        indices = new int[] {
-                0, 1, 2,
-                2, 3, 0
-        };
-
-        texCoords = new float[]{
-                0.0f, 0.0f,
-                0.0f, 1.0f,
-                1.0f, 1.0f,
-                1.0f, 0.0f,
-        };
-
-
-        Vector3f[] verticesVecs = new Vector3f[numFloats / 3];
-        int count = 0;
-        for (int i = 0; i < verticesFloats.length; i += 3) {
-            verticesVecs[count] = new Vector3f(verticesFloats[i], verticesFloats[i + 1], verticesFloats[i + 2]);
-            count++;
-        }
-
-        this.verticesVecs = verticesVecs;
+        verticesFloats = HexagonShape.vertices();
+        verticesVecs = HexagonShape.verticesVecs(verticesFloats);
+        texCoords = HexagonShape.texCoords();
+        indices = HexagonShape.indices();
 
         vaoId = glGenVertexArrays();
         glBindVertexArray(vaoId);
@@ -55,33 +34,6 @@ public class Trap extends TileTrigger{
         initAabb();
     }
 
-    protected void initAabb() {
-        for (Vector3f vertex : verticesVecs) {
-            min.x = Math.min(min.x, vertex.x);
-            min.y = Math.min(min.y, vertex.y);
-            min.z = Math.min(min.z, vertex.z);
-
-            max.x = Math.max(max.x, vertex.x);
-            max.y = Math.max(max.y, vertex.y);
-            max.z = Math.max(max.z, vertex.z);
-        }
-
-        Vector3f[] aabbVertices = {
-                new Vector3f(min.x, min.y, min.z),  // Bottom-left-back corner
-                new Vector3f(max.x, min.y, min.z),  // Bottom-right-back corner
-                new Vector3f(max.x, max.y, min.z),  // Top-right-back corner
-                new Vector3f(min.x, max.y, min.z),  // Top-left-back corner
-                new Vector3f(min.x, min.y, max.z),  // Bottom-left-front corner
-                new Vector3f(max.x, min.y, max.z),  // Bottom-right-front corner
-                new Vector3f(max.x, max.y, max.z),  // Top-right-front corner
-                new Vector3f(min.x, max.y, max.z)   // Top-left-front corner
-        };
-        this.aabbVertices = aabbVertices;
-
-        aabbMin = min;
-        aabbMax = max;
-    }
-
     @Override
     public void render() {
         glUseProgram(shaderProgram);
@@ -90,8 +42,8 @@ public class Trap extends TileTrigger{
 
         int modelLoc = glGetUniformLocation(shaderProgram, "model");
         glUniformMatrix4fv(modelLoc, false, worldMatrix.get(new float[16]));
-        int selected = glGetUniformLocation(shaderProgram, "selected");
-        glUniform1i(selected, this.selected ? 1 : 0);
+        int hovered = glGetUniformLocation(shaderProgram, "hovered");
+        glUniform1i(hovered, this.hovered ? 1 : 0);
         int texCoords = glGetUniformLocation(shaderProgram, "texCoords");
         glUniform2f(texCoords, this.texCoords[0], this.texCoords[1]);
         int isHidden = glGetUniformLocation(shaderProgram, "isHidden");
@@ -106,7 +58,7 @@ public class Trap extends TileTrigger{
 
         // Render hexagon
         glBindVertexArray(vaoId);
-        glDrawElements(GL_TRIANGLES, 4*3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, numFloats, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
         int e = glGetError();
         if (e != GL_NO_ERROR) {

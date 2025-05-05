@@ -7,8 +7,6 @@ public abstract class TileTrigger extends SceneObject {
 
     private int triggerRadius;
     private boolean isHidden;
-    private Vector2i offsetPos;
-    private Vector3i cubePos;
 
     public TileTrigger(int triggerRadius, Vector2i offsetPos) {
         super();

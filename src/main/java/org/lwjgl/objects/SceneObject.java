@@ -1,13 +1,12 @@
 package org.lwjgl.objects;
 
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.textures.Texture;
 
 import java.io.Serializable;
+import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +23,9 @@ public abstract class SceneObject implements Serializable {
     protected Vector3f[] verticesVecs;
     protected int numFloats;
     protected int[] indices;
-    public boolean selected;
+    public boolean hovered;
+    protected Vector2i offsetPos;
+    protected Vector3i cubePos;
     protected Vector3f colour;
     protected Texture texture;
     protected float[] texCoords;
@@ -52,12 +53,11 @@ public abstract class SceneObject implements Serializable {
         children = new ArrayList<>();
         verticesFloats = new float[16];
         colour = new Vector3f(0, 0, 0);
-        selected = false;
+        hovered = false;
     }
 
     public SceneObject() {
         this("default", 3);
-
     }
 
     // Update transformation matrices
@@ -144,7 +144,9 @@ public abstract class SceneObject implements Serializable {
     }
     public void setRotation(float x, float y, float z) { rotation.set(x, y, z); }
     public void addRotation(float x, float y, float z) { rotation.add(x, y, z); }
-    public void setScale(float scale) { this.scale.set(scale, scale, scale); }
+    public void setScale(float scale) {
+        this.scale.set(scale, scale, scale);
+    }
 
     public void setColour(float r, float g, float b) {this.colour = new Vector3f(r, g, b);}
     public Vector3f getColour() { return colour; }
@@ -163,6 +165,33 @@ public abstract class SceneObject implements Serializable {
     public void scaleAabb(Vector3f scale) {
         min.mul(scale);
         max.mul(scale);
+    }
+
+    protected void initAabb() {
+        for (Vector3f vertex : verticesVecs) {
+            min.x = Math.min(min.x, vertex.x);
+            min.y = Math.min(min.y, vertex.y);
+            min.z = Math.min(min.z, vertex.z);
+
+            max.x = Math.max(max.x, vertex.x);
+            max.y = Math.max(max.y, vertex.y);
+            max.z = Math.max(max.z, vertex.z);
+        }
+
+        Vector3f[] aabbVertices = {
+                new Vector3f(min.x, min.y, min.z),  // Bottom-left-back corner
+                new Vector3f(max.x, min.y, min.z),  // Bottom-right-back corner
+                new Vector3f(max.x, max.y, min.z),  // Top-right-back corner
+                new Vector3f(min.x, max.y, min.z),  // Top-left-back corner
+                new Vector3f(min.x, min.y, max.z),  // Bottom-left-front corner
+                new Vector3f(max.x, min.y, max.z),  // Bottom-right-front corner
+                new Vector3f(max.x, max.y, max.z),  // Top-right-front corner
+                new Vector3f(min.x, max.y, max.z)   // Top-left-front corner
+        };
+        this.aabbVertices = aabbVertices;
+
+        aabbMin = min;
+        aabbMax = max;
     }
 
     public void setTexture(Texture texture) {

@@ -5,7 +5,7 @@ in vec2 iconTexCoords;
 out vec4 FragColor;
 
 uniform vec3 color;
-uniform int selected;
+uniform int hovered;
 uniform int inLine;
 
 uniform sampler2D terrainTexture;
@@ -26,7 +26,7 @@ void main() {
     }
 
 
-    if (selected > 0) {
+    if (hovered > 0) {
         FragColor = vec4(selectedColour, 1.0);
     }
 

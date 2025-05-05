@@ -6,6 +6,8 @@ import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
+import org.lwjgl.objects.models.opengl.HexagonShape;
+import org.lwjgl.objects.models.opengl.Plane;
 import org.lwjgl.textures.Texture;
 
 import static java.lang.Math.TAU;
@@ -79,8 +81,8 @@ public abstract class Hexagon extends SceneObject {
         glUniformMatrix4fv(modelLoc, false, worldMatrix.get(new float[16]));
         int colorLoc = glGetUniformLocation(shaderProgram, "color");
         glUniform3f(colorLoc, colour.x, colour.y, colour.z);
-        int selected = glGetUniformLocation(shaderProgram, "selected");
-        glUniform1i(selected, this.selected ? 1 : 0);
+        int hovered = glGetUniformLocation(shaderProgram, "hovered");
+        glUniform1i(hovered, this.hovered ? 1 : 0);
         int inLine = glGetUniformLocation(shaderProgram, "inLine");
         glUniform1i(inLine, this.inLine ? 1 : 0);
         int texCoords = glGetUniformLocation(shaderProgram, "texCoords");
@@ -122,63 +124,11 @@ public abstract class Hexagon extends SceneObject {
     }
 
     protected void initGeometry() {
-        // Hexagon vertices (6 vertices forming a regular hexagon)
-        float[] verticesFloats = new float[numFloats];
 
-        Vector3f[] vecs = new Vector3f[7];
-        //Rotates a point to create a circle with 6 points (hexagon)
-        vecs[0] = new Vector3f(0, 0, 0);
-
-        Matrix3f rotation = new Matrix3f();
-        for (int i = 0; i < 6; i++) {
-            float angle = (float) (TAU/6);
-            rotation.rotationY(angle*i);
-            vecs[i+1] = new Vector3f(1.0f, 0.0f, 0.0f);
-            vecs[i+1].mul(rotation);
-        }
-
-        int count = 0;
-        for (Vector3f vec : vecs) {
-            verticesFloats[count++] = vec.x;
-            verticesFloats[count++] = vec.y;
-            verticesFloats[count++] = vec.z;
-        }
-
-        Vector3f[] verticesVecs = new Vector3f[numFloats / 3];
-        count = 0;
-        for (int i = 0; i < verticesFloats.length; i += 3) {
-            verticesVecs[count] = new Vector3f(verticesFloats[i], verticesFloats[i + 1], verticesFloats[i + 2]);
-            count++;
-        }
-        this.verticesVecs = verticesVecs;
-
-        indices = new int[18];
-        int k = 0;
-        for (int i = 1; i <= 6; i++) {
-            indices[k++] = 0;
-            indices[k++] = i;
-            indices[k++] = (i%6)+1;
-        }
-
-        //Tilted
-//        texCoords = new float[] {
-//                0.5f, 0.5f,
-//                1.0f, 0.75f,
-//                1.0f, 0.25f,
-//                0.5f, 0.0f,
-//                0.0f, 0.25f,
-//                0.0f, 0.75f,
-//                0.5f, 1.0f };
-
-        //Upright
-        texCoords = new float[] {
-                0.5f, 0.5f,
-                1.0f, 0.5f,
-                0.75f, 0.0f,
-                0.25f, 0.0f,
-                0.0f, 0.5f,
-                0.25f, 1.0f,
-                0.75f, 1.0f };
+        verticesFloats = HexagonShape.vertices();
+        verticesVecs = HexagonShape.verticesVecs(verticesFloats);
+        texCoords = HexagonShape.texCoords();
+        indices = HexagonShape.indices();
 
 
         //Buffers
@@ -191,33 +141,6 @@ public abstract class Hexagon extends SceneObject {
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
-    }
-
-    protected void initAabb() {
-        for (Vector3f vertex : verticesVecs) {
-            min.x = Math.min(min.x, vertex.x);
-            min.y = Math.min(min.y, vertex.y);
-            min.z = Math.min(min.z, vertex.z);
-
-            max.x = Math.max(max.x, vertex.x);
-            max.y = Math.max(max.y, vertex.y);
-            max.z = Math.max(max.z, vertex.z);
-        }
-
-        Vector3f[] aabbVertices = {
-                new Vector3f(min.x, min.y, min.z),  // Bottom-left-back corner
-                new Vector3f(max.x, min.y, min.z),  // Bottom-right-back corner
-                new Vector3f(max.x, max.y, min.z),  // Top-right-back corner
-                new Vector3f(min.x, max.y, min.z),  // Top-left-back corner
-                new Vector3f(min.x, min.y, max.z),  // Bottom-left-front corner
-                new Vector3f(max.x, min.y, max.z),  // Bottom-right-front corner
-                new Vector3f(max.x, max.y, max.z),  // Top-right-front corner
-                new Vector3f(min.x, max.y, max.z)   // Top-left-front corner
-        };
-        this.aabbVertices = aabbVertices;
-
-        aabbMin = min;
-        aabbMax = max;
     }
 
     public void setIconTexture(Texture texture) {

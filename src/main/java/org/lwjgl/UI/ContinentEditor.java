@@ -58,7 +58,7 @@ public class ContinentEditor extends ImGuiWindow{
         this.selectedIconTexture = scene.getTextureCache().getTexture("empty");
 
         Grid grid = (Grid) scene.getObject("grid");
-        selectedObject = scene.getSelectedObject();
+        selectedObject = scene.getHoveredObject();
         selectedType = -1;
     }
 
@@ -71,7 +71,7 @@ public class ContinentEditor extends ImGuiWindow{
 
     @Override
     protected void update() {
-        selectedObject = scene.getSelectedObject();
+        selectedObject = scene.getHoveredObject();
 
         if (inputHandler.isLeftClicked() && selectedObject != null) {
             ((ContinentHexagon) selectedObject).setType(selectedType);

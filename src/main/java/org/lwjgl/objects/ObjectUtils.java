@@ -1,5 +1,6 @@
 package org.lwjgl.objects;
 
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;

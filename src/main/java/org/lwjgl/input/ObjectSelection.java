@@ -18,8 +18,8 @@ public class ObjectSelection {
 
 
         if (object.rayIntersect(worldPos, mouseDir, camera)) {
-            if (scene.getSelectedObject() != null) {
-                scene.getSelectedObject().selected = false;
+            if (scene.getHoveredObject() != null) {
+                scene.getHoveredObject().hovered = false;
             }
             return true;
         }
@@ -42,8 +42,8 @@ public class ObjectSelection {
                                                    SceneObject sceneObject) {
 
         if (checkObjectMouseHover(sceneObject, scene, inputHandler)) {
-            sceneObject.selected = true;
-            scene.setSelectedObject(sceneObject);
+            sceneObject.hovered = true;
+            scene.setHoveredObject(sceneObject);
         }
 
 
@@ -54,7 +54,7 @@ public class ObjectSelection {
         }
     }
 
-    public static void resetSelectedObject(SceneObject object) {
-        object.selected = false;
+    public static void resetHoveredObject(SceneObject object) {
+        object.hovered = false;
     }
 }

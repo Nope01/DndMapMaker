@@ -2,6 +2,7 @@ package org.lwjgl.objects;
 
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
+import org.lwjgl.objects.models.opengl.Plane;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
@@ -19,24 +20,9 @@ public class ImageQuad extends SceneObject{
     }
 
     private void initGeometry() {
-        verticesFloats = new float[]{
-                -0.5f, 0.0f, -0.5f,
-                -0.5f, 0.0f, 0.5f,
-                0.5f, 0.0f, 0.5f,
-                0.5f, 0.0f, -0.5f,
-        };
-
-        texCoords = new float[]{
-                0.0f, 0.0f,
-                0.0f, 1.0f,
-                1.0f, 1.0f,
-                1.0f, 0.0f,
-        };
-
-        indices = new int[] {
-                0, 1, 2,
-                2, 3, 0
-        };
+        verticesFloats = Plane.vertices();
+        texCoords = Plane.texCoords();
+        indices = Plane.indices();
 
         vaoId = glGenVertexArrays();
         glBindVertexArray(vaoId);
@@ -59,8 +45,8 @@ public class ImageQuad extends SceneObject{
         glUniformMatrix4fv(modelLoc, false, worldMatrix.get(new float[16]));
         int colorLoc = glGetUniformLocation(shaderProgram, "color");
         glUniform3f(colorLoc, colour.x, colour.y, colour.z);
-        int selected = glGetUniformLocation(shaderProgram, "selected");
-        glUniform1i(selected, this.selected ? 1 : 0);
+        int hovered = glGetUniformLocation(shaderProgram, "hovered");
+        glUniform1i(hovered, this.hovered ? 1 : 0);
         int texCoords = glGetUniformLocation(shaderProgram, "texCoords");
         glUniform2f(texCoords, this.texCoords[0], this.texCoords[1]);
 

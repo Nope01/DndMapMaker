@@ -8,14 +8,12 @@ import org.lwjgl.input.ObjectSelection;
 import org.lwjgl.objects.Grid;
 import org.lwjgl.objects.SceneObject;
 import org.lwjgl.objects.Trap;
+import org.lwjgl.objects.entities.Player;
 import org.lwjgl.shaders.ShaderProgramCache;
 import org.lwjgl.textures.TextureCache;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
-import static org.lwjgl.opengl.GL11.glGetError;
 
 public class Scene extends SceneObject {
     private Camera camera;
@@ -25,6 +23,7 @@ public class Scene extends SceneObject {
     private int screenHeight;
     private long window;
     private InputHandler inputHandler;
+    private SceneObject hoveredObject;
     private SceneObject selectedObject;
     private TextureCache textureCache;
     private ShaderProgramCache shaderCache;
@@ -36,7 +35,7 @@ public class Scene extends SceneObject {
         this.screenHeight = height;
         this.window = window;
         this.inputHandler = inputHandler;
-        this.selectedObject = null;
+        this.hoveredObject = null;
         this.textureCache = new TextureCache();
         this.shaderCache = shaderCache;
         this.mapSaveLoad = new MapSaveLoad();
@@ -70,6 +69,13 @@ public class Scene extends SceneObject {
         trap.setPosition(0.0f, 0.2f, 0.0f);
         trap.setTexture(this.getTextureCache().getTexture("sandvich"));
         trap.setIsHidden(false);
+
+        Player player = new Player(grid.getHexagonAt(20, 45).getOffsetCoords());
+        player.setId("player");
+        player.setShaderProgram(this.getShaderCache().getShader("creature"));
+        player.setParent(grid.getHexagonAt(20, 45));
+        player.setTexture(this.getTextureCache().getTexture("soda"));
+        player.setPosition(0.0f, 0.01f, 0.0f);
     }
 
     public void addObject(SceneObject object) {
@@ -103,17 +109,17 @@ public class Scene extends SceneObject {
             root.update();
             root.update(this, deltaTime, inputHandler);
         }
-        if (selectedObject != null) {
-            ObjectSelection.resetSelectedObject(selectedObject);
-            selectedObject = null;
+        if (hoveredObject != null) {
+            ObjectSelection.resetHoveredObject(hoveredObject);
+            hoveredObject = null;
         }
         if (grid != null) {
-            grid.clearSelectedHexagons();
+            grid.clearHoveredHexagons();
         }
 
         ObjectSelection.selectObject(this, inputHandler, rootObjects);
-        if (selectedObject != null) {
-            selectedObject.update(this, deltaTime, inputHandler);
+        if (hoveredObject != null) {
+            hoveredObject.update(this, deltaTime, inputHandler);
         }
     }
 
@@ -182,11 +188,11 @@ public class Scene extends SceneObject {
         return screenHeight;
     }
 
-    public SceneObject getSelectedObject() {
-        return selectedObject;
+    public SceneObject getHoveredObject() {
+        return hoveredObject;
     }
-    public void setSelectedObject(SceneObject selectedObject) {
-        this.selectedObject = selectedObject;
+    public void setHoveredObject(SceneObject hoveredObject) {
+        this.hoveredObject = hoveredObject;
     }
 
     public TextureCache getTextureCache() {
