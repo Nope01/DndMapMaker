@@ -1,6 +1,7 @@
 package org.lwjgl.objects;
 
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 import org.joml.Vector3i;
 
 public abstract class TileTrigger extends SceneObject {
@@ -27,13 +28,20 @@ public abstract class TileTrigger extends SceneObject {
     public void setIsHidden(boolean isHidden) {
         this.isHidden = isHidden;
     }
+    //Swaps value and makes trigger unselectable when hidden
     public boolean swapIsHidden() {
         isHidden = !isHidden;
+        if (isHidden) {
+            clearAabb();
+        }
+        else {
+            initAabb();
+        }
         return isHidden;
     }
 
     public boolean isInRange(Vector3i position) {
-        if (Hexagon.cubeDistance(position, cubePos) < 0) {
+        if (Hexagon.cubeDistance(position, cubePos) < triggerRadius) {
             return true;
         }
         return false;

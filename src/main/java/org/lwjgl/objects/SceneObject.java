@@ -193,6 +193,15 @@ public abstract class SceneObject implements Serializable {
 
         aabbMin = min;
         aabbMax = max;
+        setPosition(position.x, position.y, position.z);
+    }
+
+    //For getting rid of bounding box when a thing is hidden
+    protected void clearAabb() {
+        aabbVertices = new Vector3f[]{};
+        aabbMin = new Vector3f(0.0f, 0.0f, 0.0f);
+        aabbMax = new Vector3f(0.0f, 0.0f, 0.0f);
+        setPosition(position.x, position.y, position.z);
     }
 
     public void setTexture(Texture texture) {

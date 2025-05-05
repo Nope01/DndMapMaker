@@ -40,6 +40,11 @@ public class CityEditor extends ImGuiWindow {
         grid = scene.getGrid().getGrid();
         gridClass = scene.getGrid();
 
+        if (hoveredObject != null) {
+            if (hoveredObject instanceof Trap) {
+                hoveredObject = hoveredObject.parent;
+            }
+        }
         if (inputHandler.isLeftClicked() && hoveredObject != null) {
             if (selectedObject != null) {
                 selectedObject.selected = false;
@@ -85,11 +90,11 @@ public class CityEditor extends ImGuiWindow {
         if (hoveredObject instanceof CityHexagon) {
             Vector3i target = gridClass.getHexagonAt(20, 40).getCubeCoords();
             Trap trap = (Trap) gridClass.getHexagonAt(20, 40).children.get(0);
-            int distance = ((CityHexagon) hoveredObject).cubeDistance(target);
+            int distance =  ((CityHexagon) hoveredObject).cubeDistance(target);
             if (distance < viewRadius) {
                 ImGui.text("I can see you");
             }
-            if (distance < trap.getTriggerRadius()) {
+            if (trap.isInRange(((CityHexagon) hoveredObject).getCubeCoords())) {
                 ImGui.text("Boom");
             }
         }
