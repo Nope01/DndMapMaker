@@ -1,6 +1,8 @@
 package org.lwjgl.UI;
 
 import imgui.ImGui;
+import imgui.ImVec2;
+import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector3f;
 import org.lwjgl.input.InputHandler;
@@ -87,11 +89,6 @@ public class CityEditor extends ImGuiWindow {
     @Override
     protected void renderContent() {
         ImGui.begin("City Editor", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
-        if (hoveredObject != null) {
-            ImGui.text(hoveredObject.getId());
-            ImGui.text(hoveredObject.getAabbMin().toString());
-            ImGui.text(hoveredObject.getAabbMax().toString());
-        }
 
         if (ImGui.button("Show/hide traps")) {
             for (SceneObject obj : scene.getAllObjects()) {
@@ -100,24 +97,29 @@ public class CityEditor extends ImGuiWindow {
                 }
             }
         }
-
-        //Trap trigger testing
-        if (hoveredObject instanceof CityHexagon) {
-            Trap trap = (Trap) gridClass.getHexagonAt(20, 40).children.get(0);
-            if (trap.isInRange(((CityHexagon) hoveredObject).getCubeCoords())) {
-                ImGui.text("Boom");
-            }
-        }
-
-        ImGui.text(inputHandler.getWorldPos(scene).toString());
         if (selectedObject != null) {
             ImGui.text("Selected: " + selectedObject.getId());
-            ImGui.text(selectedObject.getPosition().toString());
         }
         if (hoveredObject != null) {
             ImGui.text("Hovered: " + hoveredObject.getId());
-            ImGui.text(hoveredObject.getPosition().toString());
         }
+
+        if (ImGui.button("New character")) {
+            ImGui.openPopup("Create a character");
+        }
+        ImVec2 center = ImGui.getMainViewport().getCenter();
+        ImGui.setNextWindowPos(center, ImGuiCond.Appearing, new ImVec2(0.5f, 0.5f));
+
+        if (ImGui.beginPopupModal("Create a character",
+                ImGuiWindowFlags.NoResize
+                        | ImGuiWindowFlags.NoMove)) {
+            ImGui.text("Bingus");
+            if (ImGui.button("Close")) {
+                ImGui.closeCurrentPopup();
+            }
+            ImGui.endPopup();
+        }
+
 
         ImGui.end();
     }

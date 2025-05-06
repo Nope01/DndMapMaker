@@ -41,16 +41,21 @@ public class InputHandler {
     }
 
     public void update(int width, int height) {
-        double[] x = new double[1];
-        double[] y = new double[1];
-        glfwGetCursorPos(window, x, y);
-        float currentX = (float) x[0];
-        float currentY = (float) y[0];
-        mouseDelta.set(currentX - lastMousePos.x, currentY - lastMousePos.y);
-        mousePos.set((float) x[0], (float) y[0]);
-        lastMousePos.set(currentX, currentY);
-        windowSize.x = width;
-        windowSize.y = height;
+        if (!ImGui.getIO().getWantCaptureMouse()) {
+            double[] x = new double[1];
+            double[] y = new double[1];
+            glfwGetCursorPos(window, x, y);
+            float currentX = (float) x[0];
+            float currentY = (float) y[0];
+            mouseDelta.set(currentX - lastMousePos.x, currentY - lastMousePos.y);
+            mousePos.set((float) x[0], (float) y[0]);
+            lastMousePos.set(currentX, currentY);
+            windowSize.x = width;
+            windowSize.y = height;
+        }
+        else {
+
+        }
     }
 
     private void setupCallbacks() {
@@ -69,7 +74,7 @@ public class InputHandler {
 
     //todo: need to fix clicking through ui
     public boolean isLeftClicked() {
-        if (leftMouseJustPressed) {
+        if (leftMouseJustPressed && !ImGui.getIO().getWantCaptureMouse()) {
             leftMouseJustPressed = false; // Consume the click
             return true;
         }
