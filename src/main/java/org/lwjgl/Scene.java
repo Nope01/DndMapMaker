@@ -66,7 +66,7 @@ public class Scene extends SceneObject {
         trap.setShaderProgram(this.getShaderCache().getShader("trap"));
         trap.setId("trap");
         trap.setParent(grid.getHexagonAt(20, 40));
-        trap.setPosition(0.0f, 0.2f, 0.0f);
+        trap.setPosition(0.0f, 0.1f, 0.0f);
         trap.setTexture(this.getTextureCache().getTexture("sandvich"));
         trap.setIsHidden(false);
 
@@ -75,7 +75,7 @@ public class Scene extends SceneObject {
         player.setShaderProgram(this.getShaderCache().getShader("creature"));
         player.setParent(grid.getHexagonAt(20, 45));
         player.setTexture(this.getTextureCache().getTexture("soda"));
-        player.setPosition(0.0f, 0.01f, 0.0f);
+        player.setPosition(0.0f, 0.02f, 0.0f);
     }
 
     public void addObject(SceneObject object) {

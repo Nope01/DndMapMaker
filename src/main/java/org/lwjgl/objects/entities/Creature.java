@@ -1,12 +1,11 @@
 package org.lwjgl.objects.entities;
 
 import org.joml.Vector2i;
-import org.joml.Vector3f;
+import org.joml.Vector3i;
 import org.lwjgl.objects.Hexagon;
 import org.lwjgl.objects.ObjectUtils;
 import org.lwjgl.objects.SceneObject;
 import org.lwjgl.objects.models.opengl.HexagonShape;
-import org.lwjgl.objects.models.opengl.Plane;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
@@ -105,7 +104,27 @@ public abstract class Creature extends SceneObject {
         return moveSpeed / 5;
     }
 
-    public static void moveCreature(SceneObject origin, SceneObject destination) {
-        System.out.println("Moving Creature");
+    public boolean canMoveCreature(SceneObject origin, SceneObject destination) {
+        if (!(origin instanceof Hexagon) && !(destination instanceof Hexagon)) {
+            System.out.println("Selected destination is not a Hexagon");
+        }
+        else {
+            Vector3i originCoords = ((Hexagon) origin.parent).getCubeCoords();
+            Vector3i destinationCoords = ((Hexagon) destination).getCubeCoords();
+
+            if (isValidMove(originCoords, destinationCoords)) {
+                System.out.println("Moving Creature");
+                return true;
+            }
+            else {
+                System.out.println("Too far");
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private boolean isValidMove(Vector3i from, Vector3i to) {
+        return Hexagon.cubeDistance(from, to) < moveSpeed;
     }
 }

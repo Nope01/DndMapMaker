@@ -143,6 +143,11 @@ public abstract class SceneObject implements Serializable {
         position.add(x, y, z);
         translateAabb(new Vector3f(x, y, z));
     }
+
+    public void addPosition(Vector3f pos) {
+        position.add(pos);
+        translateAabb(pos);
+    }
     public void setRotation(float x, float y, float z) { rotation.set(x, y, z); }
     public void addRotation(float x, float y, float z) { rotation.add(x, y, z); }
     public void setScale(float scale) {
@@ -168,7 +173,14 @@ public abstract class SceneObject implements Serializable {
         max.mul(scale);
     }
 
-    protected void initAabb() {
+    public Vector3f getAabbMin() {
+        return aabbMin;
+    }
+    public Vector3f getAabbMax() {
+        return aabbMax;
+    }
+
+    public void initAabb() {
         for (Vector3f vertex : verticesVecs) {
             min.x = Math.min(min.x, vertex.x);
             min.y = Math.min(min.y, vertex.y);

@@ -2,16 +2,15 @@ package org.lwjgl.UI;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
+import org.joml.Vector3f;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.objects.*;
 import org.lwjgl.objects.entities.Player;
 
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.objects.Hexagon.areaSelectClear;
 import static org.lwjgl.objects.Hexagon.showMovementRange;
-import static org.lwjgl.objects.entities.Creature.moveCreature;
 
 public class CityEditor extends ImGuiWindow {
 
@@ -54,8 +53,10 @@ public class CityEditor extends ImGuiWindow {
 
         //Movement logic
         if (clickInput && selectedObject instanceof Player) {
-            moveCreature(selectedObject, hoveredObject);
-
+            if (((Player) selectedObject).canMoveCreature(selectedObject, hoveredObject)) {
+                selectedObject.setParent(hoveredObject);
+                selectedObject.initAabb();
+            }
         }
 
         //Selection logic
@@ -73,6 +74,12 @@ public class CityEditor extends ImGuiWindow {
             }
         }
 
+        if (selectedObject != null && inputHandler.isRightClicked()) {
+            selectedObject.selected = false;
+            selectedObject = null;
+            areaSelectClear(gridClass);
+        }
+
 
 
     }
@@ -82,9 +89,8 @@ public class CityEditor extends ImGuiWindow {
         ImGui.begin("City Editor", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
         if (hoveredObject != null) {
             ImGui.text(hoveredObject.getId());
-            if (hoveredObject instanceof CityHexagon) {
-                ImGui.text("Terrain: " + ((CityHexagon) hoveredObject).getMovementModifier());
-            }
+            ImGui.text(hoveredObject.getAabbMin().toString());
+            ImGui.text(hoveredObject.getAabbMax().toString());
         }
 
         if (ImGui.button("Show/hide traps")) {
@@ -103,8 +109,14 @@ public class CityEditor extends ImGuiWindow {
             }
         }
 
+        ImGui.text(inputHandler.getWorldPos(scene).toString());
         if (selectedObject != null) {
-            ImGui.text(selectedObject.getId());
+            ImGui.text("Selected: " + selectedObject.getId());
+            ImGui.text(selectedObject.getPosition().toString());
+        }
+        if (hoveredObject != null) {
+            ImGui.text("Hovered: " + hoveredObject.getId());
+            ImGui.text(hoveredObject.getPosition().toString());
         }
 
         ImGui.end();
