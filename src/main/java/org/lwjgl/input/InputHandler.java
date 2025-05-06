@@ -3,6 +3,7 @@ package org.lwjgl.input;
 import imgui.ImGui;
 import org.joml.*;
 import org.lwjgl.Scene;
+import org.lwjgl.glfw.GLFW;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -15,6 +16,8 @@ public class InputHandler {
     private Vector2f mousePos;
     private Vector3f ndcPos;
     private Vector3f worldPos;
+
+    private boolean leftMouseJustPressed = false;
 
     public InputHandler(long window, int width, int height) {
         this.window = window;
@@ -52,7 +55,11 @@ public class InputHandler {
 
     private void setupCallbacks() {
         // Mouse movement callback (optional, handled in update for simplicity)
-        // glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {});
+        glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
+            if (button == org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+                leftMouseJustPressed = true; // Mark as pressed this frame
+            }
+        });
     }
 
     // Keyboard input queries
@@ -62,9 +69,20 @@ public class InputHandler {
 
     //todo: need to fix clicking through ui
     public boolean isLeftClicked() {
-        return glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS
-                && !ImGui.getIO().getWantCaptureMouse();
+        if (leftMouseJustPressed) {
+            leftMouseJustPressed = false; // Consume the click
+            return true;
+        }
+        return false;
     }
+
+    public boolean isLeftClickedAndHeld() {
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+            return true;
+        }
+        return false;
+    }
+
 
     public boolean isRightClicked() {
         return glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS;

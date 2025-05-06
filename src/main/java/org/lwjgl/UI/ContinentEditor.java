@@ -73,7 +73,7 @@ public class ContinentEditor extends ImGuiWindow{
     protected void update() {
         selectedObject = scene.getHoveredObject();
 
-        if (inputHandler.isLeftClicked() && selectedObject != null) {
+        if (inputHandler.isLeftClickedAndHeld() && selectedObject != null) {
             ((ContinentHexagon) selectedObject).setType(selectedType);
             if (isTerrainSelected) {
                 selectedObject.setTexture(selectedTerrainTexture);

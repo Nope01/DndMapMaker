@@ -104,4 +104,8 @@ public abstract class Creature extends SceneObject {
     public static int moveSpeedToHexSpeed(int moveSpeed) {
         return moveSpeed / 5;
     }
+
+    public static void moveCreature(SceneObject origin, SceneObject destination) {
+        System.out.println("Moving Creature");
+    }
 }

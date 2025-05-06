@@ -8,8 +8,10 @@ import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.objects.*;
 import org.lwjgl.objects.entities.Player;
 
+import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.objects.Hexagon.areaSelectClear;
 import static org.lwjgl.objects.Hexagon.showMovementRange;
+import static org.lwjgl.objects.entities.Creature.moveCreature;
 
 public class CityEditor extends ImGuiWindow {
 
@@ -42,6 +44,7 @@ public class CityEditor extends ImGuiWindow {
         hoveredObject = scene.getHoveredObject();
         grid = scene.getGrid().getGrid();
         gridClass = scene.getGrid();
+        boolean clickInput = inputHandler.isLeftClicked();
 
         if (hoveredObject != null) {
             if (hoveredObject instanceof Trap) {
@@ -49,20 +52,29 @@ public class CityEditor extends ImGuiWindow {
             }
         }
 
+        //Movement logic
+        if (clickInput && selectedObject instanceof Player) {
+            moveCreature(selectedObject, hoveredObject);
+
+        }
+
         //Selection logic
-        if (inputHandler.isLeftClicked() && hoveredObject != null) {
+        if (clickInput && hoveredObject != null) {
             areaSelectClear(gridClass);
             if (selectedObject != null) {
                 selectedObject.selected = false;
             }
             selectedObject = hoveredObject;
             selectedObject.selected = true;
+
+            //Highlight moveable tiles
+            if (selectedObject instanceof Player) {
+                showMovementRange(gridClass, (Hexagon) selectedObject.parent, ((Player) selectedObject).moveSpeed);
+            }
         }
 
-        //Highlight moveable tiles
-        if (selectedObject instanceof Player) {
-            showMovementRange(gridClass, (Hexagon) selectedObject.parent, ((Player) selectedObject).moveSpeed);
-        }
+
+
     }
 
     @Override
