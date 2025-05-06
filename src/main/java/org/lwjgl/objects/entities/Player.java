@@ -12,6 +12,7 @@ public class Player extends Creature {
 
         this.name = "Creature";
         this.type = BARD;
+        this.moveSpeed = moveSpeedToHexSpeed(20);
         this.offsetPos = offsetPos;
         this.cubePos = Hexagon.offsetToCubeCoords(offsetPos);
     }
@@ -23,7 +24,6 @@ public class Player extends Creature {
 
     @Override
     public void update(Scene scene, float deltaTime, InputHandler inputHandler) {
-
     }
 
     @Override

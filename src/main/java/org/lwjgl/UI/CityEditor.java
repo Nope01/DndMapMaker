@@ -2,11 +2,14 @@ package org.lwjgl.UI;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
-import org.joml.Vector3i;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.objects.*;
+import org.lwjgl.objects.entities.Player;
+
+import static org.lwjgl.objects.Hexagon.areaSelectClear;
+import static org.lwjgl.objects.Hexagon.showMovementRange;
 
 public class CityEditor extends ImGuiWindow {
 
@@ -45,27 +48,21 @@ public class CityEditor extends ImGuiWindow {
                 hoveredObject = hoveredObject.parent;
             }
         }
+
+        //Selection logic
         if (inputHandler.isLeftClicked() && hoveredObject != null) {
+            areaSelectClear(gridClass);
             if (selectedObject != null) {
                 selectedObject.selected = false;
             }
             selectedObject = hoveredObject;
             selectedObject.selected = true;
-            if (hoveredObject instanceof CityHexagon) {
-                ((CityHexagon) hoveredObject).setMovementModifier(69);
-            }
         }
 
-        //Area select
-//        for (int i = 0; i < grid.length; i++) {
-//            for (int j = 0; j < grid[i].length; j++) {
-//                if (selectedObject instanceof Hexagon) {
-//                    if (grid[i][j].cubeDistance(((Hexagon) selectedObject).getCubeCoords()) < viewRadius) {
-//                        grid[i][j].selected = true;
-//                    }
-//                }
-//            }
-//        }
+        //Highlight moveable tiles
+        if (selectedObject instanceof Player) {
+            showMovementRange(gridClass, (Hexagon) selectedObject.parent, ((Player) selectedObject).moveSpeed);
+        }
     }
 
     @Override
@@ -88,12 +85,7 @@ public class CityEditor extends ImGuiWindow {
 
         //Trap trigger testing
         if (hoveredObject instanceof CityHexagon) {
-            Vector3i target = gridClass.getHexagonAt(20, 40).getCubeCoords();
             Trap trap = (Trap) gridClass.getHexagonAt(20, 40).children.get(0);
-            int distance =  ((CityHexagon) hoveredObject).cubeDistance(target);
-            if (distance < viewRadius) {
-                ImGui.text("I can see you");
-            }
             if (trap.isInRange(((CityHexagon) hoveredObject).getCubeCoords())) {
                 ImGui.text("Boom");
             }

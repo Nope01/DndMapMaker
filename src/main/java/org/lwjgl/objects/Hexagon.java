@@ -1,16 +1,14 @@
 package org.lwjgl.objects;
 
-import org.joml.Matrix3f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
+import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.objects.models.opengl.HexagonShape;
-import org.lwjgl.objects.models.opengl.Plane;
 import org.lwjgl.textures.Texture;
 
-import static java.lang.Math.TAU;
 import static java.lang.Math.abs;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
@@ -274,5 +272,26 @@ public abstract class Hexagon extends SceneObject {
             z = -x-y;
         }
         return new Vector3i(x, y, z);
+    }
+
+    public static void showMovementRange(Grid gridClass, Hexagon hexagon, int moveRange) {
+        Hexagon[][] grid = gridClass.getGrid();
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (grid[i][j].cubeDistance(hexagon.getCubeCoords()) < moveRange) {
+                    CityHexagon hex = (CityHexagon) grid[i][j];
+                    hex.highlighted = true;
+                }
+            }
+        }
+    }
+
+    public static void areaSelectClear(Grid gridClass) {
+        CityHexagon[][] grid = (CityHexagon[][]) gridClass.getGrid();
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                grid[i][j].highlighted = false;
+            }
+        }
     }
 }

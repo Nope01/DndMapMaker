@@ -21,6 +21,7 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 public abstract class Creature extends SceneObject {
     String name;
     int type;
+    public int moveSpeed;
 
     public static final int BARD = 6;
     public static final int ORC = 9;
@@ -40,22 +41,7 @@ public abstract class Creature extends SceneObject {
 
 
     public Creature(Vector2i offsetPos) {
-        numFloats = 7*3;
-
-        verticesFloats = HexagonShape.vertices();
-        verticesVecs = HexagonShape.verticesVecs(verticesFloats);
-        texCoords = HexagonShape.texCoords();
-        indices = HexagonShape.indices();
-
-        vaoId = glGenVertexArrays();
-        glBindVertexArray(vaoId);
-
-        ObjectUtils.bindVerticesList(verticesFloats);
-        ObjectUtils.bindTexCoordList(texCoords);
-        ObjectUtils.bindIndicesList(indices);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
+        initGeometry();
         initAabb();
     }
 
@@ -94,5 +80,28 @@ public abstract class Creature extends SceneObject {
         for (SceneObject child : children) {
             child.render();
         }
+    }
+
+    private void initGeometry() {
+        numFloats = 7*3;
+
+        verticesFloats = HexagonShape.vertices();
+        verticesVecs = HexagonShape.verticesVecs(verticesFloats);
+        texCoords = HexagonShape.texCoords();
+        indices = HexagonShape.indices();
+
+        vaoId = glGenVertexArrays();
+        glBindVertexArray(vaoId);
+
+        ObjectUtils.bindVerticesList(verticesFloats);
+        ObjectUtils.bindTexCoordList(texCoords);
+        ObjectUtils.bindIndicesList(indices);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
+
+    public static int moveSpeedToHexSpeed(int moveSpeed) {
+        return moveSpeed / 5;
     }
 }

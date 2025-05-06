@@ -18,6 +18,7 @@ public class CityHexagon extends Hexagon implements Serializable {
     public static final float DARKNESS = 0.1f;
     private int movementModifier;
     private int visibilityModifier;
+    public boolean highlighted;
     public CityHexagon(Vector2i offsetPos) {
         super(offsetPos);
     }
@@ -32,6 +33,8 @@ public class CityHexagon extends Hexagon implements Serializable {
         glUseProgram(shaderProgram);
         int selected = glGetUniformLocation(shaderProgram, "selected");
         glUniform1i(selected, this.selected ? 1 : 0);
+        int highlighted = glGetUniformLocation(shaderProgram, "highlighted");
+        glUniform1i(highlighted, this.highlighted ? 1 : 0);
         super.render();
     }
 
