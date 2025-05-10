@@ -18,9 +18,13 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public abstract class Creature extends SceneObject {
-    String name;
-    int type;
-    public int moveSpeed;
+    private String name;
+    private int classType;
+    private int raceType;
+    private int moveSpeed;
+    private int HP;
+    private int AC;
+
 
 
     /*
@@ -38,6 +42,10 @@ public abstract class Creature extends SceneObject {
      */
 
 
+    public Creature() {
+        initGeometry();
+        initAabb();
+    }
     public Creature(Vector2i offsetPos) {
         initGeometry();
         initAabb();
@@ -125,5 +133,54 @@ public abstract class Creature extends SceneObject {
 
     private boolean isValidMove(Vector3i from, Vector3i to) {
         return Hexagon.cubeDistance(from, to) < moveSpeed;
+    }
+
+    //Getters and setters
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getClassType() {
+        return classType;
+    }
+
+    public void setClassType(int classType) {
+        this.classType = classType;
+    }
+
+    public int getMoveSpeed() {
+        return moveSpeed;
+    }
+
+    public void setMoveSpeed(int moveSpeed) {
+        this.moveSpeed = moveSpeed;
+    }
+
+    public int getHP() {
+        return HP;
+    }
+
+    public void setHP(int HP) {
+        this.HP = HP;
+    }
+
+    public int getAC() {
+        return AC;
+    }
+
+    public void setAC(int AC) {
+        this.AC = AC;
+    }
+
+    public int getRaceType() {
+        return raceType;
+    }
+
+    public void setRaceType(int raceType) {
+        this.raceType = raceType;
     }
 }

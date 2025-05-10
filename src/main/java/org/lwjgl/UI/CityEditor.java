@@ -15,6 +15,7 @@ import org.lwjgl.objects.entities.Player;
 import static org.lwjgl.objects.Hexagon.areaSelectClear;
 import static org.lwjgl.objects.Hexagon.showMovementRange;
 import static org.lwjgl.objects.entities.Classes.*;
+import static org.lwjgl.objects.entities.Player.createCreatureRandomPos;
 import static org.lwjgl.objects.entities.Races.*;
 
 public class CityEditor extends ImGuiWindow {
@@ -29,6 +30,10 @@ public class CityEditor extends ImGuiWindow {
     ImInt classType = new ImInt(FIGHTER);
     ImInt raceType = new ImInt(AASIMAR);
     int[] moveSpeed = new int[] {
+            0
+    };
+    ImInt HP = new ImInt(15);
+    int[] AC = new int[] {
             0
     };
 
@@ -83,7 +88,7 @@ public class CityEditor extends ImGuiWindow {
 
             //Highlight moveable tiles
             if (selectedObject instanceof Player) {
-                showMovementRange(gridClass, (Hexagon) selectedObject.parent, ((Player) selectedObject).moveSpeed);
+                showMovementRange(gridClass, (Hexagon) selectedObject.parent, ((Player) selectedObject).getMoveSpeed());
             }
         }
 
@@ -113,6 +118,12 @@ public class CityEditor extends ImGuiWindow {
         }
         if (hoveredObject != null) {
             ImGui.text("Hovered: " + hoveredObject.getId());
+            if (hoveredObject instanceof Player) {
+                ImGui.text(((Player) hoveredObject).getName());
+                ImGui.text(hoveredObject.getOffsetPos().toString());
+                ImGui.text(String.valueOf(((Player) hoveredObject).getMoveSpeed()));
+                ImGui.text(String.valueOf(((Player) hoveredObject).getHP()));
+            }
         }
 
         if (ImGui.button("New character")) {
@@ -121,6 +132,12 @@ public class CityEditor extends ImGuiWindow {
         ImVec2 center = ImGui.getMainViewport().getCenter();
         ImGui.setNextWindowPos(center, ImGuiCond.Appearing, new ImVec2(0.5f, 0.5f));
 
+        openCharacterCreator();
+
+        ImGui.end();
+    }
+
+    private void openCharacterCreator() {
         if (ImGui.beginPopupModal("Create a character",
                 ImGuiWindowFlags.NoResize
                         | ImGuiWindowFlags.NoMove)) {
@@ -129,10 +146,11 @@ public class CityEditor extends ImGuiWindow {
             ImGui.inputText("Name", name);
             ImGui.combo("Class", classType, classList);
             ImGui.combo("Race", raceType, raceList);
-            //Move speed
             ImGui.sliderInt("Move speed", moveSpeed, 0, 10, "");
             ImGui.sameLine();
             ImGui.text(String.valueOf(moveSpeed[0] * 5));
+            ImGui.sliderInt("AC", AC, 0, 25);
+            ImGui.inputInt("Health", HP);
 
             if (ImGui.button("Close")) {
                 ImGui.closeCurrentPopup();
@@ -142,10 +160,20 @@ public class CityEditor extends ImGuiWindow {
                 classType = new ImInt(Utils.randomInt(0, classList.length-1));
                 raceType = new ImInt(Utils.randomInt(0, raceList.length-1));
             }
+            ImGui.sameLine();
+            if (ImGui.button("Add player")) {
+                Player player = createCreatureRandomPos(name.toString(), classType.intValue(), raceType.intValue(), moveSpeed[0], AC[0], HP.intValue());
+                player.setTexture(scene.getTextureCache().getTexture("sandvich"));
+                player.setId("New player");
+                player.setShaderProgram(scene.getShaderCache().getShader("creature"));
+                player.setParent(gridClass.getHexagonAt(player.getOffsetPos()));
+                player.setPosition(0.0f, 0.2f, 0.0f);
+            }
+            ImGui.sameLine();
+            if (ImGui.button("Add NPC")) {
+
+            }
             ImGui.endPopup();
         }
-
-
-        ImGui.end();
     }
 }
