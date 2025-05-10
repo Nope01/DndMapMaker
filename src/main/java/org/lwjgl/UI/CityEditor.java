@@ -4,15 +4,18 @@ import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
-import org.joml.Vector3f;
+import imgui.type.ImInt;
+import imgui.type.ImString;
+import org.lwjgl.Utils;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
-import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.objects.*;
 import org.lwjgl.objects.entities.Player;
 
 import static org.lwjgl.objects.Hexagon.areaSelectClear;
 import static org.lwjgl.objects.Hexagon.showMovementRange;
+import static org.lwjgl.objects.entities.Classes.*;
+import static org.lwjgl.objects.entities.Races.*;
 
 public class CityEditor extends ImGuiWindow {
 
@@ -21,6 +24,14 @@ public class CityEditor extends ImGuiWindow {
     private Grid gridClass;
     private Hexagon[][] grid;
     private int viewRadius = 4;
+
+    ImString name = new ImString("Boris");
+    ImInt classType = new ImInt(FIGHTER);
+    ImInt raceType = new ImInt(AASIMAR);
+    int[] moveSpeed = new int[] {
+            0
+    };
+
     public CityEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "City Editor");
         uiWidth = 400;
@@ -113,9 +124,23 @@ public class CityEditor extends ImGuiWindow {
         if (ImGui.beginPopupModal("Create a character",
                 ImGuiWindowFlags.NoResize
                         | ImGuiWindowFlags.NoMove)) {
+
             ImGui.text("Bingus");
+            ImGui.inputText("Name", name);
+            ImGui.combo("Class", classType, classList);
+            ImGui.combo("Race", raceType, raceList);
+            //Move speed
+            ImGui.sliderInt("Move speed", moveSpeed, 0, 10, "");
+            ImGui.sameLine();
+            ImGui.text(String.valueOf(moveSpeed[0] * 5));
+
             if (ImGui.button("Close")) {
                 ImGui.closeCurrentPopup();
+            }
+            ImGui.sameLine();
+            if (ImGui.button("Surprise me:)")) {
+                classType = new ImInt(Utils.randomInt(0, classList.length-1));
+                raceType = new ImInt(Utils.randomInt(0, raceList.length-1));
             }
             ImGui.endPopup();
         }

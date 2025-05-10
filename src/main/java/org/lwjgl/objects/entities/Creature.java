@@ -22,8 +22,7 @@ public abstract class Creature extends SceneObject {
     int type;
     public int moveSpeed;
 
-    public static final int BARD = 6;
-    public static final int ORC = 9;
+
     /*
     perception
     investigation

@@ -5,6 +5,8 @@ import org.lwjgl.Scene;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.objects.Hexagon;
 
+import static org.lwjgl.objects.entities.Classes.BARD;
+
 public class Player extends Creature {
 
     public Player(Vector2i offsetPos) {
