@@ -146,8 +146,20 @@ public class CityEditor extends ImGuiWindow {
 
             ImGui.text("Bingus");
             ImGui.inputText("Name", name);
+            ImGui.sameLine();
+            if (ImGui.button("Random##name")) {
+                name = new ImString(getRandomName());
+            }
             ImGui.combo("Class", classType, classList);
+            ImGui.sameLine();
+            if (ImGui.button("Random##class")) {
+                classType = new ImInt(Utils.randomInt(0, classList.length-1));
+            }
             ImGui.combo("Race", raceType, raceList);
+            ImGui.sameLine();
+            if (ImGui.button("Random##race")) {
+                raceType = new ImInt(Utils.randomInt(0, raceList.length-1));
+            }
             ImGui.sliderInt("Move speed", moveSpeed, 0, 10, "");
             ImGui.sameLine();
             ImGui.text(String.valueOf(moveSpeed[0] * 5));
