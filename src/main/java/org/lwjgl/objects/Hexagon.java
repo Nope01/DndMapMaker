@@ -278,7 +278,7 @@ public abstract class Hexagon extends SceneObject {
         Hexagon[][] grid = gridClass.getGrid();
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
-                if (grid[i][j].cubeDistance(hexagon.getCubeCoords()) < moveRange) {
+                if (grid[i][j].cubeDistance(hexagon.getCubeCoords()) <= moveRange) {
                     CityHexagon hex = (CityHexagon) grid[i][j];
                     hex.highlighted = true;
                 }

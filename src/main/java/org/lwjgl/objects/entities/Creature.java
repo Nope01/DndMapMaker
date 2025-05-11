@@ -132,7 +132,7 @@ public abstract class Creature extends SceneObject {
     }
 
     private boolean isValidMove(Vector3i from, Vector3i to) {
-        return Hexagon.cubeDistance(from, to) < moveSpeed;
+        return Hexagon.cubeDistance(from, to) <= moveSpeed;
     }
 
     //Getters and setters

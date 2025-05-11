@@ -113,26 +113,26 @@ public class CityEditor extends ImGuiWindow {
                 }
             }
         }
-        if (selectedObject != null) {
-            ImGui.text("Selected: " + selectedObject.getId());
-        }
-        if (hoveredObject != null) {
-            ImGui.text("Hovered: " + hoveredObject.getId());
-            if (hoveredObject instanceof Player) {
-                ImGui.text(((Player) hoveredObject).getName());
-                ImGui.text(hoveredObject.getOffsetPos().toString());
-                ImGui.text(String.valueOf(((Player) hoveredObject).getMoveSpeed()));
-                ImGui.text(String.valueOf(((Player) hoveredObject).getHP()));
-            }
-        }
 
         if (ImGui.button("New character")) {
             ImGui.openPopup("Create a character");
         }
         ImVec2 center = ImGui.getMainViewport().getCenter();
         ImGui.setNextWindowPos(center, ImGuiCond.Appearing, new ImVec2(0.5f, 0.5f));
-
         openCharacterCreator();
+
+        if (selectedObject != null) {
+            ImGui.text("Selected: " + selectedObject.getId());
+        }
+        if (hoveredObject != null) {
+            ImGui.text("Hovered: " + hoveredObject.getId());
+            if (hoveredObject instanceof Player) {
+                ImGui.text("Name: " + ((Player) hoveredObject).getName());
+                ImGui.text("Pos: " + hoveredObject.getOffsetPos().x + ", " + hoveredObject.getOffsetPos().y);
+                ImGui.text("Move speed: " + ((Player) hoveredObject).getMoveSpeed());
+                ImGui.text("HP: " + ((Player) hoveredObject).getHP());
+            }
+        }
 
         ImGui.end();
     }
