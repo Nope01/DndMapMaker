@@ -85,7 +85,11 @@ public class Scene extends SceneObject {
     }
 
     public void removeObject(SceneObject object) {
+        //todo: make this actually work with recursion
         if (object.parent != null) {
+
+        }
+        if (object.children != null) {
             rootObjects.remove(object);
             cleanupChildren(object);
         }

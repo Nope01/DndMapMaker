@@ -125,6 +125,24 @@ public class CityEditor extends ImGuiWindow {
 
         if (selectedObject != null) {
             ImGui.text("Selected: " + selectedObject.getId());
+            if (selectedObject instanceof Player) {
+                if (ImGui.button("Delete")) {
+                    ImGui.openPopup("Delete creature");
+                }
+                ImGui.setNextWindowPos(center, ImGuiCond.Appearing, new ImVec2(0.5f, 0.5f));
+                if (ImGui.beginPopupModal("Delete creature", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoTitleBar)) {
+                    ImGui.text("Delete creature?");
+                    if (ImGui.button("Yes")) {
+                        scene.removeObject(selectedObject);
+                        ImGui.closeCurrentPopup();
+                    }
+                    ImGui.sameLine();
+                    if (ImGui.button("No")) {
+                        ImGui.closeCurrentPopup();
+                    }
+                    ImGui.endPopup();
+                }
+            }
         }
         if (hoveredObject != null) {
             ImGui.text("Hovered: " + hoveredObject.getId());
