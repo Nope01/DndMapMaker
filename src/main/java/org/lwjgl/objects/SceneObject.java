@@ -184,6 +184,10 @@ public abstract class SceneObject implements Serializable {
         return offsetPos;
     }
 
+    public void setOffsetPos(Vector2i offsetPos) {
+        this.offsetPos = offsetPos;
+    }
+
     public void initAabb() {
         for (Vector3f vertex : verticesVecs) {
             min.x = Math.min(min.x, vertex.x);

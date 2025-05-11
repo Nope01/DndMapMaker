@@ -74,6 +74,7 @@ public class CityEditor extends ImGuiWindow {
         if (clickInput && selectedObject instanceof Player) {
             if (((Player) selectedObject).canMoveCreature(selectedObject, hoveredObject)) {
                 selectedObject.setParent(hoveredObject);
+                selectedObject.setOffsetPos(((Hexagon) selectedObject.parent).getOffsetCoords());
                 selectedObject.initAabb();
             }
         }
@@ -170,7 +171,21 @@ public class CityEditor extends ImGuiWindow {
                 player.setShaderProgram(scene.getShaderCache().getShader("creature"));
                 player.setParent(gridClass.getHexagonAt(player.getOffsetPos()));
                 player.setPosition(0.0f, 0.2f, 0.0f);
+
+                ImGui.openPopup("Success");
             }
+
+            //Character created popup
+            ImVec2 center = ImGui.getMainViewport().getCenter();
+            ImGui.setNextWindowPos(center, ImGuiCond.Appearing, new ImVec2(0.5f, 0.5f));
+            if (ImGui.beginPopupModal("Success", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove)) {
+                ImGui.text("Character added");
+                if (ImGui.button("Noice")) {
+                    ImGui.closeCurrentPopup();
+                }
+                ImGui.endPopup();
+            }
+
             ImGui.sameLine();
             if (ImGui.button("Add NPC")) {
             }
