@@ -12,6 +12,7 @@ import org.lwjgl.Scene;
 import org.lwjgl.objects.*;
 import org.lwjgl.objects.entities.Player;
 
+import static org.lwjgl.data.ApiCalls.getRandomName;
 import static org.lwjgl.objects.Hexagon.areaSelectClear;
 import static org.lwjgl.objects.Hexagon.showMovementRange;
 import static org.lwjgl.objects.entities.Classes.*;
@@ -159,6 +160,7 @@ public class CityEditor extends ImGuiWindow {
             if (ImGui.button("Surprise me:)")) {
                 classType = new ImInt(Utils.randomInt(0, classList.length-1));
                 raceType = new ImInt(Utils.randomInt(0, raceList.length-1));
+                name = new ImString(getRandomName());
             }
             ImGui.sameLine();
             if (ImGui.button("Add player")) {
@@ -171,7 +173,6 @@ public class CityEditor extends ImGuiWindow {
             }
             ImGui.sameLine();
             if (ImGui.button("Add NPC")) {
-
             }
             ImGui.endPopup();
         }
