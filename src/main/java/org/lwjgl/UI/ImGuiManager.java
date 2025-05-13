@@ -1,7 +1,6 @@
 package org.lwjgl.UI;
 
-import imgui.ImGui;
-import imgui.ImGuiIO;
+import imgui.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.*;
 import org.lwjgl.input.InputHandler;
@@ -54,6 +53,11 @@ public class ImGuiManager {
         int[] height = new int[1];
         glfwGetFramebufferSize(window, width, height);
         io.setDisplaySize(width[0], height[0]);
+
+        //Font size
+//        io.setFontGlobalScale(2.0f);
+//        ImGui.getStyle().scaleAllSizes(2.0f);
+
     }
 
     public void update(float deltaTime, Scene scene) {
@@ -122,9 +126,12 @@ public class ImGuiManager {
         MenuBar menuBar = new MenuBar(imGuiManager, scene, inputHandler);
         menuBar.cityOpen = true;
         CityEditor cityEditor = new CityEditor(imGuiManager, scene, inputHandler);
+        CityTerrain cityTerrain = new CityTerrain(imGuiManager, scene, inputHandler);
 
         imGuiManager.addWindow(menuBar);
         imGuiManager.addWindow(cityEditor);
+        imGuiManager.addWindow(cityTerrain);
+
         firstFrame = true;
     }
 

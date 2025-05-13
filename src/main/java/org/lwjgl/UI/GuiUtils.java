@@ -18,8 +18,8 @@ public class GuiUtils {
         int tileNameIncrement = 0;
         boolean result = false;
 
-        for (int y = 0; y < cols; y++) {
-            for (int x = 0; x < rows; x++) {
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
                 if (x > 0) {
                     ImGui.sameLine();
                 }
@@ -43,8 +43,8 @@ public class GuiUtils {
         int tileNameIncrement = 0;
         boolean result = false;
 
-        for (int y = 0; y < cols; y++) {
-            for (int x = 0; x < rows; x++) {
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
                 if (x > 0) {
                     ImGui.sameLine();
                 }
@@ -52,6 +52,30 @@ public class GuiUtils {
                 if (ImGui.imageButton(scene.getTextureCache().getTexture(tileNames[tileNameIncrement]).getTextureId(),
                         75.0f, 75.0f)) {
                     editor.setSelectedIconTexture(scene.getTextureCache().getTexture(tileNames[tileNameIncrement]));
+                    result = true;
+                }
+                ImGui.popID();
+                tileNameIncrement++;
+            }
+        }
+        ImGui.treePop();
+
+        return result;
+    }
+
+    public static boolean createTerrainGrid(int cols, int rows, String[] tileNames, Scene scene, CityTerrain editor) {
+        int tileNameIncrement = 0;
+        boolean result = false;
+
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                if (x > 0) {
+                    ImGui.sameLine();
+                }
+                ImGui.pushID(y * 4 + x);
+                if (ImGui.imageButton(scene.getTextureCache().getTexture(tileNames[tileNameIncrement]).getTextureId(),
+                        75.0f, 75.0f)) {
+                    editor.setSelectedTerrain(scene.getTextureCache().getTexture(tileNames[tileNameIncrement]));
                     result = true;
                 }
                 ImGui.popID();
