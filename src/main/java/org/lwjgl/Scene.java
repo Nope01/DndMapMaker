@@ -18,6 +18,7 @@ import java.util.List;
 public class Scene extends SceneObject {
     private Camera camera;
     private List<SceneObject> rootObjects;
+    private List<SceneObject> allObjects;
     private Grid grid;
     private int screenWidth;
     private int screenHeight;
@@ -30,7 +31,9 @@ public class Scene extends SceneObject {
     private MapSaveLoad mapSaveLoad;
 
     public Scene(int width, int height, InputHandler inputHandler, ShaderProgramCache shaderCache, long window) {
+        //CopyOnWriteArrayList
         rootObjects = new ArrayList<>();
+        allObjects = new ArrayList<>();
         this.screenWidth = width;
         this.screenHeight = height;
         this.window = window;
@@ -79,19 +82,39 @@ public class Scene extends SceneObject {
     }
 
     public void addObject(SceneObject object) {
-        if (object.parent == null) {
-            rootObjects.add(object);
-        }
+        rootObjects.add(object);
+        allObjects.add(object);
     }
 
-    public void removeObject(SceneObject object) {
-        //todo: make this actually work with recursion
-        if (object.parent != null) {
-
+    public void removeObject(SceneObject removeObject) {
+        for (SceneObject rootObject : rootObjects) {
+            if (rootObject == removeObject) {
+                rootObjects.remove(removeObject);
+            }
+            else {
+                removeObjectChild(rootObject, removeObject);
+            }
         }
-        if (object.children != null) {
-            rootObjects.remove(object);
-            cleanupChildren(object);
+
+
+//        for (SceneObject root : rootObjects) {
+//            if (root instanceof ContinentHexagon) {
+//                root.cleanup();
+//            }
+//            // Recursively clean up children if needed
+//            cleanupChildren(root);
+//        }
+    }
+
+    private void removeObjectChild(SceneObject object, SceneObject removeObject) {
+        for (SceneObject childObject : object.children) {
+            if (childObject == removeObject) {
+                System.out.println("Removing " + childObject.getId());
+                object.children.remove(childObject);
+            }
+            else {
+                removeObjectChild(childObject, removeObject);
+            }
         }
     }
 
@@ -141,7 +164,7 @@ public class Scene extends SceneObject {
     public void cleanup() {
         for (SceneObject root : rootObjects) {
             if (root instanceof ContinentHexagon) {
-                ((ContinentHexagon) root).cleanup();
+                root.cleanup();
             }
             // Recursively clean up children if needed
             cleanupChildren(root);

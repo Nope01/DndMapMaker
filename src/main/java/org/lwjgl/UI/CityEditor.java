@@ -184,10 +184,6 @@ public class CityEditor extends ImGuiWindow {
             ImGui.sliderInt("AC", AC, 0, 25);
             ImGui.inputInt("Health", HP);
 
-            if (ImGui.button("Close")) {
-                ImGui.closeCurrentPopup();
-            }
-            ImGui.sameLine();
             if (ImGui.button("Surprise me:)")) {
                 classType = new ImInt(Utils.randomInt(0, classList.length-1));
                 raceType = new ImInt(Utils.randomInt(0, raceList.length-1));
@@ -197,7 +193,7 @@ public class CityEditor extends ImGuiWindow {
             if (ImGui.button("Add player")) {
                 Player player = createCreatureRandomPos(name.toString(), classType.intValue(), raceType.intValue(), moveSpeed[0], AC[0], HP.intValue());
                 player.setTexture(scene.getTextureCache().getTexture("sandvich"));
-                player.setId("New player");
+                player.setId(name.toString());
                 player.setShaderProgram(scene.getShaderCache().getShader("creature"));
                 player.setParent(gridClass.getHexagonAt(player.getOffsetPos()));
                 player.setPosition(0.0f, 0.2f, 0.0f);
@@ -219,6 +215,11 @@ public class CityEditor extends ImGuiWindow {
             ImGui.sameLine();
             if (ImGui.button("Add NPC")) {
             }
+
+            if (ImGui.button("Close")) {
+                ImGui.closeCurrentPopup();
+            }
+
             ImGui.endPopup();
         }
     }

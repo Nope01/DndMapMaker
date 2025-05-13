@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class SceneObject implements Serializable {
     protected String id;
@@ -51,7 +52,7 @@ public abstract class SceneObject implements Serializable {
         scale = new Vector3f(1, 1, 1);
         localMatrix = new Matrix4f();
         worldMatrix = new Matrix4f();
-        children = new ArrayList<>();
+        children = new CopyOnWriteArrayList<>();
         verticesFloats = new float[16];
         colour = new Vector3f(0, 0, 0);
         hovered = false;
