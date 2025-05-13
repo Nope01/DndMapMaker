@@ -143,6 +143,10 @@ public class Grid extends SceneObject {
         return grid[row][col];
     }
 
+    public Hexagon getHexagonAt(Vector2i offsetPos) {
+        return grid[offsetPos.x][offsetPos.y];
+    }
+
     public void clearHoveredHexagons() {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
