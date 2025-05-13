@@ -8,9 +8,10 @@ import org.lwjgl.data.MapSaveLoad;
 
 public class MenuBar extends ImGuiWindow {
 
-    private ImGuiManager imGuiManager;
-    private Scene scene;
-    private InputHandler inputHandler;
+    public boolean continentOpen = false;
+    public boolean cityOpen = false;
+    public boolean combatOpen = false;
+
 
     public MenuBar(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "Menu Bar");
@@ -48,6 +49,28 @@ public class MenuBar extends ImGuiWindow {
             }
             if (ImGui.menuItem("Test")) {
                 MapSaveLoad.fileOverridePopup();
+            }
+            ImGui.endMenu();
+        }
+
+        if (ImGui.beginMenu("Window")) {
+            if (ImGui.menuItem("Continent editor", continentOpen)) {
+                if (!continentOpen) {
+                    scene.removeAllObjects();
+                    imGuiManager.initContinentMap(imGuiManager, scene, inputHandler);
+                }
+            }
+            if (ImGui.menuItem("City editor", cityOpen)) {
+                if (!cityOpen) {
+                    scene.removeAllObjects();
+                    imGuiManager.initCityMap(imGuiManager, scene, inputHandler);
+                }
+
+            }
+            if (ImGui.menuItem("Combat editor", combatOpen)) {
+                if (!combatOpen) {
+
+                }
             }
             ImGui.endMenu();
         }

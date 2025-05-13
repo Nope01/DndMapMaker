@@ -38,13 +38,13 @@ public class MainMenu extends ImGuiWindow {
         GuiUtils.textCentered("DND map maker");
         GuiUtils.setNextCenterOfWindow("Continent map");
         if (ImGui.button("Continent map")) {
-            imGuiManager.queueCleanup = true;
             imGuiManager.initContinentMap(imGuiManager, scene, inputHandler);
+            imGuiManager.removeWindow(this);
         }
         GuiUtils.setNextCenterOfWindow("City map");
         if (ImGui.button("City map")) {
-            imGuiManager.queueCleanup = true;
             imGuiManager.initCityMap(imGuiManager, scene, inputHandler);
+            imGuiManager.removeWindow(this);
         }
 
         ImGui.end();

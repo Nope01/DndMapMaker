@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static imgui.ImGui.getDrawData;
 import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
@@ -21,7 +22,6 @@ public class ImGuiManager {
     private static ImGuiImplGlfw imGuiGlfw;
     private static ImGuiImplGl3 imGuiGl3;
     private boolean firstFrame = true;
-    public boolean queueCleanup = false;
     private int screenWidth;
     private int screenHeight;
 
@@ -29,7 +29,7 @@ public class ImGuiManager {
 
     public ImGuiManager(long window, int width, int height) {
         this.window = window;
-        this.windows = new ArrayList<>();
+        this.windows = new CopyOnWriteArrayList<>();
         this.screenWidth = width;
         this.screenHeight = height;
         imGuiGlfw = new ImGuiImplGlfw();
@@ -100,10 +100,11 @@ public class ImGuiManager {
 
     public void initContinentMap(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         scene.initContinentScene();
-        //Clear the windows before adding new ones because arrays are annoying
-        windows = new ArrayList<>();
+
+        windows = new CopyOnWriteArrayList<>();
 
         MenuBar menuBar = new MenuBar(imGuiManager, scene, inputHandler);
+        menuBar.continentOpen = true;
         //TestWindow testWindow = new TestWindow(imGuiManager, scene, inputHandler);
         ContinentEditor continentEditor = new ContinentEditor(imGuiManager, scene, inputHandler);
 
@@ -115,9 +116,11 @@ public class ImGuiManager {
 
     public void initCityMap(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         scene.initCityScene();
-        windows = new ArrayList<>();
+
+        windows = new CopyOnWriteArrayList<>();
 
         MenuBar menuBar = new MenuBar(imGuiManager, scene, inputHandler);
+        menuBar.cityOpen = true;
         CityEditor cityEditor = new CityEditor(imGuiManager, scene, inputHandler);
 
         imGuiManager.addWindow(menuBar);
