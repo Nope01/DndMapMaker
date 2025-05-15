@@ -2,7 +2,7 @@ package org.lwjgl.objects.entities;
 
 import org.joml.Vector2i;
 import org.lwjgl.Scene;
-import org.lwjgl.Utils;
+import org.lwjgl.utils.HelperMethods;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.objects.Hexagon;
 
@@ -53,7 +53,7 @@ public class Player extends Creature {
     }
 
     public static Player createCreatureRandomPos(String name, int classType, int raceType, int moveSpeed, int AC, int HP) {
-        Vector2i offsetPos = new Vector2i(Utils.randomInt(10, 30), Utils.randomInt(20, 60));
+        Vector2i offsetPos = new Vector2i(HelperMethods.randomInt(10, 30), HelperMethods.randomInt(20, 60));
         return new Player(name, classType, raceType, moveSpeed, AC, HP, offsetPos);
     }
 }

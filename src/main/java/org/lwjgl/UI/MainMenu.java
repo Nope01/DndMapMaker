@@ -5,7 +5,7 @@ import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector2f;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
-import org.lwjgl.Utils;
+import org.lwjgl.utils.HelperMethods;
 
 public class MainMenu extends ImGuiWindow {
 
@@ -18,7 +18,7 @@ public class MainMenu extends ImGuiWindow {
 
     @Override
     protected void init(Scene scene) {
-        Vector2f center = Utils.getCenterOfScreen(scene.getScreenWidth(), scene.getScreenHeight(), uiWidth, uiHeight);
+        Vector2f center = HelperMethods.getCenterOfScreen(scene.getScreenWidth(), scene.getScreenHeight(), uiWidth, uiHeight);
         ImGui.setNextWindowPos(center.x, center.y);
         ImGui.setNextWindowSize(uiWidth, uiHeight);
         renderContent();

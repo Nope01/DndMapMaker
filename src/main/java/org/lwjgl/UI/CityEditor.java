@@ -6,7 +6,7 @@ import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
-import org.lwjgl.Utils;
+import org.lwjgl.utils.HelperMethods;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.objects.*;
@@ -27,7 +27,7 @@ public class CityEditor extends ImGuiWindow {
     private Hexagon[][] grid;
     private int viewRadius = 4;
 
-    ImString name = new ImString("Boris");
+    ImString name = new ImString(20);
     ImInt classType = new ImInt(FIGHTER);
     ImInt raceType = new ImInt(AASIMAR);
     int[] moveSpeed = new int[] {
@@ -162,7 +162,6 @@ public class CityEditor extends ImGuiWindow {
                 ImGuiWindowFlags.NoResize
                         | ImGuiWindowFlags.NoMove)) {
 
-            ImGui.text("Bingus");
             ImGui.inputText("Name", name);
             ImGui.sameLine();
             if (ImGui.button("Random##name")) {
@@ -171,12 +170,12 @@ public class CityEditor extends ImGuiWindow {
             ImGui.combo("Class", classType, classList);
             ImGui.sameLine();
             if (ImGui.button("Random##class")) {
-                classType = new ImInt(Utils.randomInt(0, classList.length-1));
+                classType = new ImInt(HelperMethods.randomInt(0, classList.length-1));
             }
             ImGui.combo("Race", raceType, raceList);
             ImGui.sameLine();
             if (ImGui.button("Random##race")) {
-                raceType = new ImInt(Utils.randomInt(0, raceList.length-1));
+                raceType = new ImInt(HelperMethods.randomInt(0, raceList.length-1));
             }
             ImGui.sliderInt("Move speed", moveSpeed, 0, 10, "");
             ImGui.sameLine();
@@ -185,8 +184,8 @@ public class CityEditor extends ImGuiWindow {
             ImGui.inputInt("Health", HP);
 
             if (ImGui.button("Surprise me:)")) {
-                classType = new ImInt(Utils.randomInt(0, classList.length-1));
-                raceType = new ImInt(Utils.randomInt(0, raceList.length-1));
+                classType = new ImInt(HelperMethods.randomInt(0, classList.length-1));
+                raceType = new ImInt(HelperMethods.randomInt(0, raceList.length-1));
                 name = new ImString(getRandomName());
             }
             ImGui.sameLine();

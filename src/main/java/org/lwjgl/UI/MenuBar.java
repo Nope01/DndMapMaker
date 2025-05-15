@@ -75,6 +75,15 @@ public class MenuBar extends ImGuiWindow {
             ImGui.endMenu();
         }
 
+        if (ImGui.beginMenu("Tools")) {
+            if (ImGui.menuItem("Initiative tracker")) {
+                InitiativeTracker initiativeTracker = new InitiativeTracker(imGuiManager, scene, inputHandler);
+                imGuiManager.addWindow(initiativeTracker);
+                initiativeTracker.init(scene);
+            }
+            ImGui.endMenu();
+        }
+
         ImGui.endMenuBar();
         ImGui.end();
     }

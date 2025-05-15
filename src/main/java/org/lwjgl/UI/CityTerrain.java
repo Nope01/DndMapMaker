@@ -33,6 +33,7 @@ public class CityTerrain extends ImGuiWindow {
         renderContent();
     }
 
+    //TODO: create obstacles and walls
     @Override
     protected void update() {
 

@@ -1,9 +1,9 @@
-package org.lwjgl;
+package org.lwjgl.utils;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class Utils {
+public class HelperMethods {
     public static Vector3f RGBToVec3(int r, int g, int b) {
         return new Vector3f((float) r /255, (float) g /255, (float) b /255);
     }

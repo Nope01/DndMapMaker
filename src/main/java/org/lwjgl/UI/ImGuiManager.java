@@ -127,10 +127,12 @@ public class ImGuiManager {
         menuBar.cityOpen = true;
         CityEditor cityEditor = new CityEditor(imGuiManager, scene, inputHandler);
         CityTerrain cityTerrain = new CityTerrain(imGuiManager, scene, inputHandler);
+        InitiativeTracker initiativeTracker = new InitiativeTracker(imGuiManager, scene, inputHandler);
 
         imGuiManager.addWindow(menuBar);
         imGuiManager.addWindow(cityEditor);
         imGuiManager.addWindow(cityTerrain);
+        imGuiManager.addWindow(initiativeTracker);
 
         firstFrame = true;
     }
