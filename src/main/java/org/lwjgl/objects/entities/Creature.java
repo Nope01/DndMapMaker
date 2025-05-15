@@ -2,6 +2,7 @@ package org.lwjgl.objects.entities;
 
 import org.joml.Vector2i;
 import org.joml.Vector3i;
+import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.objects.Hexagon;
 import org.lwjgl.objects.ObjectUtils;
 import org.lwjgl.objects.SceneObject;
@@ -120,6 +121,12 @@ public abstract class Creature extends SceneObject {
             Vector3i destinationCoords = ((Hexagon) destination).getCubeCoords();
 
             if (isValidMove(originCoords, destinationCoords)) {
+                if (destination instanceof CityHexagon) {
+                    if (((CityHexagon) destination).isHalfCover) {
+                        System.out.println("Blocked from moving because of half cover");
+                        return false;
+                    }
+                }
                 System.out.println("Moving Creature");
                 return true;
             }

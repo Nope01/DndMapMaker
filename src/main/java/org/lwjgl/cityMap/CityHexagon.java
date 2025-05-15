@@ -19,6 +19,11 @@ public class CityHexagon extends Hexagon implements Serializable {
     private int movementModifier;
     private int visibilityModifier;
     public boolean highlighted;
+
+    //TODO: destructible walls and cover, with HP?
+    public boolean isHalfCover;
+    public boolean isFullCover;
+    public boolean isWall;
     public CityHexagon(Vector2i offsetPos) {
         super(offsetPos);
     }

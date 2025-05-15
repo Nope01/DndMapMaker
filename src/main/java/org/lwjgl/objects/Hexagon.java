@@ -213,6 +213,14 @@ public abstract class Hexagon extends SceneObject {
         return cubeAddDirection(hex, cubeDirection(direction));
     }
 
+    public Vector3i[] getAllNeighbours() {
+        Vector3i hex = this.cubeCoords;
+        Vector3i[] neighbours = new Vector3i[6];
+        for (int i = 0; i < 6; i++) {
+            neighbours[i] = getCubeNeighbour(hex, i);
+        }
+        return neighbours;
+    }
 
     public Vector3i getCubeNeighbour(int direction) {
         return cubeAddDirection(cubeCoords, cubeDirection(direction));

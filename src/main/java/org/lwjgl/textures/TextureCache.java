@@ -24,11 +24,13 @@ public class TextureCache {
     private static final String[] iconTextures = new String[]{
             "anchor",
             "anvil",
+            "barrel",
             "caravel",
             "castle",
             "coffer",
             "old-key",
             "soda",
+            "table",
             "tavern",
     };
 

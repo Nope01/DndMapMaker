@@ -146,7 +146,7 @@ public class Main {
             });
 
             if (imGuiManager != null) {
-                imGuiManager.update(deltaTime, scene);
+                imGuiManager.update(deltaTime, scene, inputHandler);
             }
 
             glfwSwapBuffers(window);

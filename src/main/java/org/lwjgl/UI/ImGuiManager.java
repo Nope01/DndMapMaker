@@ -60,7 +60,7 @@ public class ImGuiManager {
 
     }
 
-    public void update(float deltaTime, Scene scene) {
+    public void update(float deltaTime, Scene scene, InputHandler inputHandler) {
         // Start new ImGui frame
         imGuiGlfw.newFrame();
         imGuiGl3.newFrame();

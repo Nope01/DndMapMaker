@@ -17,7 +17,7 @@ public class InputHandler {
     private Vector3f ndcPos;
     private Vector3f worldPos;
 
-    private boolean leftMouseJustPressed = false;
+    public boolean leftMouseJustPressed = false;
 
     public InputHandler(long window, int width, int height) {
         this.window = window;
@@ -72,7 +72,7 @@ public class InputHandler {
         return glfwGetKey(window, key) == GLFW_PRESS;
     }
 
-    //todo: need to fix clicking through ui
+    //todo: only works for first window it activates on
     public boolean isLeftClicked() {
         if (leftMouseJustPressed && !ImGui.getIO().getWantCaptureMouse()) {
             leftMouseJustPressed = false; // Consume the click
