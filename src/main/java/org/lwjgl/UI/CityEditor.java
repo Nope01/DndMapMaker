@@ -6,7 +6,10 @@ import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
+import org.joml.Vector3i;
+import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.objects.entities.Creature;
+import org.lwjgl.textures.Texture;
 import org.lwjgl.utils.HelperMethods;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
@@ -24,30 +27,35 @@ import static org.lwjgl.objects.entities.Player.createCreatureRandomPos;
 import static org.lwjgl.objects.entities.Races.*;
 
 public class CityEditor extends ImGuiWindow {
+    private String[] tileNames = new String[]{
+            "table",
+            "barrel",
+            "jungle_01",
+            "sand_07",
+    };
 
     private SceneObject hoveredObject;
     private SceneObject selectedObject;
     private Grid gridClass;
     private Hexagon[][] grid;
-    private int viewRadius = 4;
 
+
+    //Character creator variables
     ImString name = new ImString(20);
     ImInt classType = new ImInt(FIGHTER);
     ImInt raceType = new ImInt(AASIMAR);
-    int[] moveSpeed = new int[] {
-            4
-    };
+    int[] moveSpeed = new int[] {4};
     ImInt HP = new ImInt(15);
-    int[] AC = new int[] {
-            12
-    };
+    int[] AC = new int[] {12};
 
     private List<Creature> characterList = new ArrayList<>();
+    private Vector3i[] neighbours = new Vector3i[6];
+    private Texture selectedTerrain;
 
     public CityEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "City Editor");
         uiWidth = 400;
-        uiHeight = 250;
+        uiHeight = 600;
         uiXPos = 0;
         uiYPos = 20;
 
@@ -66,18 +74,14 @@ public class CityEditor extends ImGuiWindow {
     @Override
     protected void update() {
         hoveredObject = scene.getHoveredObject();
-        grid = scene.getGrid().getGrid();
         gridClass = scene.getGrid();
-        boolean clickInput = inputHandler.isLeftClicked();
+        grid = gridClass.getGrid();
 
-        if (hoveredObject != null) {
-            if (hoveredObject instanceof Trap) {
-                hoveredObject = hoveredObject.parent;
-            }
-        }
+        boolean clickInput = inputHandler.isLeftClicked();
 
         //Movement logic
         if (clickInput && selectedObject instanceof Player) {
+            selectedTerrain = null;
             if (((Player) selectedObject).canMoveCreature(selectedObject, hoveredObject)) {
                 selectedObject.setParent(hoveredObject);
                 selectedObject.setOffsetPos(((Hexagon) selectedObject.parent).getOffsetCoords());
@@ -98,26 +102,46 @@ public class CityEditor extends ImGuiWindow {
             if (selectedObject instanceof Player) {
                 showMovementRange(gridClass, (Hexagon) selectedObject.parent, ((Player) selectedObject).getMoveSpeed());
             }
+            //Neighbours
+            //TODO: get grid and match coords to hex object to see if they have an obstacle on it
+            if (selectedObject.parent instanceof CityHexagon) {
+                CityHexagon hexUnderPlayer = (CityHexagon) selectedObject.parent;
+                neighbours = hexUnderPlayer.getAllNeighbours();
+            }
         }
 
+        //Icons
+        if (clickInput && selectedObject instanceof CityHexagon) {
+            if (selectedTerrain != null) {
+                ((CityHexagon) selectedObject).setIconTexture(selectedTerrain);
+                ((CityHexagon) selectedObject).isHalfCover = true;
+            }
+        }
+
+        //Deselect
         if (selectedObject != null && inputHandler.isRightClicked()) {
             selectedObject.selected = false;
             selectedObject = null;
             areaSelectClear(gridClass);
+            selectedTerrain = null;
+        }
+
+        //Icon eraser
+        if (hoveredObject instanceof CityHexagon && inputHandler.isRightClicked()) {
+            ((CityHexagon) hoveredObject).setIconTexture(scene.getTextureCache().getTexture("empty"));
+            ((CityHexagon) hoveredObject).isHalfCover = false;
+        }
+
+        if (hoveredObject != null) {
+            if (hoveredObject instanceof Trap) {
+                hoveredObject = hoveredObject.parent;
+            }
         }
     }
 
     @Override
     protected void renderContent() {
         ImGui.begin("City Editor", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
-
-        if (ImGui.button("Show/hide traps")) {
-            for (SceneObject obj : scene.getAllObjects()) {
-                if (obj instanceof TileTrigger) {
-                    ((TileTrigger) obj).swapIsHidden();
-                }
-            }
-        }
 
         if (ImGui.button("New character")) {
             ImGui.openPopup("Create a character");
@@ -126,6 +150,15 @@ public class CityEditor extends ImGuiWindow {
         ImGui.setNextWindowPos(center, ImGuiCond.Appearing, new ImVec2(0.5f, 0.5f));
         openCharacterCreator();
 
+        //Icon selection
+        ImGui.setNextItemOpen(true);
+        if (ImGui.treeNode("Grid", "Terrain")) {
+            if (GuiUtils.createTerrainGrid(4, 1, tileNames, scene, this)) {
+            }
+        }
+
+
+        //Delete players
         if (selectedObject != null) {
             ImGui.text("Selected: " + selectedObject.getId());
             if (selectedObject instanceof Player) {
@@ -148,13 +181,15 @@ public class CityEditor extends ImGuiWindow {
                 }
             }
         }
-        if (hoveredObject != null) {
-            ImGui.text("Hovered: " + hoveredObject.getId());
-            if (hoveredObject instanceof Player) {
-                ImGui.text("Name: " + ((Player) hoveredObject).getName());
-                ImGui.text("Pos: " + hoveredObject.getOffsetPos().x + ", " + hoveredObject.getOffsetPos().y);
-                ImGui.text("Move speed: " + ((Player) hoveredObject).getMoveSpeed());
-                ImGui.text("HP: " + ((Player) hoveredObject).getHP());
+
+        ImGui.separator();
+        if (selectedObject instanceof CityHexagon) {
+            ImGui.text("Cover: " + ((CityHexagon) selectedObject).isHalfCover);
+        }
+
+        for (int i = 0; i < neighbours.length; i++) {
+            if (neighbours[i] != null) {
+                ImGui.text("Neighbour " + i + ": " + neighbours[i].x + ", " + neighbours[i].y + ", " + neighbours[i].z);
             }
         }
 
@@ -230,5 +265,9 @@ public class CityEditor extends ImGuiWindow {
 
     public List<Creature> getCharacterList() {
         return characterList;
+    }
+
+    public void setSelectedTerrain(Texture selectedTerrain) {
+        this.selectedTerrain = selectedTerrain;
     }
 }

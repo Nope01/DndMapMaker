@@ -63,7 +63,7 @@ public class GuiUtils {
         return result;
     }
 
-    public static boolean createTerrainGrid(int cols, int rows, String[] tileNames, Scene scene, CityTerrain editor) {
+    public static boolean createTerrainGrid(int cols, int rows, String[] tileNames, Scene scene, CityEditor editor) {
         int tileNameIncrement = 0;
         boolean result = false;
 
