@@ -8,6 +8,8 @@ import imgui.type.ImInt;
 import imgui.type.ImString;
 import org.lwjgl.Scene;
 import org.lwjgl.input.InputHandler;
+import org.lwjgl.objects.entities.Creature;
+import org.lwjgl.objects.entities.Player;
 import org.lwjgl.utils.Pair;
 
 import java.util.ArrayList;
@@ -17,8 +19,12 @@ import java.util.List;
 
 public class InitiativeTracker extends ImGuiWindow {
     private List<Pair<String, Integer>> initiativeList;
+    private List<Creature> characterList = new ArrayList<>();
+    private String[] nameList = new String[]{};
+    private ImInt characterInt = new ImInt(0);
     private ImInt initiative = new ImInt(0);
     private ImString character = new ImString(20);
+    List<String> tempList = new ArrayList<>();
 
     public InitiativeTracker(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "Initiative Tracker");
@@ -39,6 +45,14 @@ public class InitiativeTracker extends ImGuiWindow {
 
     @Override
     protected void update() {
+        CityEditor cityEditor = (CityEditor) imGuiManager.getWindow("City Editor");
+        characterList = cityEditor.getCharacterList();
+
+        tempList.clear();
+        for (Creature creature : characterList) {
+            tempList.add(creature.getName());
+        }
+        nameList = tempList.toArray(nameList);
     }
 
     @Override
@@ -46,7 +60,12 @@ public class InitiativeTracker extends ImGuiWindow {
         ImGui.begin("Initiative Tracker", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
 
         if (ImGui.button("Add character")) {
-            ImGui.openPopup("Add initiative");
+            if (characterList.isEmpty()) {
+                ImGui.openPopup("Empty list");
+            }
+            else {
+                ImGui.openPopup("Add initiative");
+            }
         }
 
         for (Pair<String, Integer> entry : initiativeList) {
@@ -57,6 +76,9 @@ public class InitiativeTracker extends ImGuiWindow {
         ImVec2 center = ImGui.getMainViewport().getCenter();
         ImGui.setNextWindowPos(center, ImGuiCond.Appearing, new ImVec2(0.5f, 0.5f));
         openInitiativeAdder();
+        openEmptyListPopup();
+
+
 
         ImGui.end();
     }
@@ -67,10 +89,12 @@ public class InitiativeTracker extends ImGuiWindow {
                 | ImGuiWindowFlags.NoMove)) {
 
             ImGui.inputInt("Initiative", initiative);
-            ImGui.inputText("Character", character);
+            ImGui.combo("Character", characterInt, nameList);
 
             if (ImGui.button("Add")) {
-                Pair<String, Integer> initiativeEntry = new Pair<>(character.toString(), initiative.intValue());
+                Pair<String, Integer> initiativeEntry =
+                        new Pair<>(characterList.get(characterInt.intValue()).getName(), initiative.intValue());
+
                 initiativeList.add(initiativeEntry);
                 //Funky way of sorting the pair
                 initiativeList.sort(Comparator.comparing(p -> -p.getRight()));
@@ -81,5 +105,22 @@ public class InitiativeTracker extends ImGuiWindow {
             ImGui.endPopup();
         }
 
+    }
+
+    private void openEmptyListPopup() {
+        ImGui.setNextWindowSize(new ImVec2(200, 100));
+        if (ImGui.beginPopupModal("Empty list", ImGuiWindowFlags.NoResize
+                | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoTitleBar)) {
+            ImGui.newLine();
+            ImGui.sameLine(30);
+            ImGui.text("No characters present");
+            ImGui.newLine();
+            ImGui.newLine();
+            ImGui.sameLine(90);
+            if (ImGui.button("OK")) {
+                ImGui.closeCurrentPopup();
+            }
+            ImGui.endPopup();
+        }
     }
 }

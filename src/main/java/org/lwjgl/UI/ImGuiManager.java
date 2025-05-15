@@ -150,6 +150,15 @@ public class ImGuiManager {
         windows.remove(window);
     }
 
+    public ImGuiWindow getWindow(String title) {
+        for (ImGuiWindow window : windows) {
+            if (window.title == title) {
+                return window;
+            }
+        }
+        return null;
+    }
+
 
     public ImGuiIO getIO() {
         return io;

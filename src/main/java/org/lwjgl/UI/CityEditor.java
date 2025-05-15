@@ -6,11 +6,15 @@ import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
+import org.lwjgl.objects.entities.Creature;
 import org.lwjgl.utils.HelperMethods;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.objects.*;
 import org.lwjgl.objects.entities.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.lwjgl.data.ApiCalls.getRandomName;
 import static org.lwjgl.objects.Hexagon.areaSelectClear;
@@ -37,6 +41,8 @@ public class CityEditor extends ImGuiWindow {
     int[] AC = new int[] {
             0
     };
+
+    private List<Creature> characterList = new ArrayList<>();
 
     public CityEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "City Editor");
@@ -99,9 +105,6 @@ public class CityEditor extends ImGuiWindow {
             selectedObject = null;
             areaSelectClear(gridClass);
         }
-
-
-
     }
 
     @Override
@@ -196,6 +199,7 @@ public class CityEditor extends ImGuiWindow {
                 player.setShaderProgram(scene.getShaderCache().getShader("creature"));
                 player.setParent(gridClass.getHexagonAt(player.getOffsetPos()));
                 player.setPosition(0.0f, 0.2f, 0.0f);
+                characterList.add(player);
 
                 ImGui.openPopup("Success");
             }
@@ -221,5 +225,9 @@ public class CityEditor extends ImGuiWindow {
 
             ImGui.endPopup();
         }
+    }
+
+    public List<Creature> getCharacterList() {
+        return characterList;
     }
 }
