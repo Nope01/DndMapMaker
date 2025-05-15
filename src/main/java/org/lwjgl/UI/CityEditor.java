@@ -49,7 +49,7 @@ public class CityEditor extends ImGuiWindow {
     int[] AC = new int[] {12};
 
     private List<Creature> characterList = new ArrayList<>();
-    private Vector3i[] neighbours = new Vector3i[6];
+    private CityHexagon[] neighbours = new CityHexagon[6];
     private Texture selectedTerrain;
 
     public CityEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
@@ -87,6 +87,13 @@ public class CityEditor extends ImGuiWindow {
                 selectedObject.setOffsetPos(((Hexagon) selectedObject.parent).getOffsetCoords());
                 selectedObject.initAabb();
             }
+            //Neighbours
+            if (selectedObject.parent instanceof CityHexagon hexUnderPlayer) {
+                Vector3i[] neighbourCoords = hexUnderPlayer.getAllNeighbours();
+                for (int i = 0; i < neighbours.length; i++) {
+                    neighbours[i] = (CityHexagon) gridClass.getHexagonAt(neighbourCoords[i]);
+                }
+            }
         }
 
         //Selection logic
@@ -101,12 +108,6 @@ public class CityEditor extends ImGuiWindow {
             //Highlight moveable tiles
             if (selectedObject instanceof Player) {
                 showMovementRange(gridClass, (Hexagon) selectedObject.parent, ((Player) selectedObject).getMoveSpeed());
-            }
-            //Neighbours
-            //TODO: get grid and match coords to hex object to see if they have an obstacle on it
-            if (selectedObject.parent instanceof CityHexagon) {
-                CityHexagon hexUnderPlayer = (CityHexagon) selectedObject.parent;
-                neighbours = hexUnderPlayer.getAllNeighbours();
             }
         }
 
@@ -132,6 +133,7 @@ public class CityEditor extends ImGuiWindow {
             ((CityHexagon) hoveredObject).isHalfCover = false;
         }
 
+        //Trap hover
         if (hoveredObject != null) {
             if (hoveredObject instanceof Trap) {
                 hoveredObject = hoveredObject.parent;
@@ -189,9 +191,13 @@ public class CityEditor extends ImGuiWindow {
 
         for (int i = 0; i < neighbours.length; i++) {
             if (neighbours[i] != null) {
-                ImGui.text("Neighbour " + i + ": " + neighbours[i].x + ", " + neighbours[i].y + ", " + neighbours[i].z);
+                if (neighbours[i].isHalfCover) {
+                    ImGui.text("Covered " + Hexagon.intToDirection(i));
+                }
             }
         }
+
+
 
         ImGui.end();
     }

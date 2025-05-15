@@ -2,6 +2,7 @@ package org.lwjgl.objects;
 
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.joml.Vector3i;
 import org.lwjgl.Scene;
 import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.continentMap.ContinentHexagon;
@@ -145,6 +146,17 @@ public class Grid extends SceneObject {
 
     public Hexagon getHexagonAt(Vector2i offsetPos) {
         return grid[offsetPos.x][offsetPos.y];
+    }
+
+    public Hexagon getHexagonAt(Vector3i cubeCoords) {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
+                if (grid[row][col].getCubeCoords().equals(cubeCoords)) {
+                    return grid[row][col];
+                }
+            }
+        }
+        return null;
     }
 
     public void clearHoveredHexagons() {

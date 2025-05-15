@@ -169,6 +169,25 @@ public abstract class Hexagon extends SceneObject {
         return verticesFloats;
     }
 
+    public static String intToDirection(int direction) {
+        switch (direction) {
+            case N:
+                return "N";
+            case NE:
+                return "NE";
+            case SE:
+                return "SE";
+            case S:
+                return "S";
+            case SW:
+                return "SW";
+            case NW:
+                return "NW";
+            default:
+                return "What";
+        }
+    }
+
     //Below methods convert between coordinate types, namely cube and offset coords
     //Axial coords is the same as cube coords, but hides the S coord
     //Might as well keep all the data?

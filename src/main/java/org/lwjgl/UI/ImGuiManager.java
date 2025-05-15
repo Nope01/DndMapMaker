@@ -86,8 +86,6 @@ public class ImGuiManager {
         // End frame and render
         ImGui.render();
         imGuiGl3.renderDrawData(getDrawData());
-
-
     }
 
     public void resize(int width, int height) {
