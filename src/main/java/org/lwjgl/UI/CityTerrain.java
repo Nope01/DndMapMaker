@@ -51,6 +51,7 @@ public class CityTerrain extends ImGuiWindow {
             }
 
             //Neighbours
+            //TODO: get grid and match coords to hex object to see if they have an obstacle on it
             if (selectedObject instanceof Player) {
                 if (selectedObject.parent instanceof CityHexagon) {
                     CityHexagon hexUnderPlayer = (CityHexagon) selectedObject.parent;
