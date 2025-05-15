@@ -23,7 +23,6 @@ public class InitiativeTracker extends ImGuiWindow {
     private String[] nameList = new String[]{};
     private ImInt characterInt = new ImInt(0);
     private ImInt initiative = new ImInt(0);
-    private ImString character = new ImString(20);
     List<String> tempList = new ArrayList<>();
 
     public InitiativeTracker(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
@@ -78,8 +77,6 @@ public class InitiativeTracker extends ImGuiWindow {
         openInitiativeAdder();
         openEmptyListPopup();
 
-
-
         ImGui.end();
     }
 
@@ -112,11 +109,9 @@ public class InitiativeTracker extends ImGuiWindow {
         if (ImGui.beginPopupModal("Empty list", ImGuiWindowFlags.NoResize
                 | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoTitleBar)) {
             ImGui.newLine();
-            ImGui.sameLine(30);
-            ImGui.text("No characters present");
+            GuiUtils.textCentered("No creatures added");
             ImGui.newLine();
-            ImGui.newLine();
-            ImGui.sameLine(90);
+            GuiUtils.setNextCenterOfWindow("OK");
             if (ImGui.button("OK")) {
                 ImGui.closeCurrentPopup();
             }
