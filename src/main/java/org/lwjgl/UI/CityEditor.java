@@ -35,11 +35,11 @@ public class CityEditor extends ImGuiWindow {
     ImInt classType = new ImInt(FIGHTER);
     ImInt raceType = new ImInt(AASIMAR);
     int[] moveSpeed = new int[] {
-            0
+            4
     };
     ImInt HP = new ImInt(15);
     int[] AC = new int[] {
-            0
+            12
     };
 
     private List<Creature> characterList = new ArrayList<>();
@@ -137,6 +137,7 @@ public class CityEditor extends ImGuiWindow {
                     ImGui.text("Delete creature?");
                     if (ImGui.button("Yes")) {
                         scene.removeObject(selectedObject);
+                        characterList.remove(selectedObject);
                         ImGui.closeCurrentPopup();
                     }
                     ImGui.sameLine();

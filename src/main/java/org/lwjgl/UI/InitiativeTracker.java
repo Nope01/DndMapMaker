@@ -18,12 +18,15 @@ import java.util.Comparator;
 import java.util.List;
 
 public class InitiativeTracker extends ImGuiWindow {
-    private List<Pair<String, Integer>> initiativeList;
+    private List<Pair<Creature, Integer>> initiativeList;
     private List<Creature> characterList = new ArrayList<>();
     private String[] nameList = new String[]{};
     private ImInt characterInt = new ImInt(0);
     private ImInt initiative = new ImInt(0);
     List<String> tempList = new ArrayList<>();
+    private int selectedIndex = -1;
+
+    private Creature currentTurn;
 
     public InitiativeTracker(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "Initiative Tracker");
@@ -33,6 +36,7 @@ public class InitiativeTracker extends ImGuiWindow {
         uiYPos = 20;
 
         initiativeList = new ArrayList<>();
+        currentTurn = null;
     }
 
     @Override
@@ -52,6 +56,11 @@ public class InitiativeTracker extends ImGuiWindow {
             tempList.add(creature.getName());
         }
         nameList = tempList.toArray(nameList);
+
+        if (selectedIndex > -1) {
+            currentTurn = initiativeList.get(selectedIndex).getLeft();
+            currentTurn.hovered = true;
+        }
     }
 
     @Override
@@ -67,11 +76,24 @@ public class InitiativeTracker extends ImGuiWindow {
             }
         }
 
-        for (Pair<String, Integer> entry : initiativeList) {
-            ImGui.text(entry.getLeft());
-            ImGui.sameLine();
-            ImGui.text(entry.getRight().toString());
+        ImGui.sameLine();
+        if (ImGui.button("Clear")) {
+            initiativeList.clear();
+            selectedIndex = -1;
+            currentTurn = null;
         }
+
+        //Displays names in order of initiative
+        for (int i = 0; i < initiativeList.size(); i++) {
+            Pair<Creature, Integer> entry = initiativeList.get(i);
+            String label = entry.getLeft().getName() + " " + entry.getRight();
+            if (ImGui.selectable(label, selectedIndex == i)) {
+                selectedIndex = i;
+            }
+        }
+
+        ImGui.text("Current turn: " + (currentTurn == null ? "None" : currentTurn.getName()));
+
         ImVec2 center = ImGui.getMainViewport().getCenter();
         ImGui.setNextWindowPos(center, ImGuiCond.Appearing, new ImVec2(0.5f, 0.5f));
         openInitiativeAdder();
@@ -89,8 +111,8 @@ public class InitiativeTracker extends ImGuiWindow {
             ImGui.combo("Character", characterInt, nameList);
 
             if (ImGui.button("Add")) {
-                Pair<String, Integer> initiativeEntry =
-                        new Pair<>(characterList.get(characterInt.intValue()).getName(), initiative.intValue());
+                Pair<Creature, Integer> initiativeEntry =
+                        new Pair<>(characterList.get(characterInt.intValue()), initiative.intValue());
 
                 initiativeList.add(initiativeEntry);
                 //Funky way of sorting the pair
