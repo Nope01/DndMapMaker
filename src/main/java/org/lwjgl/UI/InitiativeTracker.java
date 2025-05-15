@@ -111,8 +111,7 @@ public class InitiativeTracker extends ImGuiWindow {
             ImGui.newLine();
             GuiUtils.textCentered("No creatures added");
             ImGui.newLine();
-            GuiUtils.setNextCenterOfWindow("OK");
-            if (ImGui.button("OK")) {
+            if (GuiUtils.buttonCentered("OK")) {
                 ImGui.closeCurrentPopup();
             }
             ImGui.endPopup();

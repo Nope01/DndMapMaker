@@ -99,4 +99,14 @@ public class GuiUtils {
         setNextCenterOfWindow(text);
         ImGui.text(text);
     }
+
+    public static boolean buttonCentered(String text) {
+        setNextCenterOfWindow(text);
+        if (ImGui.button(text)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }
