@@ -54,10 +54,10 @@ public class ImGuiManager {
         glfwGetFramebufferSize(window, width, height);
         io.setDisplaySize(width[0], height[0]);
 
-        //Font size
-//        io.setFontGlobalScale(2.0f);
-//        ImGui.getStyle().scaleAllSizes(2.0f);
 
+        ImFontAtlas atlas = io.getFonts();
+        atlas.clearFonts();
+        atlas.addFontDefault().setScale(0.5f);
     }
 
     public void update(float deltaTime, Scene scene, InputHandler inputHandler) {

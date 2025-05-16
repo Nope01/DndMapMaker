@@ -1,5 +1,8 @@
 package org.lwjgl;
 
+import imgui.ImFontAtlas;
+import imgui.ImGui;
+import imgui.ImGuiIO;
 import org.lwjgl.UI.ImGuiManager;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.input.InputHandler;
@@ -86,6 +89,7 @@ public class Main {
         scene = new Scene(width, height, inputHandler, shaderCache, window);
 
         //UI init
+
         try {
             imGuiManager = new ImGuiManager(window, width, height);
             imGuiManager.initMainMenu(imGuiManager, scene, inputHandler);
