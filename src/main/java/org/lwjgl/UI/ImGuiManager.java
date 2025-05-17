@@ -7,6 +7,11 @@ import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.opengl.GL;
 
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -23,8 +28,10 @@ public class ImGuiManager {
     private boolean firstFrame = true;
     private int screenWidth;
     private int screenHeight;
+    private float fontSize = 32.0f;
 
 
+    //TODO: add ui scaling based on screen size
 
     public ImGuiManager(long window, int width, int height) {
         this.window = window;
@@ -55,9 +62,28 @@ public class ImGuiManager {
         io.setDisplaySize(width[0], height[0]);
 
 
-        ImFontAtlas atlas = io.getFonts();
-        atlas.clearFonts();
-        atlas.addFontDefault().setScale(0.5f);
+        io.getFonts().clear();
+
+        try {
+            InputStream fontStream = getClass().getResourceAsStream("/fonts/Roboto-Regular.ttf");
+            if (fontStream != null) {
+                Path tempFont = Files.createTempFile("imgui-font", ".ttf");
+                Files.copy(fontStream, tempFont, StandardCopyOption.REPLACE_EXISTING);
+
+                io.getFonts().addFontFromFileTTF(tempFont.toString(), fontSize);
+                tempFont.toFile().deleteOnExit();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Fallback to default font if anything fails
+            ImFontConfig fontConfig = new ImFontConfig();
+            fontConfig.setSizePixels(fontSize);
+            io.getFonts().addFontDefault(fontConfig);
+            io.getFonts().build();
+        }
+
+        io.getFonts().build();
     }
 
     public void update(float deltaTime, Scene scene, InputHandler inputHandler) {
