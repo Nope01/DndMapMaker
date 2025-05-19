@@ -7,13 +7,12 @@ import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.opengl.GL;
 
-import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static imgui.ImGui.getDrawData;
@@ -28,7 +27,11 @@ public class ImGuiManager {
     private boolean firstFrame = true;
     private int screenWidth;
     private int screenHeight;
-    private float fontSize = 32.0f;
+    private float fontSize = 16.0f;
+
+    private float scale = 1.0f;
+
+    public boolean scaleFont = false;
 
 
     //TODO: add ui scaling based on screen size
@@ -61,32 +64,15 @@ public class ImGuiManager {
         glfwGetFramebufferSize(window, width, height);
         io.setDisplaySize(width[0], height[0]);
 
-
-        io.getFonts().clear();
-
-        try {
-            InputStream fontStream = getClass().getResourceAsStream("/fonts/Roboto-Regular.ttf");
-            if (fontStream != null) {
-                Path tempFont = Files.createTempFile("imgui-font", ".ttf");
-                Files.copy(fontStream, tempFont, StandardCopyOption.REPLACE_EXISTING);
-
-                io.getFonts().addFontFromFileTTF(tempFont.toString(), fontSize);
-                tempFont.toFile().deleteOnExit();
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Fallback to default font if anything fails
-            ImFontConfig fontConfig = new ImFontConfig();
-            fontConfig.setSizePixels(fontSize);
-            io.getFonts().addFontDefault(fontConfig);
-            io.getFonts().build();
-        }
-
-        io.getFonts().build();
+        resizeFont();
     }
 
     public void update(float deltaTime, Scene scene, InputHandler inputHandler) {
+        //TODO: remove this to stop text scaling breaking
+        if (scaleFont) {
+            resizeFont();
+            scaleFont = false;
+        }
         // Start new ImGui frame
         imGuiGlfw.newFrame();
         imGuiGl3.newFrame();
@@ -97,16 +83,15 @@ public class ImGuiManager {
             window.update();
         }
 
-        if (firstFrame) {
-            for (ImGuiWindow window : windows) {
-                window.init(scene);
-            }
-            firstFrame = false;
-        }
-        else {
-            for (ImGuiWindow window : windows) {
-                window.render();
-            }
+//        if (firstFrame) {
+//            for (ImGuiWindow window : windows) {
+//                window.init(scene);
+//            }
+//            firstFrame = false;
+//        }
+
+        for (ImGuiWindow window : windows) {
+            window.render();
         }
 
         // End frame and render
@@ -117,6 +102,17 @@ public class ImGuiManager {
     public void resize(int width, int height) {
         if (width > 0 && height > 0) {
             io.setDisplaySize(width, height);
+        }
+    }
+
+    public void rescaleAllWindows() {
+        for (ImGuiWindow window : windows) {
+            if (!Objects.equals(window.title, "Menu Bar")) {
+                window.uiWidth *= scale;
+                window.uiHeight *= scale;
+                window.rescaleWindow();
+                window.resizeWindow();
+            }
         }
     }
 
@@ -133,11 +129,9 @@ public class ImGuiManager {
 
         MenuBar menuBar = new MenuBar(imGuiManager, scene, inputHandler);
         menuBar.continentOpen = true;
-        //TestWindow testWindow = new TestWindow(imGuiManager, scene, inputHandler);
-        ContinentEditor continentEditor = new ContinentEditor(imGuiManager, scene, inputHandler);
-
         imGuiManager.addWindow(menuBar);
-        //imGuiManager.addWindow(testWindow);
+
+        ContinentEditor continentEditor = new ContinentEditor(imGuiManager, scene, inputHandler);
         imGuiManager.addWindow(continentEditor);
         firstFrame = true;
     }
@@ -148,12 +142,13 @@ public class ImGuiManager {
         windows = new CopyOnWriteArrayList<>();
 
         MenuBar menuBar = new MenuBar(imGuiManager, scene, inputHandler);
-        menuBar.cityOpen = true;
-        CityEditor cityEditor = new CityEditor(imGuiManager, scene, inputHandler);
-        InitiativeTracker initiativeTracker = new InitiativeTracker(imGuiManager, scene, inputHandler);
-
         imGuiManager.addWindow(menuBar);
+        menuBar.cityOpen = true;
+
+        CityEditor cityEditor = new CityEditor(imGuiManager, scene, inputHandler);
         imGuiManager.addWindow(cityEditor);
+
+        InitiativeTracker initiativeTracker = new InitiativeTracker(imGuiManager, scene, inputHandler);
         imGuiManager.addWindow(initiativeTracker);
 
         firstFrame = true;
@@ -174,15 +169,57 @@ public class ImGuiManager {
 
     public ImGuiWindow getWindow(String title) {
         for (ImGuiWindow window : windows) {
-            if (window.title == title) {
+            if (Objects.equals(window.title, title)) {
                 return window;
             }
         }
+        System.out.println("Failed to find window with title: " + title);
         return null;
     }
 
 
+    private void resizeFont() {
+        io.getFonts().clear();
+
+        try {
+            InputStream fontStream = getClass().getResourceAsStream("/fonts/Roboto-Regular.ttf");
+            if (fontStream != null) {
+                Path tempFont = Files.createTempFile("imgui-font", ".ttf");
+                Files.copy(fontStream, tempFont, StandardCopyOption.REPLACE_EXISTING);
+
+                io.getFonts().addFontFromFileTTF(tempFont.toString(), fontSize);
+                tempFont.toFile().deleteOnExit();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Fallback to default font if anything fails
+            ImFontConfig fontConfig = new ImFontConfig();
+            fontConfig.setSizePixels(fontSize);
+            io.getFonts().addFontDefault(fontConfig);
+        }
+
+        io.getFonts().build();
+        imGuiGl3.destroyFontsTexture();
+        imGuiGl3.createFontsTexture();
+    }
+
     public ImGuiIO getIO() {
         return io;
+    }
+
+    public List<ImGuiWindow> getWindows() {
+        return windows;
+    }
+
+    public float getScale() {
+        return scale;
+    }
+    public void setScale(float scale) {
+        this.scale = scale;
+        this.fontSize *= scale;
+
+        rescaleAllWindows();
+        scaleFont = true;
     }
 }

@@ -46,7 +46,7 @@ public class HelperMethods {
         return result;
     }
 
-    public static Vector2f getCenterOfScreen(int screenWidth, int screenHeight, int uiWidth, int uiHeight) {
+    public static Vector2f getCenterOfScreen(float screenWidth, float screenHeight, float uiWidth, float uiHeight) {
         Vector2f result = new Vector2f();
         result.x = (screenWidth / 2) - (uiWidth/2);
         result.y = (screenHeight / 2) - (uiHeight/2);

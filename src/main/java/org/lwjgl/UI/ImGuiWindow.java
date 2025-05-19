@@ -1,5 +1,6 @@
 package org.lwjgl.UI;
 
+import imgui.ImGui;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 
@@ -9,10 +10,11 @@ public abstract class ImGuiWindow {
     protected Scene scene;
     protected InputHandler inputHandler;
 
-    protected int uiWidth;
-    protected int uiHeight;
-    protected int uiXPos;
-    protected int uiYPos;
+
+    protected float uiWidth;
+    protected float uiHeight;
+    protected float uiXPos;
+    protected float uiYPos;
 
     public ImGuiWindow(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler, String title) {
         this.title = title;
@@ -27,9 +29,37 @@ public abstract class ImGuiWindow {
         //end();
     }
 
+    public void rescaleWindow() {
+        ImGui.setNextWindowSize(uiWidth, uiHeight);
+        ImGui.begin(title);
+        ImGui.end();
+    }
+
+    public void resizeWindow() {
+        ImGui.setNextWindowPos(uiXPos, uiYPos);
+        ImGui.begin(title);
+        ImGui.end();
+    }
+
     protected abstract void init(Scene scene);
     protected abstract void update();
 
     protected abstract void renderContent();
+
+    public float getUiWidth() {
+        return uiWidth;
+    }
+
+    public float getUiHeight() {
+        return uiHeight;
+    }
+
+    public float getUiXPos() {
+        return uiXPos;
+    }
+
+    public float getUiYPos() {
+        return uiYPos;
+    }
 
 }

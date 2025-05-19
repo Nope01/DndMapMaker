@@ -4,6 +4,7 @@ import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
+import imgui.type.ImFloat;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import org.joml.Vector3i;
@@ -52,16 +53,24 @@ public class CityEditor extends ImGuiWindow {
     private CityHexagon[] neighbours = new CityHexagon[6];
     private Texture selectedTerrain;
 
+    private float[] uiScale;
+    private ImFloat uiScaleFloat;
+
     public CityEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "City Editor");
-        uiWidth = 400;
-        uiHeight = 600;
+        uiWidth = 400 * imGuiManager.getScale();
+        uiHeight = 600 * imGuiManager.getScale();
         uiXPos = 0;
-        uiYPos = 20;
+        uiYPos = imGuiManager.getWindow("Menu Bar").getUiHeight();
 
         hoveredObject = scene.getHoveredObject();
         grid = scene.getGrid().getGrid();
         gridClass = scene.getGrid();
+
+        uiScale = new float[]{imGuiManager.getScale()};
+        uiScaleFloat = new ImFloat(imGuiManager.getScale());
+
+        init(scene);
     }
 
     @Override
@@ -197,7 +206,15 @@ public class CityEditor extends ImGuiWindow {
             }
         }
 
+        if (ImGui.sliderFloat("Scale", uiScale,0.5f, 3.0f)) {
+            imGuiManager.setScale(uiScale[0]);
+        }
 
+        if (ImGui.inputFloat("Scale", uiScaleFloat)) {
+            imGuiManager.setScale(uiScaleFloat.get());
+        }
+
+        ImGui.text("Scale: " + imGuiManager.getScale());
 
         ImGui.end();
     }

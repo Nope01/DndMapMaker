@@ -49,10 +49,10 @@ public class ContinentEditor extends ImGuiWindow{
 
     public ContinentEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "Continent Editor");
-        uiWidth = 400;
-        uiHeight = 600;
+        uiWidth = 400 * imGuiManager.getScale();
+        uiHeight = 600 * imGuiManager.getScale();
         uiXPos = 0;
-        uiYPos = 20;
+        uiYPos = imGuiManager.getWindow("Menu Bar").getUiHeight();
 
         this.selectedTerrainTexture = scene.getTextureCache().getTexture("default_tile");
         this.selectedIconTexture = scene.getTextureCache().getTexture("empty");
@@ -60,6 +60,8 @@ public class ContinentEditor extends ImGuiWindow{
         Grid grid = (Grid) scene.getObject("grid");
         selectedObject = scene.getHoveredObject();
         selectedType = -1;
+
+        init(scene);
     }
 
     @Override
