@@ -27,19 +27,21 @@ void main() {
         FragColor = vec4(terrainTextureColour);
     }
 
-    if (hovered > 0) {
-        FragColor = vec4(selectedColour, 1.0);
-    }
-
     if (inLine > 0) {
         FragColor = vec4(lineColour, 1.0);
     }
 
     if (selected > 0) {
-        FragColor = iconTextureColour + 0.2f;
+        FragColor = FragColor + 0.2f;
     }
 
     if (highlighted > 0) {
         FragColor.g = FragColor.g + 0.2f;
     }
+
+    if (hovered > 0) {
+        FragColor = vec4(selectedColour, 1.0);
+    }
+
+
 }

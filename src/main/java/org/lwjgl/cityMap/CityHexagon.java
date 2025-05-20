@@ -25,7 +25,9 @@ public class CityHexagon extends Hexagon implements Serializable {
     public boolean isFullCover;
     public boolean isWall;
     public CityHexagon(Vector2i offsetPos) {
-        super(offsetPos);
+
+        super(offsetPos)
+        ;
     }
 
     @Override

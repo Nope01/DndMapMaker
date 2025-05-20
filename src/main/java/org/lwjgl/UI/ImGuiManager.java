@@ -136,8 +136,8 @@ public class ImGuiManager {
         windows = new CopyOnWriteArrayList<>();
 
         MenuBar menuBar = new MenuBar(imGuiManager, scene, inputHandler);
-        imGuiManager.addWindow(menuBar);
         menuBar.cityOpen = true;
+        imGuiManager.addWindow(menuBar);
 
         CityEditor cityEditor = new CityEditor(imGuiManager, scene, inputHandler);
         imGuiManager.addWindow(cityEditor);

@@ -89,15 +89,20 @@ public abstract class Hexagon extends SceneObject {
         glActiveTexture(GL_TEXTURE0);
         if (texture != null) {
             texture.bind();
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         }
+
         glActiveTexture(GL_TEXTURE1);
         if (iconTexture != null) {
             iconTexture.bind();
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
         }
-
 
         glUniform1i(glGetUniformLocation(shaderProgram, "terrainTexture"), 0);
         glUniform1i(glGetUniformLocation(shaderProgram, "iconTexture"), 1);
+
 
         // Render hexagon
         glBindVertexArray(vaoId);

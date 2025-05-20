@@ -53,8 +53,6 @@ public class CityEditor extends ImGuiWindow {
     private CityHexagon[] neighbours = new CityHexagon[6];
     private Texture selectedTerrain;
 
-    private float[] uiScale;
-    private ImFloat uiScaleFloat;
 
     public CityEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "City Editor");
@@ -66,9 +64,6 @@ public class CityEditor extends ImGuiWindow {
         hoveredObject = scene.getHoveredObject();
         grid = scene.getGrid().getGrid();
         gridClass = scene.getGrid();
-
-        uiScale = new float[]{imGuiManager.getScale()};
-        uiScaleFloat = new ImFloat(imGuiManager.getScale());
 
         placeUiWindow();
     }
@@ -152,6 +147,7 @@ public class CityEditor extends ImGuiWindow {
         }
         ImVec2 center = ImGui.getMainViewport().getCenter();
         ImGui.setNextWindowPos(center, ImGuiCond.Appearing, new ImVec2(0.5f, 0.5f));
+        ImGui.setNextWindowSize(450 * imGuiManager.getScale(), 220 * imGuiManager.getScale());
         openCharacterCreator();
 
         //Icon selection
@@ -161,7 +157,7 @@ public class CityEditor extends ImGuiWindow {
             }
         }
 
-
+        ImGui.separator();
         //Delete players
         if (selectedObject != null) {
             ImGui.text("Selected: " + selectedObject.getId());
@@ -170,8 +166,10 @@ public class CityEditor extends ImGuiWindow {
                     ImGui.openPopup("Delete creature");
                 }
                 ImGui.setNextWindowPos(center, ImGuiCond.Appearing, new ImVec2(0.5f, 0.5f));
+                ImGui.setNextWindowSize(150 * imGuiManager.getScale(), 100 * imGuiManager.getScale());
                 if (ImGui.beginPopupModal("Delete creature", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoTitleBar)) {
-                    ImGui.text("Delete creature?");
+                    GuiUtils.textCentered("Delete creature?");
+                    //TODO: Make yes and no look nicer
                     if (ImGui.button("Yes")) {
                         scene.removeObject(selectedObject);
                         characterList.remove(selectedObject);
@@ -186,7 +184,6 @@ public class CityEditor extends ImGuiWindow {
             }
         }
 
-        ImGui.separator();
         if (selectedObject instanceof CityHexagon) {
             ImGui.text("Cover: " + ((CityHexagon) selectedObject).isHalfCover);
         }
@@ -198,17 +195,6 @@ public class CityEditor extends ImGuiWindow {
                 }
             }
         }
-
-        if (ImGui.sliderFloat("Scale", uiScale,0.5f, 3.0f)) {
-            imGuiManager.setScale(uiScale[0]);
-        }
-
-        if (ImGui.inputFloat("Scale", uiScaleFloat)) {
-            imGuiManager.setScale(uiScaleFloat.get());
-        }
-
-        ImGui.text("Scale: " + imGuiManager.getScale());
-
         ImGui.end();
     }
 
@@ -259,9 +245,11 @@ public class CityEditor extends ImGuiWindow {
             //Character created popup
             ImVec2 center = ImGui.getMainViewport().getCenter();
             ImGui.setNextWindowPos(center, ImGuiCond.Appearing, new ImVec2(0.5f, 0.5f));
-            if (ImGui.beginPopupModal("Success", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove)) {
-                ImGui.text("Character added");
-                if (ImGui.button("Noice")) {
+            ImGui.setNextWindowSize(120 * imGuiManager.getScale(), 50 * imGuiManager.getScale());
+            if (ImGui.beginPopupModal("Success",
+                    ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoTitleBar)) {
+                GuiUtils.textCentered("Creature added!");
+                if (GuiUtils.buttonCentered("Noice")) {
                     ImGui.closeCurrentPopup();
                 }
                 ImGui.endPopup();

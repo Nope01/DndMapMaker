@@ -15,11 +15,20 @@ public class MenuBar extends ImGuiWindow {
 
     public MenuBar(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "Menu Bar");
+        uiXPos = 0;
+        uiYPos = 0;
         uiWidth = ImGui.getWindowWidth();
+        uiHeight = ImGui.getFrameHeight();
 
-        placeUiWindow();
+        //placeUiWindow();
     }
 
+
+    @Override
+    public void placeUiWindow() {
+        ImGui.setNextWindowSize(uiWidth, uiHeight);
+        renderContent();
+    }
 
     @Override
     protected void update() {

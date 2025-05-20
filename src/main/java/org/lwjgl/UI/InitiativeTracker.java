@@ -95,7 +95,7 @@ public class InitiativeTracker extends ImGuiWindow {
     }
 
     private void openInitiativeAdder() {
-        ImGui.setNextWindowSize(new ImVec2(400, 400));
+        ImGui.setNextWindowSize(new ImVec2(200 * imGuiManager.getScale(), 120 * imGuiManager.getScale()));
         if (ImGui.beginPopupModal("Add initiative", ImGuiWindowFlags.NoResize
                 | ImGuiWindowFlags.NoMove)) {
 
@@ -119,12 +119,10 @@ public class InitiativeTracker extends ImGuiWindow {
     }
 
     private void openEmptyListPopup() {
-        ImGui.setNextWindowSize(new ImVec2(200, 100));
+        ImGui.setNextWindowSize(new ImVec2(150 * imGuiManager.getScale(), 60 * imGuiManager.getScale()));
         if (ImGui.beginPopupModal("Empty list", ImGuiWindowFlags.NoResize
                 | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoTitleBar)) {
-            ImGui.newLine();
             GuiUtils.textCentered("No creatures added");
-            ImGui.newLine();
             if (GuiUtils.buttonCentered("OK")) {
                 ImGui.closeCurrentPopup();
             }
