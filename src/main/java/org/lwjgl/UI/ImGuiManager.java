@@ -33,9 +33,6 @@ public class ImGuiManager {
 
     public boolean scaleFont = false;
 
-
-    //TODO: add ui scaling based on screen size
-
     public ImGuiManager(long window, int width, int height) {
         this.window = window;
         this.windows = new CopyOnWriteArrayList<>();
@@ -69,7 +66,6 @@ public class ImGuiManager {
     }
 
     public void update(float deltaTime, Scene scene, InputHandler inputHandler) {
-        //TODO: remove this to stop text scaling breaking
         if (scaleFont) {
             resizeFont();
             scaleFont = false;

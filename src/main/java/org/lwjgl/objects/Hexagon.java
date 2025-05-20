@@ -86,6 +86,9 @@ public abstract class Hexagon extends SceneObject {
         int texCoords = glGetUniformLocation(shaderProgram, "texCoords");
         glUniform2f(texCoords, this.texCoords[0], this.texCoords[1]);
 
+        //Change the texture wrap mode, so icons are clamped and terrain is repeating
+        //Doesnt actually work properly because of how the textures are.
+        //TODO: fix how hexagon shaped textures are made to allow for texture wrapping
         glActiveTexture(GL_TEXTURE0);
         if (texture != null) {
             texture.bind();
