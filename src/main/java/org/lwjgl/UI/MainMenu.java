@@ -14,14 +14,21 @@ public class MainMenu extends ImGuiWindow {
 
         uiWidth = 500;
         uiHeight = 500;
+        Vector2f center = HelperMethods.getCenterOfScreen(scene.getScreenWidth(), scene.getScreenHeight(), uiWidth, uiHeight);
+        uiXPos = center.x;
+        uiYPos = center.y;
+
+        placeUiWindow();
     }
 
     @Override
-    protected void init(Scene scene) {
-        Vector2f center = HelperMethods.getCenterOfScreen(scene.getScreenWidth(), scene.getScreenHeight(), uiWidth, uiHeight);
-        ImGui.setNextWindowPos(center.x, center.y);
+    public void placeUiWindow() {
+        //Main menu needs new frame, as it happens before the main game loop
+        ImGui.newFrame();
+        ImGui.setNextWindowPos(uiXPos, uiYPos);
         ImGui.setNextWindowSize(uiWidth, uiHeight);
         renderContent();
+        ImGui.endFrame();
     }
 
     @Override

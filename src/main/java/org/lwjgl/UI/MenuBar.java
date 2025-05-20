@@ -17,17 +17,9 @@ public class MenuBar extends ImGuiWindow {
         super(imGuiManager, scene, inputHandler, "Menu Bar");
         uiWidth = ImGui.getWindowWidth();
 
-        init(scene);
+        placeUiWindow();
     }
 
-    @Override
-    protected void init(Scene scene) {
-        ImGui.begin("Menu Bar");
-        uiWidth = ImGui.getWindowWidth();
-        uiHeight = ImGui.getFrameHeight();
-        System.out.println("MenuBar height: " + uiHeight);
-        ImGui.end();
-    }
 
     @Override
     protected void update() {
@@ -86,7 +78,7 @@ public class MenuBar extends ImGuiWindow {
             if (ImGui.menuItem("Initiative tracker")) {
                 InitiativeTracker initiativeTracker = new InitiativeTracker(imGuiManager, scene, inputHandler);
                 imGuiManager.addWindow(initiativeTracker);
-                initiativeTracker.init(scene);
+                initiativeTracker.placeUiWindow();
             }
             ImGui.endMenu();
         }

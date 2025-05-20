@@ -27,9 +27,9 @@ public class ImGuiManager {
     private boolean firstFrame = true;
     private int screenWidth;
     private int screenHeight;
-    private float fontSize = 16.0f;
+    private float fontSize;
 
-    private float scale = 1.0f;
+    private float scale = 1.5f;
 
     public boolean scaleFont = false;
 
@@ -41,6 +41,7 @@ public class ImGuiManager {
         this.windows = new CopyOnWriteArrayList<>();
         this.screenWidth = width;
         this.screenHeight = height;
+        this.fontSize = 16f * scale;
         imGuiGlfw = new ImGuiImplGlfw();
         imGuiGl3 = new ImGuiImplGl3();
         init();
@@ -82,13 +83,6 @@ public class ImGuiManager {
         for (ImGuiWindow window : windows) {
             window.update();
         }
-
-//        if (firstFrame) {
-//            for (ImGuiWindow window : windows) {
-//                window.init(scene);
-//            }
-//            firstFrame = false;
-//        }
 
         for (ImGuiWindow window : windows) {
             window.render();

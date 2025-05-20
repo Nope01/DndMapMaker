@@ -36,13 +36,6 @@ public class TestWindow extends ImGuiWindow {
     }
 
     @Override
-    protected void init(Scene scene) {
-        ImGui.setNextWindowPos(uiXPos, uiYPos);
-        ImGui.setNextWindowSize(uiWidth, uiHeight);
-        renderContent();
-    }
-
-    @Override
     protected void update() {
         worldPos = inputHandler.getWorldPos(scene);
         cameraPos = camera.getPosition();

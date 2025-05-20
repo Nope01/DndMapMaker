@@ -105,7 +105,9 @@ public class Main {
             if (width > 0 && height > 0) {
                 glViewport(0, 0, width, height);
                 scene.getCamera().updateProjection(width, height);
-                if (imGuiManager != null) imGuiManager.resize(width, height);
+                if (imGuiManager != null) {
+                    imGuiManager.resize(width, height);
+                }
             }
         });
     }

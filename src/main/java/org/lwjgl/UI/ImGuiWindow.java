@@ -41,8 +41,13 @@ public abstract class ImGuiWindow {
         ImGui.end();
     }
 
-    protected abstract void init(Scene scene);
+    public void placeUiWindow() {
+        ImGui.setNextWindowPos(uiXPos, uiYPos);
+        ImGui.setNextWindowSize(uiWidth, uiHeight);
+        renderContent();
+    }
     protected abstract void update();
+
 
     protected abstract void renderContent();
 

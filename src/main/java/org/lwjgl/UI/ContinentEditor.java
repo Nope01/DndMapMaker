@@ -61,14 +61,7 @@ public class ContinentEditor extends ImGuiWindow{
         selectedObject = scene.getHoveredObject();
         selectedType = -1;
 
-        init(scene);
-    }
-
-    @Override
-    protected void init(Scene scene) {
-        ImGui.setNextWindowPos(uiXPos, uiYPos);
-        ImGui.setNextWindowSize(uiWidth, uiHeight);
-        renderContent();
+        placeUiWindow();
     }
 
     @Override

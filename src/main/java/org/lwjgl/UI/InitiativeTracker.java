@@ -5,15 +5,12 @@ import imgui.ImVec2;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
-import imgui.type.ImString;
 import org.lwjgl.Scene;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.objects.entities.Creature;
-import org.lwjgl.objects.entities.Player;
 import org.lwjgl.utils.Pair;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -38,14 +35,7 @@ public class InitiativeTracker extends ImGuiWindow {
         initiativeList = new ArrayList<>();
         currentTurn = null;
 
-        init(scene);
-    }
-
-    @Override
-    protected void init(Scene scene) {
-        ImGui.setNextWindowPos(uiXPos, uiYPos);
-        ImGui.setNextWindowSize(uiWidth, uiHeight);
-        renderContent();
+        placeUiWindow();
     }
 
     @Override

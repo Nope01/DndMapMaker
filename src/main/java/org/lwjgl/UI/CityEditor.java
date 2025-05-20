@@ -70,14 +70,7 @@ public class CityEditor extends ImGuiWindow {
         uiScale = new float[]{imGuiManager.getScale()};
         uiScaleFloat = new ImFloat(imGuiManager.getScale());
 
-        init(scene);
-    }
-
-    @Override
-    protected void init(Scene scene) {
-        ImGui.setNextWindowPos(uiXPos, uiYPos);
-        ImGui.setNextWindowSize(uiWidth, uiHeight);
-        renderContent();
+        placeUiWindow();
     }
 
     @Override
