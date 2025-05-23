@@ -108,6 +108,7 @@ public class CityEditor extends ImGuiWindow {
 
         //Icons
         if (clickInput && selectedObject instanceof CityHexagon) {
+            System.out.println("Doing a tile");
             if (selectedTerrain != null) {
                 ((CityHexagon) selectedObject).setIconTexture(selectedTerrain);
                 ((CityHexagon) selectedObject).isHalfCover = true;

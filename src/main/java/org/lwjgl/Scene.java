@@ -151,7 +151,7 @@ public class Scene extends SceneObject {
             grid.clearHoveredHexagons();
         }
 
-        //Turn off object selection when hovering over UI
+        //Only get a new hovered object when not hovering over UI
         if (!ImGui.getIO().getWantCaptureMouse()) {
             ObjectSelection.hoverObject(this, inputHandler, rootObjects);
         }

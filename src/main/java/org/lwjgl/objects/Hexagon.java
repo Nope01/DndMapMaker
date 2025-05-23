@@ -10,6 +10,11 @@ import org.lwjgl.Scene;
 import org.lwjgl.objects.models.opengl.HexagonShape;
 import org.lwjgl.textures.Texture;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import static java.lang.Math.abs;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
@@ -25,7 +30,7 @@ public abstract class Hexagon extends SceneObject {
     public boolean inLine;
     protected Texture iconTexture;
     protected int numFloats = 7 * 3;
-    protected Vector3i[] cubeDirectionVectors;
+    protected static Vector3i[] cubeDirectionVectors;
     protected Vector2i offsetCoords;
     protected Vector3i cubeCoords;
     protected Vector2i axialCoords;
@@ -229,17 +234,17 @@ public abstract class Hexagon extends SceneObject {
     }
 
     //Converts direction int value to a vector for the given direction
-    public Vector3i cubeDirection(int direction) {
+    public static Vector3i cubeDirection(int direction) {
         return cubeDirectionVectors[direction];
     }
 
     //Adds the directional vec to a target hexagon, returning the target neighbour hex
-    public Vector3i cubeAddDirection(Vector3i hex, Vector3i vec ) {
+    public static Vector3i cubeAddDirection(Vector3i hex, Vector3i vec ) {
         return new Vector3i(hex.x + vec.x, hex.y + vec.y, hex.z + vec.z);
     }
 
     //Given a hex and directional value, returns the coords for the neighbour in that direction
-    public Vector3i getCubeNeighbour(Vector3i hex, int direction) {
+    public static Vector3i getCubeNeighbour(Vector3i hex, int direction) {
         return cubeAddDirection(hex, cubeDirection(direction));
     }
 
@@ -317,7 +322,13 @@ public abstract class Hexagon extends SceneObject {
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
                 if (grid[i][j].cubeDistance(hexagon.getCubeCoords()) <= moveRange) {
-                    grid[i][j].highlighted = true;
+                    Hexagon hex = grid[i][j];
+                    //Basic removal of invalid tiles
+                    if (hex instanceof CombatHexagon combatHexagon) {
+                        if (!combatHexagon.isWall && !combatHexagon.isFullCover && !combatHexagon.isHalfCover) {
+                            hex.highlighted = true;
+                        }
+                    }
                 }
             }
         }
@@ -330,5 +341,33 @@ public abstract class Hexagon extends SceneObject {
                 grid[i][j].highlighted = false;
             }
         }
+    }
+
+    //TODO: make movement bound to this method
+    public static Set<Hexagon> hexReachable(Hexagon start, int movement, Grid gridClass) {
+        Set<Hexagon> visited = new HashSet<>();
+        visited.add(start);
+
+        List<List<Hexagon>> fringes = new ArrayList<>();
+        fringes.add(new ArrayList<>());
+        fringes.get(0).add(start);
+
+        for (int k = 1; k <= movement; k++) {
+            fringes.add(new ArrayList<>());
+            for (Hexagon hex : fringes.get(k-1)) {
+                for (int dir = 0; dir < 6; dir++) {
+                    Hexagon neighbor = gridClass.getHexagonAt(getCubeNeighbour(hex.getCubeCoords(), dir));
+                    if (neighbor instanceof CombatHexagon && !((CombatHexagon) neighbor).isBlocked()) {
+                        if (!visited.contains(neighbor)) {
+                            visited.add(neighbor);
+                            fringes.get(k).add(neighbor);
+                            neighbor.highlighted = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return visited;
     }
 }

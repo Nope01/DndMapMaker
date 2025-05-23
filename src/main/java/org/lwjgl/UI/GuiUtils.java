@@ -2,6 +2,7 @@ package org.lwjgl.UI;
 
 import imgui.ImGui;
 import org.lwjgl.Scene;
+import org.lwjgl.textures.Texture;
 
 public class GuiUtils {
 
@@ -24,9 +25,10 @@ public class GuiUtils {
                     ImGui.sameLine();
                 }
                 ImGui.pushID(y * 4 + x);
-                if (ImGui.imageButton(scene.getTextureCache().getTexture(tileNames[tileNameIncrement]).getTextureId(),
+                Texture texture = scene.getTextureCache().getTexture(tileNames[tileNameIncrement]);
+                if (ImGui.imageButton(texture.getTextureId(),
                         75.0f, 75.0f)) {
-                    editor.setSelectedTerrainTexture(scene.getTextureCache().getTexture(tileNames[tileNameIncrement]));
+                    editor.setSelectedTerrainTexture(texture);
                     editor.setSelectedType(tileTypes[tileNameIncrement]);
                     result = true;
                 }
@@ -49,9 +51,10 @@ public class GuiUtils {
                     ImGui.sameLine();
                 }
                 ImGui.pushID(y * 4 + x);
-                if (ImGui.imageButton(scene.getTextureCache().getTexture(tileNames[tileNameIncrement]).getTextureId(),
+                Texture texture = scene.getTextureCache().getTexture(tileNames[tileNameIncrement]);
+                if (ImGui.imageButton(texture.getTextureId(),
                         75.0f, 75.0f)) {
-                    editor.setSelectedIconTexture(scene.getTextureCache().getTexture(tileNames[tileNameIncrement]));
+                    editor.setSelectedIconTexture(texture);
                     result = true;
                 }
                 ImGui.popID();
@@ -73,9 +76,60 @@ public class GuiUtils {
                     ImGui.sameLine();
                 }
                 ImGui.pushID(y * 4 + x);
-                if (ImGui.imageButton(scene.getTextureCache().getTexture(tileNames[tileNameIncrement]).getTextureId(),
+                Texture texture = scene.getTextureCache().getTexture(tileNames[tileNameIncrement]);
+                if (ImGui.imageButton(texture.getTextureId(),
                         75.0f, 75.0f)) {
-                    editor.setSelectedTerrain(scene.getTextureCache().getTexture(tileNames[tileNameIncrement]));
+                    editor.setSelectedTerrain(texture);
+                    result = true;
+                }
+                ImGui.popID();
+                tileNameIncrement++;
+            }
+        }
+        ImGui.treePop();
+
+        return result;
+    }
+
+    public static boolean createTerrainGrid(int cols, int rows, String[] tileNames, Scene scene, CombatEditor editor) {
+        int tileNameIncrement = 0;
+        boolean result = false;
+
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                if (x > 0) {
+                    ImGui.sameLine();
+                }
+                ImGui.pushID(y * 4 + x);
+                Texture texture = scene.getTextureCache().getTexture(tileNames[tileNameIncrement]);
+                if (ImGui.imageButton(texture.getTextureId(),
+                        75.0f, 75.0f)) {
+                    editor.setSelectedTerrain(texture);
+                    result = true;
+                }
+                ImGui.popID();
+                tileNameIncrement++;
+            }
+        }
+        ImGui.treePop();
+
+        return result;
+    }
+
+    public static boolean createObstacleGrid(int cols, int rows, String[] tileNames, Scene scene, CombatEditor editor) {
+        int tileNameIncrement = 0;
+        boolean result = false;
+
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                if (x > 0) {
+                    ImGui.sameLine();
+                }
+                ImGui.pushID(y * 4 + x);
+                Texture texture = scene.getTextureCache().getTexture(tileNames[tileNameIncrement]);
+                if (ImGui.imageButton(texture.getTextureId(),
+                        75.0f, 75.0f)) {
+                    editor.setSelectedObstacle(texture);
                     result = true;
                 }
                 ImGui.popID();

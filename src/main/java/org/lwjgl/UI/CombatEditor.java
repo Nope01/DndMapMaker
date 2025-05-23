@@ -8,7 +8,6 @@ import imgui.type.ImInt;
 import imgui.type.ImString;
 import org.joml.Vector3i;
 import org.lwjgl.Scene;
-import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.combatMap.CombatHexagon;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.objects.Grid;
@@ -23,8 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.data.ApiCalls.getRandomName;
-import static org.lwjgl.objects.Hexagon.areaSelectClear;
-import static org.lwjgl.objects.Hexagon.showMovementRange;
+import static org.lwjgl.objects.Hexagon.*;
 import static org.lwjgl.objects.entities.Classes.FIGHTER;
 import static org.lwjgl.objects.entities.Classes.classList;
 import static org.lwjgl.objects.entities.Player.createCreatureRandomPos;
@@ -32,6 +30,11 @@ import static org.lwjgl.objects.entities.Races.AASIMAR;
 import static org.lwjgl.objects.entities.Races.raceList;
 
 public class CombatEditor extends ImGuiWindow {
+    private String[] terrainNames = new String[]{
+            "wall_01",
+            "wall_02",
+            "floor_01",
+    };
     private SceneObject hoveredObject;
     private SceneObject selectedObject;
     private Grid gridClass;
@@ -48,6 +51,7 @@ public class CombatEditor extends ImGuiWindow {
     private List<Creature> characterList = new ArrayList<>();
     private CombatHexagon[] neighbours = new CombatHexagon[6];
     private Texture selectedObstacle;
+    private Texture selectedTerrain;
 
     public CombatEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "Combat Editor");
@@ -74,6 +78,7 @@ public class CombatEditor extends ImGuiWindow {
         //Movement logic
         if (clickInput && selectedObject instanceof Player) {
             selectedObstacle = null;
+            selectedTerrain = null;
             if (((Player) selectedObject).canMoveCreature(selectedObject, hoveredObject)) {
                 selectedObject.setParent(hoveredObject);
                 selectedObject.setOffsetPos(((Hexagon) selectedObject.parent).getOffsetCoords());
@@ -99,7 +104,20 @@ public class CombatEditor extends ImGuiWindow {
 
             //Highlight moveable tiles
             if (selectedObject instanceof Player) {
-                showMovementRange(gridClass, (Hexagon) selectedObject.parent, ((Player) selectedObject).getMoveSpeed());
+                //showMovementRange(gridClass, (Hexagon) selectedObject.parent, ((Player) selectedObject).getMoveSpeed());
+                hexReachable((CombatHexagon)selectedObject.parent, ((Player) selectedObject).getMoveSpeed(), gridClass);
+            }
+
+        }
+
+        //TODO: bug with setting tiles to walls and floors
+        //Terrain
+        if (inputHandler.isLeftClickedAndHeld() && hoveredObject instanceof CombatHexagon) {
+            if (selectedTerrain != null) {
+                ((CombatHexagon) hoveredObject).setTexture(selectedTerrain);
+                if (selectedTerrain.getTextureName().contains("wall")) {
+                    ((CombatHexagon) hoveredObject).isWall = true;
+                }
             }
         }
 
@@ -111,18 +129,23 @@ public class CombatEditor extends ImGuiWindow {
             }
         }
 
+
         //Deselect
         if (selectedObject != null && inputHandler.isRightClicked()) {
             selectedObject.selected = false;
             selectedObject = null;
             areaSelectClear(gridClass);
             selectedObstacle = null;
+            selectedTerrain = null;
         }
 
         //Icon eraser
         if (hoveredObject instanceof CombatHexagon && inputHandler.isRightClicked()) {
             ((CombatHexagon) hoveredObject).setIconTexture(scene.getTextureCache().getTexture("empty"));
+            hoveredObject.setTexture(scene.getTextureCache().getTexture("default_tile"));
             ((CombatHexagon) hoveredObject).isHalfCover = false;
+            ((CombatHexagon) hoveredObject).isWall = false;
+            ((CombatHexagon) hoveredObject).isFullCover = false;
         }
 
     }
@@ -143,6 +166,16 @@ public class CombatEditor extends ImGuiWindow {
         ImGui.setNextWindowPos(center, ImGuiCond.Appearing, new ImVec2(0.5f, 0.5f));
         ImGui.setNextWindowSize(450 * imGuiManager.getScale(), 220 * imGuiManager.getScale());
         openCharacterCreator();
+
+        ImGui.setNextItemOpen(true);
+        if (ImGui.treeNode("Grid", "Terrain")) {
+            if (GuiUtils.createTerrainGrid(3, 1, terrainNames, scene, this)) {
+            }
+        }
+
+        if (hoveredObject instanceof CombatHexagon) {
+            ImGui.text(((CombatHexagon) hoveredObject).isWall ? "Wall" : "Floor");
+        }
 
         ImGui.end();
     }
@@ -219,4 +252,31 @@ public class CombatEditor extends ImGuiWindow {
     public List<Creature> getCharacterList() {
         return characterList;
     }
+
+    public void setSelectedObstacle(Texture texture) {
+        selectedObstacle = texture;
+    }
+
+    public void setSelectedTerrain(Texture texture) {
+        selectedTerrain = texture;
+    }
+
+    public void setHoveredObjectAsWall() {
+        if (hoveredObject instanceof CombatHexagon) {
+            ((CombatHexagon) hoveredObject).isWall = true;
+        }
+    }
+
+    public void setHoveredObjectAsFullCover() {
+        if (hoveredObject instanceof CombatHexagon) {
+            ((CombatHexagon) hoveredObject).isFullCover = true;
+        }
+    }
+
+    public void setHoveredObjectAsHalfCover() {
+        if (hoveredObject instanceof CombatHexagon) {
+            ((CombatHexagon) hoveredObject).isHalfCover = true;
+        }
+    }
+
 }

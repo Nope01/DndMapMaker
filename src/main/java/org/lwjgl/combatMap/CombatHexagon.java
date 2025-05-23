@@ -29,4 +29,8 @@ public class CombatHexagon extends Hexagon implements Serializable {
         glUniform1i(highlighted, this.highlighted ? 1 : 0);
         super.render();
     }
+
+    public boolean isBlocked() {
+        return isWall || isFullCover || isHalfCover;
+    }
 }

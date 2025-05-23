@@ -62,7 +62,10 @@ public class InputHandler {
         // Mouse movement callback (optional, handled in update for simplicity)
         glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
             if (button == org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-                leftMouseJustPressed = true; // Mark as pressed this frame
+                if (!ImGui.getIO().getWantCaptureMouse()) {
+                    leftMouseJustPressed = true; // Mark as pressed this frame
+                }
+
             }
         });
     }

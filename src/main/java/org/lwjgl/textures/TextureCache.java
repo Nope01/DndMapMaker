@@ -40,10 +40,13 @@ public class TextureCache {
 
     private static final String[] tilesTextures = new String[]{
             "dead_forest_01",
+            "floor_01",
             "grass_05",
             "jungle_01",
             "sand_07",
             "snow_01",
+            "wall_01",
+            "wall_02",
             "water_01",
     };
 

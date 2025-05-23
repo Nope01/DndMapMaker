@@ -37,7 +37,7 @@ public class Camera {
         right = new Vector3f();
         up = new Vector3f();
 
-        moveSpeed = 0.02f;
+        moveSpeed = 0.1f;
         rotateSpeed = 1.0f;
         mouseSensitivity = 0.05f;
         panSensitivity = 0.01f;
