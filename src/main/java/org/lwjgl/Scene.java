@@ -1,5 +1,6 @@
 package org.lwjgl;
 
+import imgui.ImGui;
 import org.lwjgl.data.ImageGeneration;
 import org.lwjgl.data.MapSaveLoad;
 import org.lwjgl.continentMap.ContinentHexagon;
@@ -81,6 +82,12 @@ public class Scene extends SceneObject {
         player.setPosition(0.0f, 0.02f, 0.0f);
     }
 
+    public void initCombatScene() {
+        this.grid = new Grid(this, 80, 40);
+        grid.makeCombatGrid(this);
+        addObject(grid);
+    }
+
     public void addObject(SceneObject object) {
         rootObjects.add(object);
         allObjects.add(object);
@@ -144,7 +151,11 @@ public class Scene extends SceneObject {
             grid.clearHoveredHexagons();
         }
 
-        ObjectSelection.hoverObject(this, inputHandler, rootObjects);
+        //Turn off object selection when hovering over UI
+        if (!ImGui.getIO().getWantCaptureMouse()) {
+            ObjectSelection.hoverObject(this, inputHandler, rootObjects);
+        }
+
         if (hoveredObject != null) {
             hoveredObject.update(this, deltaTime, inputHandler);
         }

@@ -19,6 +19,7 @@ public class ShaderProgramCache {
         shaderMap.put("default", createShaderProgram("default"));
         shaderMap.put("continentHex", createShaderProgram("continentHex"));
         shaderMap.put("cityHex", createShaderProgram("cityHex"));
+        shaderMap.put("combatHex", createShaderProgram("combatHex"));
         shaderMap.put("trap", createShaderProgram("trap"));
         shaderMap.put("creature", createShaderProgram("creature"));
     }

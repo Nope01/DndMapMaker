@@ -127,7 +127,6 @@ public class ImGuiManager {
 
         ContinentEditor continentEditor = new ContinentEditor(imGuiManager, scene, inputHandler);
         imGuiManager.addWindow(continentEditor);
-        firstFrame = true;
     }
 
     public void initCityMap(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
@@ -139,15 +138,17 @@ public class ImGuiManager {
 
         CityEditor cityEditor = new CityEditor(imGuiManager, scene, inputHandler);
         imGuiManager.addWindow(cityEditor);
-
-        InitiativeTracker initiativeTracker = new InitiativeTracker(imGuiManager, scene, inputHandler);
-        imGuiManager.addWindow(initiativeTracker);
-
-        firstFrame = true;
     }
 
     public void initCombatMap(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
+        scene.initCombatScene();
+
+        windows = new CopyOnWriteArrayList<>();
+
         combatOpen = true;
+
+        CombatEditor combatEditor = new CombatEditor(imGuiManager, scene, inputHandler);
+        imGuiManager.addWindow(combatEditor);
     }
 
     public void initMainMenu(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
@@ -161,7 +162,9 @@ public class ImGuiManager {
     }
 
     public void removeWindow(ImGuiWindow window) {
-        windows.remove(window);
+        if (window != null) {
+            windows.remove(window);
+        }
     }
 
     public ImGuiWindow getWindow(String title) {
@@ -170,7 +173,6 @@ public class ImGuiManager {
                 return window;
             }
         }
-        System.out.println("Failed to find window with title: " + title);
         return null;
     }
 
@@ -201,7 +203,7 @@ public class ImGuiManager {
         imGuiGl3.createFontsTexture();
     }
 
-    public void drawMainMenu(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
+    public void drawMenuBar(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         ImGui.beginMenuBar();
         if (ImGui.beginMenu("File")) {
             if (ImGui.menuItem("Save")) {
@@ -249,6 +251,7 @@ public class ImGuiManager {
 
         if (ImGui.beginMenu("Tools")) {
             if (ImGui.menuItem("Initiative tracker")) {
+                imGuiManager.removeWindow(imGuiManager.getWindow("Initiative Tracker"));
                 InitiativeTracker initiativeTracker = new InitiativeTracker(imGuiManager, scene, inputHandler);
                 imGuiManager.addWindow(initiativeTracker);
                 initiativeTracker.placeUiWindow();

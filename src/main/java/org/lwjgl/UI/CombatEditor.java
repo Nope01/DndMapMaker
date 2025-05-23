@@ -7,14 +7,17 @@ import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import org.joml.Vector3i;
+import org.lwjgl.Scene;
 import org.lwjgl.cityMap.CityHexagon;
+import org.lwjgl.combatMap.CombatHexagon;
+import org.lwjgl.input.InputHandler;
+import org.lwjgl.objects.Grid;
+import org.lwjgl.objects.Hexagon;
+import org.lwjgl.objects.SceneObject;
 import org.lwjgl.objects.entities.Creature;
+import org.lwjgl.objects.entities.Player;
 import org.lwjgl.textures.Texture;
 import org.lwjgl.utils.HelperMethods;
-import org.lwjgl.input.InputHandler;
-import org.lwjgl.Scene;
-import org.lwjgl.objects.*;
-import org.lwjgl.objects.entities.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,23 +25,17 @@ import java.util.List;
 import static org.lwjgl.data.ApiCalls.getRandomName;
 import static org.lwjgl.objects.Hexagon.areaSelectClear;
 import static org.lwjgl.objects.Hexagon.showMovementRange;
-import static org.lwjgl.objects.entities.Classes.*;
+import static org.lwjgl.objects.entities.Classes.FIGHTER;
+import static org.lwjgl.objects.entities.Classes.classList;
 import static org.lwjgl.objects.entities.Player.createCreatureRandomPos;
-import static org.lwjgl.objects.entities.Races.*;
+import static org.lwjgl.objects.entities.Races.AASIMAR;
+import static org.lwjgl.objects.entities.Races.raceList;
 
-public class CityEditor extends ImGuiWindow {
-    private String[] tileNames = new String[]{
-            "table",
-            "barrel",
-            "jungle_01",
-            "sand_07",
-    };
-
+public class CombatEditor extends ImGuiWindow {
     private SceneObject hoveredObject;
     private SceneObject selectedObject;
     private Grid gridClass;
     private Hexagon[][] grid;
-
 
     //Character creator variables
     ImString name = new ImString(20);
@@ -49,15 +46,15 @@ public class CityEditor extends ImGuiWindow {
     int[] AC = new int[] {12};
 
     private List<Creature> characterList = new ArrayList<>();
-    private CityHexagon[] neighbours = new CityHexagon[6];
-    private Texture selectedTerrain;
+    private CombatHexagon[] neighbours = new CombatHexagon[6];
+    private Texture selectedObstacle;
 
-
-    public CityEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
-        super(imGuiManager, scene, inputHandler, "City Editor");
+    public CombatEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
+        super(imGuiManager, scene, inputHandler, "Combat Editor");
         uiWidth = 400 * imGuiManager.getScale();
         uiHeight = 600 * imGuiManager.getScale();
         uiXPos = 0;
+        uiYPos = 0;
 
         hoveredObject = scene.getHoveredObject();
         grid = scene.getGrid().getGrid();
@@ -76,17 +73,17 @@ public class CityEditor extends ImGuiWindow {
 
         //Movement logic
         if (clickInput && selectedObject instanceof Player) {
-            selectedTerrain = null;
+            selectedObstacle = null;
             if (((Player) selectedObject).canMoveCreature(selectedObject, hoveredObject)) {
                 selectedObject.setParent(hoveredObject);
                 selectedObject.setOffsetPos(((Hexagon) selectedObject.parent).getOffsetCoords());
                 selectedObject.initAabb();
             }
             //Neighbours
-            if (selectedObject.parent instanceof CityHexagon hexUnderPlayer) {
+            if (selectedObject.parent instanceof CombatHexagon hexUnderPlayer) {
                 Vector3i[] neighbourCoords = hexUnderPlayer.getAllNeighbours();
                 for (int i = 0; i < neighbours.length; i++) {
-                    neighbours[i] = (CityHexagon) gridClass.getHexagonAt(neighbourCoords[i]);
+                    neighbours[i] = (CombatHexagon) gridClass.getHexagonAt(neighbourCoords[i]);
                 }
             }
         }
@@ -107,10 +104,10 @@ public class CityEditor extends ImGuiWindow {
         }
 
         //Icons
-        if (clickInput && selectedObject instanceof CityHexagon) {
-            if (selectedTerrain != null) {
-                ((CityHexagon) selectedObject).setIconTexture(selectedTerrain);
-                ((CityHexagon) selectedObject).isHalfCover = true;
+        if (clickInput && selectedObject instanceof CombatHexagon) {
+            if (selectedObstacle != null) {
+                ((CombatHexagon) selectedObject).setIconTexture(selectedObstacle);
+                ((CombatHexagon) selectedObject).isHalfCover = true;
             }
         }
 
@@ -119,26 +116,20 @@ public class CityEditor extends ImGuiWindow {
             selectedObject.selected = false;
             selectedObject = null;
             areaSelectClear(gridClass);
-            selectedTerrain = null;
+            selectedObstacle = null;
         }
 
         //Icon eraser
-        if (hoveredObject instanceof CityHexagon && inputHandler.isRightClicked()) {
-            ((CityHexagon) hoveredObject).setIconTexture(scene.getTextureCache().getTexture("empty"));
-            ((CityHexagon) hoveredObject).isHalfCover = false;
+        if (hoveredObject instanceof CombatHexagon && inputHandler.isRightClicked()) {
+            ((CombatHexagon) hoveredObject).setIconTexture(scene.getTextureCache().getTexture("empty"));
+            ((CombatHexagon) hoveredObject).isHalfCover = false;
         }
 
-        //Trap hover
-        if (hoveredObject != null) {
-            if (hoveredObject instanceof Trap) {
-                hoveredObject = hoveredObject.parent;
-            }
-        }
     }
 
     @Override
     protected void renderContent() {
-        ImGui.begin("City Editor",
+        ImGui.begin("Combat Editor",
                 ImGuiWindowFlags.NoResize |
                         ImGuiWindowFlags.NoMove |
                         ImGuiWindowFlags.MenuBar);
@@ -153,51 +144,6 @@ public class CityEditor extends ImGuiWindow {
         ImGui.setNextWindowSize(450 * imGuiManager.getScale(), 220 * imGuiManager.getScale());
         openCharacterCreator();
 
-        //Icon selection
-        ImGui.setNextItemOpen(true);
-        if (ImGui.treeNode("Grid", "Terrain")) {
-            if (GuiUtils.createTerrainGrid(4, 1, tileNames, scene, this)) {
-            }
-        }
-
-        ImGui.separator();
-        //Delete players
-        if (selectedObject != null) {
-            ImGui.text("Selected: " + selectedObject.getId());
-            if (selectedObject instanceof Player) {
-                if (ImGui.button("Delete")) {
-                    ImGui.openPopup("Delete creature");
-                }
-                ImGui.setNextWindowPos(center, ImGuiCond.Appearing, new ImVec2(0.5f, 0.5f));
-                ImGui.setNextWindowSize(150 * imGuiManager.getScale(), 100 * imGuiManager.getScale());
-                if (ImGui.beginPopupModal("Delete creature", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoTitleBar)) {
-                    GuiUtils.textCentered("Delete creature?");
-                    //TODO: Make yes and no look nicer
-                    if (ImGui.button("Yes")) {
-                        scene.removeObject(selectedObject);
-                        characterList.remove(selectedObject);
-                        ImGui.closeCurrentPopup();
-                    }
-                    ImGui.sameLine();
-                    if (ImGui.button("No")) {
-                        ImGui.closeCurrentPopup();
-                    }
-                    ImGui.endPopup();
-                }
-            }
-        }
-
-        if (selectedObject instanceof CityHexagon) {
-            ImGui.text("Cover: " + ((CityHexagon) selectedObject).isHalfCover);
-        }
-
-        for (int i = 0; i < neighbours.length; i++) {
-            if (neighbours[i] != null) {
-                if (neighbours[i].isHalfCover) {
-                    ImGui.text("Covered " + Hexagon.intToDirection(i));
-                }
-            }
-        }
         ImGui.end();
     }
 
@@ -272,9 +218,5 @@ public class CityEditor extends ImGuiWindow {
 
     public List<Creature> getCharacterList() {
         return characterList;
-    }
-
-    public void setSelectedTerrain(Texture selectedTerrain) {
-        this.selectedTerrain = selectedTerrain;
     }
 }

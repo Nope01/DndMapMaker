@@ -4,6 +4,7 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.lwjgl.cityMap.CityHexagon;
+import org.lwjgl.combatMap.CombatHexagon;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.objects.models.opengl.HexagonShape;
@@ -28,6 +29,8 @@ public abstract class Hexagon extends SceneObject {
     protected Vector2i offsetCoords;
     protected Vector3i cubeCoords;
     protected Vector2i axialCoords;
+
+    public boolean highlighted;
 
     public static final float SIZE = 1.0f;
     public static final int N = 0;
@@ -314,21 +317,18 @@ public abstract class Hexagon extends SceneObject {
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
                 if (grid[i][j].cubeDistance(hexagon.getCubeCoords()) <= moveRange) {
-                    CityHexagon hex = (CityHexagon) grid[i][j];
-                    hex.highlighted = true;
+                    grid[i][j].highlighted = true;
                 }
             }
         }
     }
 
     public static void areaSelectClear(Grid gridClass) {
-        CityHexagon[][] grid = (CityHexagon[][]) gridClass.getGrid();
+        Hexagon[][] grid = gridClass.getGrid();
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
                 grid[i][j].highlighted = false;
             }
         }
     }
-
-
 }

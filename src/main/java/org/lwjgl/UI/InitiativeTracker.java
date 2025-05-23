@@ -39,8 +39,14 @@ public class InitiativeTracker extends ImGuiWindow {
 
     @Override
     protected void update() {
-        CityEditor cityEditor = (CityEditor) imGuiManager.getWindow("City Editor");
-        characterList = cityEditor.getCharacterList();
+        if (imGuiManager.combatOpen) {
+            CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
+            characterList = combatEditor.getCharacterList();
+        }
+        else if (imGuiManager.cityOpen) {
+            CityEditor cityEditor = (CityEditor) imGuiManager.getWindow("City Editor");
+            characterList = cityEditor.getCharacterList();
+        }
 
         tempList.clear();
         for (Creature creature : characterList) {

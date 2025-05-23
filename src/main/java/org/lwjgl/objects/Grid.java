@@ -5,6 +5,7 @@ import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.lwjgl.Scene;
 import org.lwjgl.cityMap.CityHexagon;
+import org.lwjgl.combatMap.CombatHexagon;
 import org.lwjgl.continentMap.ContinentHexagon;
 import org.lwjgl.input.InputHandler;
 
@@ -59,6 +60,22 @@ public class Grid extends SceneObject {
         this.grid = grid;
     }
 
+    public void makeCombatGrid(Scene scene) {
+        CombatHexagon[][] grid = new CombatHexagon[rows][columns];
+
+        for (int col = 0; col < columns; col++) {
+            for (int row = 0; row < rows; row++) {
+                CombatHexagon combatHexagon = createCombatHexagon(row, col);
+                combatHexagon.setShaderProgram(scene.getShaderCache().getShader("combatHex"));
+                grid[row][col] = combatHexagon;
+                combatHexagon.setTexture(scene.getTextureCache().getTexture("default_tile"));
+                combatHexagon.setIconTexture(scene.getTextureCache().getTexture("empty"));
+                this.addChild(combatHexagon);
+            }
+        }
+        this.grid = grid;
+    }
+
     public ContinentHexagon createContinentHexagon(int row, int col) {
         Vector3f pos = calculatePosition(row, col);
         ContinentHexagon continentHexagon = new ContinentHexagon(new Vector2i(col, row));
@@ -75,6 +92,15 @@ public class Grid extends SceneObject {
         cityHexagon.setPosition(pos.x, pos.y, pos.z);
         cityHexagon.setParent(this);
         return cityHexagon;
+    }
+
+    public CombatHexagon createCombatHexagon(int row, int col) {
+        Vector3f pos = calculatePosition(row, col);
+        CombatHexagon combatHexagon = new CombatHexagon(new Vector2i(col, row));
+        combatHexagon.setId("combat-" + row + "-" + col);
+        combatHexagon.setPosition(pos.x, pos.y, pos.z);
+        combatHexagon.setParent(this);
+        return combatHexagon;
     }
 
     public Vector3f calculatePosition(int row, int col) {

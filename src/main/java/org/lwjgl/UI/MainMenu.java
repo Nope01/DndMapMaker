@@ -54,6 +54,11 @@ public class MainMenu extends ImGuiWindow {
             imGuiManager.removeWindow(this);
         }
 
+        if (GuiUtils.buttonCentered("Combat map")) {
+            imGuiManager.initCombatMap(imGuiManager, scene, inputHandler);
+            imGuiManager.removeWindow(this);
+        }
+
         ImGui.end();
     }
 }

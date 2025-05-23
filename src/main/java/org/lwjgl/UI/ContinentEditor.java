@@ -95,7 +95,7 @@ public class ContinentEditor extends ImGuiWindow{
                 ImGuiWindowFlags.NoResize |
                         ImGuiWindowFlags.NoMove |
                         ImGuiWindowFlags.MenuBar);
-        imGuiManager.drawMainMenu(imGuiManager, scene, inputHandler);
+        imGuiManager.drawMenuBar(imGuiManager, scene, inputHandler);
 
         ImGui.text("Selected Type: " + ContinentHexagon.getTypeAsString(selectedType));
         ImGui.text("Selected Texture: " + selectedTerrainTexture.getTextureName());
