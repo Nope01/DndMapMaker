@@ -28,6 +28,7 @@ public abstract class Creature extends SceneObject {
     private int moveSpeed;
     private int HP;
     private int AC;
+    private int dungeonVisibleRange;
 
 
 
@@ -207,5 +208,13 @@ public abstract class Creature extends SceneObject {
 
     public void setRaceType(int raceType) {
         this.raceType = raceType;
+    }
+
+    public int getDungeonVisibleRange() {
+        return dungeonVisibleRange;
+    }
+
+    public void setDungeonVisibleRange(int dungeonVisibleRange) {
+        this.dungeonVisibleRange = dungeonVisibleRange;
     }
 }

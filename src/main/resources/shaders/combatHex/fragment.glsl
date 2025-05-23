@@ -9,6 +9,7 @@ uniform int hovered;
 uniform int inLine;
 uniform int selected;
 uniform int highlighted;
+uniform int isVisible;
 
 uniform sampler2D terrainTexture;
 uniform sampler2D iconTexture;
@@ -41,6 +42,13 @@ void main() {
 
     if (hovered > 0) {
         FragColor = vec4(selectedColour, 1.0);
+    }
+
+    if (isVisible > 0) {
+        FragColor.a = 1.0f;
+    }
+    else {
+        FragColor.a = 0.0f;
     }
 
 

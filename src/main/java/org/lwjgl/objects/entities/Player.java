@@ -20,6 +20,7 @@ public class Player extends Creature {
         this.setMoveSpeed(moveSpeedToHexSpeed(20));
         this.setHP(25);
         this.setAC(16);
+        this.setDungeonVisibleRange(10);
 
         this.offsetPos = offsetPos;
         this.cubePos = Hexagon.offsetToCubeCoords(offsetPos);
@@ -33,6 +34,7 @@ public class Player extends Creature {
         this.setMoveSpeed(moveSpeed);
         this.setAC(AC);
         this.setHP(HP);
+        this.setDungeonVisibleRange(10);
 
         this.offsetPos = offsetPos;
         this.cubePos = Hexagon.offsetToCubeCoords(offsetPos);

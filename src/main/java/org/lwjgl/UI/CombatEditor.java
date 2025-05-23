@@ -36,10 +36,19 @@ public class CombatEditor extends ImGuiWindow {
             "wall_02",
             "floor_01",
     };
+    private String[] obstacleNames = new String[]{
+            "barrel",
+            "table",
+            "coffer",
+    };
+
     private SceneObject hoveredObject;
     private SceneObject selectedObject;
+    private Texture selectedObstacle;
+    private Texture selectedTerrain;
     private Grid gridClass;
     private Hexagon[][] grid;
+
 
     //Character creator variables
     ImString name = new ImString(20);
@@ -51,8 +60,8 @@ public class CombatEditor extends ImGuiWindow {
 
     private List<Creature> characterList = new ArrayList<>();
     private CombatHexagon[] neighbours = new CombatHexagon[6];
-    private Texture selectedObstacle;
-    private Texture selectedTerrain;
+
+    private boolean fogOfWar = false;
 
     public CombatEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "Combat Editor");
@@ -102,22 +111,29 @@ public class CombatEditor extends ImGuiWindow {
 
         //Selection logic
         if (clickInput && hoveredObject != null) {
-            areaSelectClear(gridClass);
+            areaSelectClear(gridClass, fogOfWar);
             if (selectedObject != null) {
                 selectedObject.selected = false;
             }
             selectedObject = hoveredObject;
             selectedObject.selected = true;
 
+            //TODO: vision works differently to movement, so need a different algorithm for LOS
             //Highlight moveable tiles
-            if (selectedObject instanceof Player) {
-                //showMovementRange(gridClass, (Hexagon) selectedObject.parent, ((Player) selectedObject).getMoveSpeed());
-                hexReachable((CombatHexagon)selectedObject.parent, ((Player) selectedObject).getMoveSpeed(), gridClass);
+            if (selectedObject instanceof Player player) {
+                Set<Hexagon> reachableTiles =
+                        hexReachable((CombatHexagon)selectedObject.parent, player.getMoveSpeed(), gridClass);
+                Set<Hexagon> visibleTiles =
+                        hexReachable((CombatHexagon)selectedObject.parent, player.getDungeonVisibleRange(), gridClass);
+                for (Hexagon hex : reachableTiles) {
+                    hex.highlighted = true;
+                }
+                for (Hexagon hex : visibleTiles) {
+                    hex.isVisible = true;
+                }
             }
-
         }
 
-        //TODO: bug with setting tiles to walls and floors
         //Terrain
         if (inputHandler.isLeftClickedAndHeld() && hoveredObject instanceof CombatHexagon) {
             if (selectedTerrain != null) {
@@ -135,7 +151,18 @@ public class CombatEditor extends ImGuiWindow {
         if (clickInput && selectedObject instanceof CombatHexagon) {
             if (selectedObstacle != null) {
                 ((CombatHexagon) selectedObject).setIconTexture(selectedObstacle);
-                ((CombatHexagon) selectedObject).isHalfCover = true;
+                if (selectedObstacle.getTextureName().contains("barrel")) {
+                    ((CombatHexagon) selectedObject).isHalfCover = true;
+                }
+                else {
+                    ((CombatHexagon) selectedObject).isHalfCover = false;
+                }
+                if (selectedObstacle.getTextureName().contains("table")) {
+                    ((CombatHexagon) selectedObject).isFullCover = true;
+                }
+                else {
+                    ((CombatHexagon) selectedObject).isFullCover = false;
+                }
             }
         }
 
@@ -144,15 +171,15 @@ public class CombatEditor extends ImGuiWindow {
         if (selectedObject != null && inputHandler.isRightClicked()) {
             selectedObject.selected = false;
             selectedObject = null;
-            areaSelectClear(gridClass);
+            areaSelectClear(gridClass, fogOfWar);
             selectedObstacle = null;
             selectedTerrain = null;
         }
 
-        //Icon eraser
+        //Eraser
         if (hoveredObject instanceof CombatHexagon && inputHandler.isRightClicked()) {
             ((CombatHexagon) hoveredObject).setIconTexture(scene.getTextureCache().getTexture("empty"));
-            hoveredObject.setTexture(scene.getTextureCache().getTexture("default_tile"));
+            hoveredObject.setTexture(scene.getTextureCache().getTexture("floor_01"));
             ((CombatHexagon) hoveredObject).isHalfCover = false;
             ((CombatHexagon) hoveredObject).isWall = false;
             ((CombatHexagon) hoveredObject).isFullCover = false;
@@ -179,11 +206,33 @@ public class CombatEditor extends ImGuiWindow {
         ImGui.setNextItemOpen(true);
         if (ImGui.treeNode("Grid", "Terrain")) {
             if (GuiUtils.createTerrainGrid(3, 1, terrainNames, scene, this)) {
+                selectedObstacle = null;
             }
         }
 
+        ImGui.setNextItemOpen(true);
+        if (ImGui.treeNode("Grid", "Obstacles")) {
+            if (GuiUtils.createObstacleGrid(3, 1, obstacleNames, scene, this)) {
+                selectedTerrain = null;
+            }
+        }
+
+        if (ImGui.button("Make all hexes floor")) {
+            for (int row = 0; row < gridClass.rows; row++) {
+                for (int col = 0; col < gridClass.columns; col++) {
+                    grid[row][col].setTexture(scene.getTextureCache().getTexture("floor_01"));
+                    ((CombatHexagon) grid[row][col]).isWall = false;
+                }
+            }
+        }
+
+        if (ImGui.checkbox("Fog of War", fogOfWar)) {
+            fogOfWar = !fogOfWar;
+        }
         if (hoveredObject instanceof CombatHexagon) {
             ImGui.text(((CombatHexagon) hoveredObject).isWall ? "Wall" : "Floor");
+            ImGui.text(((CombatHexagon) hoveredObject).isFullCover ? "Full cover" : "Nope");
+            ImGui.text(((CombatHexagon) hoveredObject).isHalfCover ? "Half cover" : "Nope");
         }
 
         ImGui.end();
@@ -287,5 +336,4 @@ public class CombatEditor extends ImGuiWindow {
             ((CombatHexagon) hoveredObject).isHalfCover = true;
         }
     }
-
 }

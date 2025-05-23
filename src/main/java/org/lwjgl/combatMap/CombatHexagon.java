@@ -22,11 +22,16 @@ public class CombatHexagon extends Hexagon implements Serializable {
 
     @Override
     public void render() {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         glUseProgram(shaderProgram);
         int selected = glGetUniformLocation(shaderProgram, "selected");
         glUniform1i(selected, this.selected ? 1 : 0);
         int highlighted = glGetUniformLocation(shaderProgram, "highlighted");
         glUniform1i(highlighted, this.highlighted ? 1 : 0);
+        int isVisible = glGetUniformLocation(shaderProgram, "isVisible");
+        glUniform1i(isVisible, this.isVisible ? 1 : 0);
         super.render();
     }
 

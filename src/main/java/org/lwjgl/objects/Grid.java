@@ -10,6 +10,7 @@ import org.lwjgl.continentMap.ContinentHexagon;
 import org.lwjgl.input.InputHandler;
 
 import static org.lwjgl.opengl.GL11.glGetError;
+import static org.lwjgl.opengl.GL20.glUseProgram;
 
 
 public class Grid extends SceneObject {
@@ -99,6 +100,7 @@ public class Grid extends SceneObject {
         CombatHexagon combatHexagon = new CombatHexagon(new Vector2i(col, row));
         combatHexagon.setId("combat-" + row + "-" + col);
         combatHexagon.setPosition(pos.x, pos.y, pos.z);
+        combatHexagon.isVisible = true;
         combatHexagon.setParent(this);
         return combatHexagon;
     }
@@ -142,7 +144,6 @@ public class Grid extends SceneObject {
 
     @Override
     public void render() {
-        int e = glGetError();
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 grid[row][col].render();

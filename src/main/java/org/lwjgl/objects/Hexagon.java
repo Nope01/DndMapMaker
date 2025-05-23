@@ -36,6 +36,7 @@ public abstract class Hexagon extends SceneObject {
     protected Vector2i axialCoords;
 
     public boolean highlighted;
+    public boolean isVisible;
 
     public static final float SIZE = 1.0f;
     public static final int N = 0;
@@ -334,16 +335,27 @@ public abstract class Hexagon extends SceneObject {
         }
     }
 
-    public static void areaSelectClear(Grid gridClass) {
+    //TODO: move these to grid class?
+    public static void areaSelectClear(Grid gridClass, boolean fogOfWar) {
         Hexagon[][] grid = gridClass.getGrid();
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
                 grid[i][j].highlighted = false;
+                if (fogOfWar) {
+                    grid[i][j].isVisible = false;
+                }
+                else {
+                    grid[i][j].isVisible = true;
+                }
             }
         }
     }
 
-    public static Set<Hexagon> hexReachable(Hexagon start, int movement, Grid gridClass) {
+    public static void areaSelectClear(Grid gridClass) {
+        areaSelectClear(gridClass, false);
+    }
+
+    public static Set<Hexagon> hexReachable(Hexagon start, int range, Grid gridClass) {
         Set<Hexagon> visited = new HashSet<>();
         visited.add(start);
 
@@ -351,7 +363,7 @@ public abstract class Hexagon extends SceneObject {
         fringes.add(new ArrayList<>());
         fringes.get(0).add(start);
 
-        for (int k = 1; k <= movement; k++) {
+        for (int k = 1; k <= range; k++) {
             fringes.add(new ArrayList<>());
             for (Hexagon hex : fringes.get(k-1)) {
                 for (int dir = 0; dir < 6; dir++) {
@@ -360,7 +372,6 @@ public abstract class Hexagon extends SceneObject {
                         if (!visited.contains(neighbor)) {
                             visited.add(neighbor);
                             fringes.get(k).add(neighbor);
-                            neighbor.highlighted = true;
                         }
                     }
                 }
