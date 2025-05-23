@@ -9,6 +9,8 @@ import org.lwjgl.objects.ObjectUtils;
 import org.lwjgl.objects.SceneObject;
 import org.lwjgl.objects.models.opengl.HexagonShape;
 
+import java.util.Set;
+
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -113,6 +115,7 @@ public abstract class Creature extends SceneObject {
         return moveSpeed / 5;
     }
 
+    //NOT USEFUL FOR PROPER CREATURE MOVEMENT, USE HEXREACHABLE INSTEAD
     public boolean canMoveCreature(SceneObject origin, SceneObject destination) {
         if (!(origin instanceof Hexagon) && !(destination instanceof Hexagon)) {
             System.out.println("Selected destination is not a Hexagon");

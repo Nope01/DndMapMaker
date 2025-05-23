@@ -20,6 +20,7 @@ import org.lwjgl.utils.HelperMethods;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.lwjgl.data.ApiCalls.getRandomName;
 import static org.lwjgl.objects.Hexagon.*;
@@ -79,11 +80,17 @@ public class CombatEditor extends ImGuiWindow {
         if (clickInput && selectedObject instanceof Player) {
             selectedObstacle = null;
             selectedTerrain = null;
-            if (((Player) selectedObject).canMoveCreature(selectedObject, hoveredObject)) {
+            Set<Hexagon> reachableTiles = hexReachable((CombatHexagon)selectedObject.parent, ((Player) selectedObject).getMoveSpeed(), gridClass);
+            if (reachableTiles.contains(hoveredObject)) {
                 selectedObject.setParent(hoveredObject);
                 selectedObject.setOffsetPos(((Hexagon) selectedObject.parent).getOffsetCoords());
                 selectedObject.initAabb();
             }
+//            if (((Player) selectedObject).canMoveCreature(selectedObject, hoveredObject)) {
+//                selectedObject.setParent(hoveredObject);
+//                selectedObject.setOffsetPos(((Hexagon) selectedObject.parent).getOffsetCoords());
+//                selectedObject.initAabb();
+//            }
             //Neighbours
             if (selectedObject.parent instanceof CombatHexagon hexUnderPlayer) {
                 Vector3i[] neighbourCoords = hexUnderPlayer.getAllNeighbours();
@@ -118,6 +125,9 @@ public class CombatEditor extends ImGuiWindow {
                 if (selectedTerrain.getTextureName().contains("wall")) {
                     ((CombatHexagon) hoveredObject).isWall = true;
                 }
+                else {
+                    ((CombatHexagon) hoveredObject).isWall = false;
+                }
             }
         }
 
@@ -147,7 +157,6 @@ public class CombatEditor extends ImGuiWindow {
             ((CombatHexagon) hoveredObject).isWall = false;
             ((CombatHexagon) hoveredObject).isFullCover = false;
         }
-
     }
 
     @Override

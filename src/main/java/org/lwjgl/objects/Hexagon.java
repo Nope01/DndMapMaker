@@ -343,7 +343,6 @@ public abstract class Hexagon extends SceneObject {
         }
     }
 
-    //TODO: make movement bound to this method
     public static Set<Hexagon> hexReachable(Hexagon start, int movement, Grid gridClass) {
         Set<Hexagon> visited = new HashSet<>();
         visited.add(start);
