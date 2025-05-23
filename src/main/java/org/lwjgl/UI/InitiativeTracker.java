@@ -30,7 +30,6 @@ public class InitiativeTracker extends ImGuiWindow {
         uiWidth = 400;
         uiHeight = 250;
         uiXPos = scene.getScreenWidth()-400;
-        uiYPos = imGuiManager.getWindow("Menu Bar").getUiHeight();
 
         initiativeList = new ArrayList<>();
         currentTurn = null;

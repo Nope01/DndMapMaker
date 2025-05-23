@@ -3,6 +3,7 @@ package org.lwjgl.UI;
 import imgui.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.*;
+import org.lwjgl.data.MapSaveLoad;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.opengl.GL;
@@ -27,11 +28,15 @@ public class ImGuiManager {
     private boolean firstFrame = true;
     private int screenWidth;
     private int screenHeight;
+
     private float fontSize;
-
     private float scale = 1.5f;
-
     public boolean scaleFont = false;
+
+    public boolean continentOpen = false;
+    public boolean cityOpen = false;
+    public boolean combatOpen = false;
+
 
     public ImGuiManager(long window, int width, int height) {
         this.window = window;
@@ -118,9 +123,7 @@ public class ImGuiManager {
 
         windows = new CopyOnWriteArrayList<>();
 
-        MenuBar menuBar = new MenuBar(imGuiManager, scene, inputHandler);
-        menuBar.continentOpen = true;
-        imGuiManager.addWindow(menuBar);
+        continentOpen = true;
 
         ContinentEditor continentEditor = new ContinentEditor(imGuiManager, scene, inputHandler);
         imGuiManager.addWindow(continentEditor);
@@ -132,9 +135,7 @@ public class ImGuiManager {
 
         windows = new CopyOnWriteArrayList<>();
 
-        MenuBar menuBar = new MenuBar(imGuiManager, scene, inputHandler);
-        menuBar.cityOpen = true;
-        imGuiManager.addWindow(menuBar);
+        cityOpen = true;
 
         CityEditor cityEditor = new CityEditor(imGuiManager, scene, inputHandler);
         imGuiManager.addWindow(cityEditor);
@@ -145,11 +146,16 @@ public class ImGuiManager {
         firstFrame = true;
     }
 
+    public void initCombatMap(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
+        combatOpen = true;
+    }
+
     public void initMainMenu(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         MainMenu mainMenu = new MainMenu(imGuiManager, scene, inputHandler);
 
         imGuiManager.addWindow(mainMenu);
     }
+
     public void addWindow(ImGuiWindow window) {
         windows.add(window);
     }
@@ -193,6 +199,64 @@ public class ImGuiManager {
         io.getFonts().build();
         imGuiGl3.destroyFontsTexture();
         imGuiGl3.createFontsTexture();
+    }
+
+    public void drawMainMenu(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
+        ImGui.beginMenuBar();
+        if (ImGui.beginMenu("File")) {
+            if (ImGui.menuItem("Save")) {
+                scene.saveMap();
+            }
+            if (ImGui.menuItem("Load")) {
+                scene.loadMap();
+            }
+            if (ImGui.menuItem("Screenshot")) {
+                scene.saveImage();
+            }
+            if (ImGui.menuItem("Test")) {
+                MapSaveLoad.fileOverridePopup();
+            }
+            ImGui.endMenu();
+        }
+
+        if (ImGui.beginMenu("Window")) {
+            if (ImGui.menuItem("Continent editor", continentOpen)) {
+                if (!continentOpen) {
+                    cityOpen = false;
+                    combatOpen = false;
+                    scene.removeAllObjects();
+                    imGuiManager.initContinentMap(imGuiManager, scene, inputHandler);
+                }
+            }
+            if (ImGui.menuItem("City editor", cityOpen)) {
+                if (!cityOpen) {
+                    continentOpen = false;
+                    combatOpen = false;
+                    scene.removeAllObjects();
+                    imGuiManager.initCityMap(imGuiManager, scene, inputHandler);
+                }
+            }
+            if (ImGui.menuItem("Combat editor", combatOpen)) {
+                if (!combatOpen) {
+                    cityOpen = false;
+                    continentOpen = false;
+                    scene.removeAllObjects();
+                    imGuiManager.initCombatMap(imGuiManager, scene, inputHandler);
+                }
+            }
+            ImGui.endMenu();
+        }
+
+        if (ImGui.beginMenu("Tools")) {
+            if (ImGui.menuItem("Initiative tracker")) {
+                InitiativeTracker initiativeTracker = new InitiativeTracker(imGuiManager, scene, inputHandler);
+                imGuiManager.addWindow(initiativeTracker);
+                initiativeTracker.placeUiWindow();
+            }
+            ImGui.endMenu();
+        }
+
+        ImGui.endMenuBar();
     }
 
     public ImGuiIO getIO() {

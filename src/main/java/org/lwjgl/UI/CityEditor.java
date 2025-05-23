@@ -59,7 +59,6 @@ public class CityEditor extends ImGuiWindow {
         uiWidth = 400 * imGuiManager.getScale();
         uiHeight = 600 * imGuiManager.getScale();
         uiXPos = 0;
-        uiYPos = imGuiManager.getWindow("Menu Bar").getUiHeight();
 
         hoveredObject = scene.getHoveredObject();
         grid = scene.getGrid().getGrid();
@@ -140,7 +139,12 @@ public class CityEditor extends ImGuiWindow {
 
     @Override
     protected void renderContent() {
-        ImGui.begin("City Editor", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
+        ImGui.begin("City Editor",
+                ImGuiWindowFlags.NoResize |
+                        ImGuiWindowFlags.NoMove |
+                        ImGuiWindowFlags.MenuBar);
+
+        imGuiManager.drawMainMenu(imGuiManager, scene, inputHandler);
 
         if (ImGui.button("New character")) {
             ImGui.openPopup("Create a character");

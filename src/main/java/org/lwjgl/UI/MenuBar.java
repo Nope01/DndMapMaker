@@ -26,9 +26,11 @@ public class MenuBar extends ImGuiWindow {
 
     @Override
     public void placeUiWindow() {
+        ImGui.newFrame();
         ImGui.setNextWindowPos(uiXPos, uiYPos);
         ImGui.setNextWindowSize(uiWidth, uiHeight);
         renderContent();
+        ImGui.endFrame();
     }
 
     @Override
@@ -38,13 +40,6 @@ public class MenuBar extends ImGuiWindow {
 
     @Override
     protected void renderContent() {
-        ImGui.begin("Menu Bar",
-                ImGuiWindowFlags.MenuBar |
-                        ImGuiWindowFlags.NoTitleBar |
-                        ImGuiWindowFlags.NoMove |
-                        ImGuiWindowFlags.NoResize |
-                        ImGuiWindowFlags.NoBackground);
-
         ImGui.beginMenuBar();
         if (ImGui.beginMenu("File")) {
             if (ImGui.menuItem("Save")) {
@@ -94,6 +89,5 @@ public class MenuBar extends ImGuiWindow {
         }
 
         ImGui.endMenuBar();
-        ImGui.end();
     }
 }

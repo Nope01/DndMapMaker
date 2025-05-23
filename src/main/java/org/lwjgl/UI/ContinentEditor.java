@@ -52,7 +52,6 @@ public class ContinentEditor extends ImGuiWindow{
         uiWidth = 400 * imGuiManager.getScale();
         uiHeight = 600 * imGuiManager.getScale();
         uiXPos = 0;
-        uiYPos = imGuiManager.getWindow("Menu Bar").getUiHeight();
 
         this.selectedTerrainTexture = scene.getTextureCache().getTexture("default_tile");
         this.selectedIconTexture = scene.getTextureCache().getTexture("empty");
@@ -92,7 +91,11 @@ public class ContinentEditor extends ImGuiWindow{
 
     @Override
     protected void renderContent() {
-        ImGui.begin("Hex Editor", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
+        ImGui.begin("Hex Editor",
+                ImGuiWindowFlags.NoResize |
+                        ImGuiWindowFlags.NoMove |
+                        ImGuiWindowFlags.MenuBar);
+        imGuiManager.drawMainMenu(imGuiManager, scene, inputHandler);
 
         ImGui.text("Selected Type: " + ContinentHexagon.getTypeAsString(selectedType));
         ImGui.text("Selected Texture: " + selectedTerrainTexture.getTextureName());
