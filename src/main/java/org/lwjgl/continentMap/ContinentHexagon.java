@@ -37,14 +37,15 @@ public class ContinentHexagon extends org.lwjgl.objects.Hexagon implements Seria
     }
 
     public static String getTypeAsString(int type) {
-        return switch (type) {
-            case FOREST -> "Forest";
-            case PLAINS -> "Plains";
-            case DESERT -> "Desert";
-            case SNOW -> "Snow";
-            case WATER -> "Water";
-            default -> "Unknown";
-        };
+//        return switch (type) {
+//            case FOREST -> "Forest";
+//            case PLAINS -> "Plains";
+//            case DESERT -> "Desert";
+//            case SNOW -> "Snow";
+//            case WATER -> "Water";
+//            default -> "Unknown";
+//        };
+        return "Bingus";
     }
 
     public int getType() {

@@ -20,12 +20,13 @@ public class MenuBar extends ImGuiWindow {
         uiWidth = ImGui.getWindowWidth();
         uiHeight = ImGui.getFrameHeight();
 
-        //placeUiWindow();
+        placeUiWindow();
     }
 
 
     @Override
     public void placeUiWindow() {
+        ImGui.setNextWindowPos(uiXPos, uiYPos);
         ImGui.setNextWindowSize(uiWidth, uiHeight);
         renderContent();
     }

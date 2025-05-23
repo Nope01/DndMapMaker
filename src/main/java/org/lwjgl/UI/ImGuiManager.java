@@ -112,6 +112,7 @@ public class ImGuiManager {
         ImGui.destroyContext();
     }
 
+    //TODO: make menu bar not break everything when changing map modes
     public void initContinentMap(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         scene.initContinentScene();
 
