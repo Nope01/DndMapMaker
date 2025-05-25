@@ -10,10 +10,7 @@ import org.lwjgl.Scene;
 import org.lwjgl.objects.models.opengl.HexagonShape;
 import org.lwjgl.textures.Texture;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static java.lang.Math.abs;
 import static org.lwjgl.opengl.GL11.*;
@@ -377,7 +374,81 @@ public abstract class Hexagon extends SceneObject {
                 }
             }
         }
-
         return visited;
     }
+
+    public static Set<Hexagon> hexVisible(Hexagon start, int range, Grid gridClass) {
+        Set<Hexagon> visible = new HashSet<>();
+        visible.add(start); // Always visible to itself
+
+        // Get all hexagons within range first
+        Set<Hexagon> inRange = getHexagonsInRange(start, range, gridClass);
+
+        // Check LOS to each hex in range
+        for (Hexagon target : inRange) {
+            if (hasLineOfSight(start, target, gridClass)) {
+                visible.add(target);
+                // If this is a wall, we stop checking further along this line
+                if (target instanceof CombatHexagon && ((CombatHexagon) target).isWall) {
+                    continue; // Don't check what's behind this wall
+                }
+            }
+        }
+
+        return visible;
+    }
+
+    private static Set<Hexagon> getHexagonsInRange(Hexagon start, int range, Grid gridClass) {
+        Set<Hexagon> inRange = new HashSet<>();
+        Queue<Hexagon> queue = new LinkedList<>();
+        Map<Hexagon, Integer> distances = new HashMap<>();
+
+        queue.add(start);
+        distances.put(start, 0);
+        inRange.add(start);
+
+        while (!queue.isEmpty()) {
+            Hexagon current = queue.poll();
+            int currentDist = distances.get(current);
+
+            if (currentDist >= range) {
+                continue;
+            }
+
+            for (int dir = 0; dir < 6; dir++) {
+                Hexagon neighbor = gridClass.getHexagonAt(getCubeNeighbour(current.getCubeCoords(), dir));
+                if (neighbor != null && !distances.containsKey(neighbor)) {
+                    distances.put(neighbor, currentDist + 1);
+                    inRange.add(neighbor);
+                    queue.add(neighbor);
+                }
+            }
+        }
+        return inRange;
+    }
+
+    private static boolean hasLineOfSight(Hexagon start, Hexagon end, Grid gridClass) {
+        if (start.equals(end)) return true;
+
+        Vector3i a = start.getCubeCoords();
+        Vector3i b = end.getCubeCoords();
+        int distance = cubeDistance(a, b);
+
+        // Walk along the line
+        for (int i = 1; i <= distance; i++) {
+            float t = 1.0f/distance * i;
+            Vector3i interp = cubeRound(cubeLerp(a, b, t));
+            Hexagon hex = gridClass.getHexagonAt(interp);
+
+            // If we hit a wall before reaching our target, no LOS
+            if (hex instanceof CombatHexagon && ((CombatHexagon) hex).isWall) {
+                // Only block if the wall is before our target position
+                if (i < distance) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 }

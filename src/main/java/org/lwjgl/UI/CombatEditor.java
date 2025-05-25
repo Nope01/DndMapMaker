@@ -124,7 +124,7 @@ public class CombatEditor extends ImGuiWindow {
                 Set<Hexagon> reachableTiles =
                         hexReachable((CombatHexagon)selectedObject.parent, player.getMoveSpeed(), gridClass);
                 Set<Hexagon> visibleTiles =
-                        hexReachable((CombatHexagon)selectedObject.parent, player.getDungeonVisibleRange(), gridClass);
+                        hexVisible((CombatHexagon)selectedObject.parent, player.getDungeonVisibleRange(), gridClass);
                 for (Hexagon hex : reachableTiles) {
                     hex.highlighted = true;
                 }
@@ -228,7 +228,9 @@ public class CombatEditor extends ImGuiWindow {
 
         if (ImGui.checkbox("Fog of War", fogOfWar)) {
             fogOfWar = !fogOfWar;
+            areaSelectClear(gridClass, fogOfWar);
         }
+
         if (hoveredObject instanceof CombatHexagon) {
             ImGui.text(((CombatHexagon) hoveredObject).isWall ? "Wall" : "Floor");
             ImGui.text(((CombatHexagon) hoveredObject).isFullCover ? "Full cover" : "Nope");

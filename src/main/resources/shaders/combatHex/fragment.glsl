@@ -18,6 +18,7 @@ void main() {
     vec4 terrainTextureColour = texture(terrainTexture, texCoords);
     vec4 iconTextureColour = texture(iconTexture, iconTexCoords);
     vec3 selectedColour = vec3(173.0/255.0, 62.0/255.0, 62.0/255.0);
+    vec3 fogColour = vec3(0.1f, 0.1f, 0.15f);
     vec3 lineColour = vec3(0.0, 1.0, 0.3);
 
     if (iconTextureColour.a > 0.001f) {
@@ -36,6 +37,14 @@ void main() {
         FragColor = FragColor + 0.2f;
     }
 
+
+    if (isVisible > 0) {
+        FragColor.a = 1.0f;
+    }
+    else {
+        FragColor = vec4(fogColour, 1.0f);
+    }
+
     if (highlighted > 0) {
         FragColor.g = FragColor.g + 0.2f;
     }
@@ -43,13 +52,4 @@ void main() {
     if (hovered > 0) {
         FragColor = vec4(selectedColour, 1.0);
     }
-
-    if (isVisible > 0) {
-        FragColor.a = 1.0f;
-    }
-    else {
-        FragColor.a = 0.0f;
-    }
-
-
 }
