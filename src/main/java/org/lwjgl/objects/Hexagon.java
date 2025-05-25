@@ -3,7 +3,6 @@ package org.lwjgl.objects;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
-import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.combatMap.CombatHexagon;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
@@ -33,6 +32,9 @@ public abstract class Hexagon extends SceneObject {
     protected Vector2i axialCoords;
 
     public boolean highlighted;
+    private boolean movementHighlighted;
+    private boolean spellHighlighted;
+
     public boolean isVisible;
 
     public static final float SIZE = 1.0f;
@@ -285,11 +287,12 @@ public abstract class Hexagon extends SceneObject {
                 lerp(a.z, b.z, t));
     }
 
-    public static Vector3i[] cubeLineDraw(Vector3i a, Vector3i b) {
+    public static Set<Hexagon> cubeLineDraw(Vector3i a, Vector3i b, Grid gridClass) {
         int length = cubeDistance(a, b);
-        Vector3i[] results = new Vector3i[length];
+        Set<Hexagon> results = new HashSet<>();
         for (int i = 0; i < length; i++) {
-            results[i] = cubeRound(cubeLerp(a, b, (float) (1.0/length * i)));
+            Hexagon hexagon = gridClass.getHexagonAt(cubeRound(cubeLerp(a, b, (float) (1.0/length * i))));
+            results.add(hexagon);
         }
         return results;
     }
@@ -333,11 +336,11 @@ public abstract class Hexagon extends SceneObject {
     }
 
     //TODO: move these to grid class?
-    public static void areaSelectClear(Grid gridClass, boolean fogOfWar) {
+    public static void clearReachableTiles(Grid gridClass, boolean fogOfWar) {
         Hexagon[][] grid = gridClass.getGrid();
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
-                grid[i][j].highlighted = false;
+                grid[i][j].setMovementHighlighted(false);
                 if (fogOfWar) {
                     grid[i][j].isVisible = false;
                 }
@@ -348,8 +351,8 @@ public abstract class Hexagon extends SceneObject {
         }
     }
 
-    public static void areaSelectClear(Grid gridClass) {
-        areaSelectClear(gridClass, false);
+    public static void clearReachableTiles(Grid gridClass) {
+        clearReachableTiles(gridClass, false);
     }
 
     public static Set<Hexagon> hexReachable(Hexagon start, int range, Grid gridClass) {
@@ -451,4 +454,19 @@ public abstract class Hexagon extends SceneObject {
         return true;
     }
 
+    public boolean isMovementHighlighted() {
+        return movementHighlighted;
+    }
+
+    public void setMovementHighlighted(boolean movementHighlighted) {
+        this.movementHighlighted = movementHighlighted;
+    }
+
+    public boolean isSpellHighlighted() {
+        return spellHighlighted;
+    }
+
+    public void setSpellHighlighted(boolean spellHighlighted) {
+        this.spellHighlighted = spellHighlighted;
+    }
 }

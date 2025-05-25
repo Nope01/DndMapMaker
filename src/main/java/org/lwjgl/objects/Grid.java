@@ -190,6 +190,7 @@ public class Grid extends SceneObject {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 grid[row][col].hovered = false;
+                grid[row][col].setSpellHighlighted(false);
             }
         }
     }

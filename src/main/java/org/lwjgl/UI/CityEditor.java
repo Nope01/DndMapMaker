@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.data.ApiCalls.getRandomName;
-import static org.lwjgl.objects.Hexagon.areaSelectClear;
+import static org.lwjgl.objects.Hexagon.clearReachableTiles;
 import static org.lwjgl.objects.Hexagon.showMovementRange;
 import static org.lwjgl.objects.entities.Classes.*;
 import static org.lwjgl.objects.entities.Player.createCreatureRandomPos;
@@ -93,7 +93,7 @@ public class CityEditor extends ImGuiWindow {
 
         //Selection logic
         if (clickInput && hoveredObject != null) {
-            areaSelectClear(gridClass);
+            clearReachableTiles(gridClass);
             if (selectedObject != null) {
                 selectedObject.selected = false;
             }
@@ -119,7 +119,7 @@ public class CityEditor extends ImGuiWindow {
         if (selectedObject != null && inputHandler.isRightClicked()) {
             selectedObject.selected = false;
             selectedObject = null;
-            areaSelectClear(gridClass);
+            clearReachableTiles(gridClass);
             selectedTerrain = null;
         }
 

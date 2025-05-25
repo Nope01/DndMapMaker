@@ -19,6 +19,7 @@ import org.lwjgl.textures.Texture;
 import org.lwjgl.utils.HelperMethods;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -63,6 +64,12 @@ public class CombatEditor extends ImGuiWindow {
 
     private boolean fogOfWar = false;
 
+    private int spellType = 0;
+    private int[] spellSize = new int[]{1};
+    private Set<Hexagon> spellHighlightedTiles = new HashSet<>();
+    private Set<Hexagon> reachableTiles = new HashSet<>();
+    private Set<Hexagon> visibleTiles = new HashSet<>();
+
     public CombatEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "Combat Editor");
         uiWidth = 400 * imGuiManager.getScale();
@@ -89,11 +96,12 @@ public class CombatEditor extends ImGuiWindow {
         if (clickInput && selectedObject instanceof Player) {
             selectedObstacle = null;
             selectedTerrain = null;
-            Set<Hexagon> reachableTiles = hexReachable((CombatHexagon)selectedObject.parent, ((Player) selectedObject).getMoveSpeed(), gridClass);
+            reachableTiles = hexReachable((CombatHexagon)selectedObject.parent, ((Player) selectedObject).getMoveSpeed(), gridClass);
             if (reachableTiles.contains(hoveredObject)) {
                 selectedObject.setParent(hoveredObject);
                 selectedObject.setOffsetPos(((Hexagon) selectedObject.parent).getOffsetCoords());
                 selectedObject.initAabb();
+                clearReachableTiles(gridClass, fogOfWar);
             }
 //            if (((Player) selectedObject).canMoveCreature(selectedObject, hoveredObject)) {
 //                selectedObject.setParent(hoveredObject);
@@ -111,22 +119,21 @@ public class CombatEditor extends ImGuiWindow {
 
         //Selection logic
         if (clickInput && hoveredObject != null) {
-            areaSelectClear(gridClass, fogOfWar);
+            clearReachableTiles(gridClass, fogOfWar);
             if (selectedObject != null) {
                 selectedObject.selected = false;
             }
             selectedObject = hoveredObject;
             selectedObject.selected = true;
 
-            //TODO: vision works differently to movement, so need a different algorithm for LOS
             //Highlight moveable tiles
             if (selectedObject instanceof Player player) {
-                Set<Hexagon> reachableTiles =
+                reachableTiles =
                         hexReachable((CombatHexagon)selectedObject.parent, player.getMoveSpeed(), gridClass);
-                Set<Hexagon> visibleTiles =
+                visibleTiles =
                         hexVisible((CombatHexagon)selectedObject.parent, player.getDungeonVisibleRange(), gridClass);
                 for (Hexagon hex : reachableTiles) {
-                    hex.highlighted = true;
+                    hex.setMovementHighlighted(true);
                 }
                 for (Hexagon hex : visibleTiles) {
                     hex.isVisible = true;
@@ -166,16 +173,6 @@ public class CombatEditor extends ImGuiWindow {
             }
         }
 
-
-        //Deselect
-        if (selectedObject != null && inputHandler.isRightClicked()) {
-            selectedObject.selected = false;
-            selectedObject = null;
-            areaSelectClear(gridClass, fogOfWar);
-            selectedObstacle = null;
-            selectedTerrain = null;
-        }
-
         //Eraser
         if (hoveredObject instanceof CombatHexagon && inputHandler.isRightClicked()) {
             ((CombatHexagon) hoveredObject).setIconTexture(scene.getTextureCache().getTexture("empty"));
@@ -183,6 +180,35 @@ public class CombatEditor extends ImGuiWindow {
             ((CombatHexagon) hoveredObject).isHalfCover = false;
             ((CombatHexagon) hoveredObject).isWall = false;
             ((CombatHexagon) hoveredObject).isFullCover = false;
+        }
+
+        //Spell highlighting
+        if (hoveredObject instanceof CombatHexagon hoveredHex) {
+            //Line between hovered and selected hex specifically
+            if (selectedObject instanceof CombatHexagon selectedHex) {
+                if (spellType == 0) {
+                    spellHighlightedTiles = Hexagon.cubeLineDraw(hoveredHex.getCubeCoords(), selectedHex.getCubeCoords(), gridClass);
+                }
+            }
+            if (spellType == 1) {
+                spellHighlightedTiles = hexVisible(hoveredHex,spellSize[0], gridClass);
+            }
+            if (spellType == 2) {
+
+            }
+        }
+        for (Hexagon hex : spellHighlightedTiles) {
+            hex.setSpellHighlighted(true);
+        }
+
+        //Deselect
+        if (selectedObject != null && inputHandler.isRightClicked()) {
+            selectedObject.selected = false;
+            selectedObject = null;
+            clearReachableTiles(gridClass, fogOfWar);
+            selectedObstacle = null;
+            selectedTerrain = null;
+            spellHighlightedTiles.clear();
         }
     }
 
@@ -228,15 +254,30 @@ public class CombatEditor extends ImGuiWindow {
 
         if (ImGui.checkbox("Fog of War", fogOfWar)) {
             fogOfWar = !fogOfWar;
-            areaSelectClear(gridClass, fogOfWar);
+            clearReachableTiles(gridClass, fogOfWar);
         }
 
-        if (hoveredObject instanceof CombatHexagon) {
-            ImGui.text(((CombatHexagon) hoveredObject).isWall ? "Wall" : "Floor");
-            ImGui.text(((CombatHexagon) hoveredObject).isFullCover ? "Full cover" : "Nope");
-            ImGui.text(((CombatHexagon) hoveredObject).isHalfCover ? "Half cover" : "Nope");
+        ImGui.separator();
+        if (ImGui.button("Select spell")) {
+            ImGui.openPopup("Select spell");
+        }
+        if (ImGui.beginPopup("Select spell")) {
+            if (ImGui.button("Line")) {
+                setSpellType(0);
+                ImGui.closeCurrentPopup();
+            }
+            if (ImGui.button("Circle")) {
+                setSpellType(1);
+                ImGui.closeCurrentPopup();
+            }
+            if (ImGui.button("Cone")) {
+                setSpellType(2);
+                ImGui.closeCurrentPopup();
+            }
+            ImGui.endPopup();
         }
 
+        ImGui.sliderInt("Spell size", spellSize, 1, 10 );
         ImGui.end();
     }
 
@@ -336,6 +377,14 @@ public class CombatEditor extends ImGuiWindow {
     public void setHoveredObjectAsHalfCover() {
         if (hoveredObject instanceof CombatHexagon) {
             ((CombatHexagon) hoveredObject).isHalfCover = true;
+        }
+    }
+
+    public void setSpellType(int type) {
+        this.spellType = type;
+        spellHighlightedTiles.clear();
+        if (spellType == 0) {
+
         }
     }
 }

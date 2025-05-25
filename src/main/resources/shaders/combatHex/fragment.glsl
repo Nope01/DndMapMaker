@@ -10,6 +10,8 @@ uniform int inLine;
 uniform int selected;
 uniform int highlighted;
 uniform int isVisible;
+uniform int movementHighlighted;
+uniform int spellHighlighted;
 
 uniform sampler2D terrainTexture;
 uniform sampler2D iconTexture;
@@ -43,6 +45,14 @@ void main() {
     }
     else {
         FragColor = vec4(fogColour, 1.0f);
+    }
+
+    if (movementHighlighted > 0) {
+        FragColor.b = FragColor.b + 0.2f;
+    }
+
+    if (spellHighlighted > 0) {
+        FragColor.r = FragColor.r + 0.2f;
     }
 
     if (highlighted > 0) {
