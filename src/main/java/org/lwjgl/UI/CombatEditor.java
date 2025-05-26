@@ -70,6 +70,11 @@ public class CombatEditor extends ImGuiWindow {
     private Set<Hexagon> reachableTiles = new HashSet<>();
     private Set<Hexagon> visibleTiles = new HashSet<>();
 
+    private int menuCurrentlyOpen = 0;
+    private int terrainButtonIcon;
+    private int spellButtonIcon;
+    private int combatButtonIcon;
+
     public CombatEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "Combat Editor");
         uiWidth = 400 * imGuiManager.getScale();
@@ -81,6 +86,10 @@ public class CombatEditor extends ImGuiWindow {
         grid = scene.getGrid().getGrid();
         gridClass = scene.getGrid();
 
+        terrainButtonIcon = scene.getTextureCache().getTexture("repair-tools").getTextureId();
+        spellButtonIcon = scene.getTextureCache().getTexture("magic").getTextureId();
+        combatButtonIcon = scene.getTextureCache().getTexture("sword").getTextureId();
+
         placeUiWindow();
     }
 
@@ -91,40 +100,93 @@ public class CombatEditor extends ImGuiWindow {
         grid = gridClass.getGrid();
 
         boolean clickInput = inputHandler.isLeftClicked();
-
-        //Movement logic
-        if (clickInput && selectedObject instanceof Player) {
-            selectedObstacle = null;
-            selectedTerrain = null;
-            reachableTiles = hexReachable((CombatHexagon)selectedObject.parent, ((Player) selectedObject).getMoveSpeed(), gridClass);
-            if (reachableTiles.contains(hoveredObject)) {
-                selectedObject.setParent(hoveredObject);
-                selectedObject.setOffsetPos(((Hexagon) selectedObject.parent).getOffsetCoords());
-                selectedObject.initAabb();
-                clearReachableTiles(gridClass, fogOfWar);
-            }
-//            if (((Player) selectedObject).canMoveCreature(selectedObject, hoveredObject)) {
-//                selectedObject.setParent(hoveredObject);
-//                selectedObject.setOffsetPos(((Hexagon) selectedObject.parent).getOffsetCoords());
-//                selectedObject.initAabb();
-//            }
-            //Neighbours
-            if (selectedObject.parent instanceof CombatHexagon hexUnderPlayer) {
-                Vector3i[] neighbourCoords = hexUnderPlayer.getAllNeighbours();
-                for (int i = 0; i < neighbours.length; i++) {
-                    neighbours[i] = (CombatHexagon) gridClass.getHexagonAt(neighbourCoords[i]);
+        //Terrain
+        if (menuCurrentlyOpen == 0) {
+            //Terrain
+            if (inputHandler.isLeftClickedAndHeld() && hoveredObject instanceof CombatHexagon) {
+                if (selectedTerrain != null) {
+                    ((CombatHexagon) hoveredObject).setTexture(selectedTerrain);
+                    if (selectedTerrain.getTextureName().contains("wall")) {
+                        ((CombatHexagon) hoveredObject).isWall = true;
+                    }
+                    else {
+                        ((CombatHexagon) hoveredObject).isWall = false;
+                    }
                 }
+            }
+
+            //Icons
+            if (clickInput && selectedObject instanceof CombatHexagon) {
+                if (selectedObstacle != null) {
+                    ((CombatHexagon) selectedObject).setIconTexture(selectedObstacle);
+                    if (selectedObstacle.getTextureName().contains("barrel")) {
+                        ((CombatHexagon) selectedObject).isHalfCover = true;
+                    }
+                    else {
+                        ((CombatHexagon) selectedObject).isHalfCover = false;
+                    }
+                    if (selectedObstacle.getTextureName().contains("table")) {
+                        ((CombatHexagon) selectedObject).isFullCover = true;
+                    }
+                    else {
+                        ((CombatHexagon) selectedObject).isFullCover = false;
+                    }
+                }
+            }
+
+            //Eraser
+            if (hoveredObject instanceof CombatHexagon hoveredHex && inputHandler.isRightClicked()) {
+                hoveredHex.setIconTexture(scene.getTextureCache().getTexture("empty"));
+                hoveredHex.setTexture(scene.getTextureCache().getTexture("floor_01"));
+                hoveredHex.isHalfCover = false;
+                hoveredHex.isWall = false;
+                hoveredHex.isFullCover = false;
             }
         }
 
-        //Selection logic
-        if (clickInput && hoveredObject != null) {
-            clearReachableTiles(gridClass, fogOfWar);
-            if (selectedObject != null) {
-                selectedObject.selected = false;
+        //Spells
+        else if (menuCurrentlyOpen == 1) {
+            //Spell highlighting
+            if (hoveredObject instanceof CombatHexagon hoveredHex) {
+                //Line between hovered and selected hex specifically
+                if (selectedObject instanceof CombatHexagon selectedHex) {
+                    if (spellType == 0) {
+                        spellHighlightedTiles = Hexagon.cubeLineDraw(hoveredHex.getCubeCoords(), selectedHex.getCubeCoords(), gridClass);
+                    }
+                }
+                if (spellType == 1) {
+                    spellHighlightedTiles = hexVisible(hoveredHex,spellSize[0], gridClass);
+                }
+                if (spellType == 2) {
+
+                }
             }
-            selectedObject = hoveredObject;
-            selectedObject.selected = true;
+            for (Hexagon hex : spellHighlightedTiles) {
+                hex.setSpellHighlighted(true);
+            }
+        }
+
+        //Combat
+        if (true) {
+            //Movement logic
+            if (clickInput && selectedObject instanceof Player) {
+                selectedObstacle = null;
+                selectedTerrain = null;
+                reachableTiles = hexReachable((CombatHexagon)selectedObject.parent, ((Player) selectedObject).getMoveSpeed(), gridClass);
+                if (reachableTiles.contains(hoveredObject)) {
+                    selectedObject.setParent(hoveredObject);
+                    selectedObject.setOffsetPos(((Hexagon) selectedObject.parent).getOffsetCoords());
+                    selectedObject.initAabb();
+                    clearReachableTiles(gridClass, fogOfWar);
+                }
+                //Neighbours
+                if (selectedObject.parent instanceof CombatHexagon hexUnderPlayer) {
+                    Vector3i[] neighbourCoords = hexUnderPlayer.getAllNeighbours();
+                    for (int i = 0; i < neighbours.length; i++) {
+                        neighbours[i] = (CombatHexagon) gridClass.getHexagonAt(neighbourCoords[i]);
+                    }
+                }
+            }
 
             //Highlight moveable tiles
             if (selectedObject instanceof Player player) {
@@ -141,64 +203,14 @@ public class CombatEditor extends ImGuiWindow {
             }
         }
 
-        //Terrain
-        if (inputHandler.isLeftClickedAndHeld() && hoveredObject instanceof CombatHexagon) {
-            if (selectedTerrain != null) {
-                ((CombatHexagon) hoveredObject).setTexture(selectedTerrain);
-                if (selectedTerrain.getTextureName().contains("wall")) {
-                    ((CombatHexagon) hoveredObject).isWall = true;
-                }
-                else {
-                    ((CombatHexagon) hoveredObject).isWall = false;
-                }
+        //Selection logic
+        if (clickInput && hoveredObject != null) {
+            clearReachableTiles(gridClass, fogOfWar);
+            if (selectedObject != null) {
+                selectedObject.selected = false;
             }
-        }
-
-        //Icons
-        if (clickInput && selectedObject instanceof CombatHexagon) {
-            if (selectedObstacle != null) {
-                ((CombatHexagon) selectedObject).setIconTexture(selectedObstacle);
-                if (selectedObstacle.getTextureName().contains("barrel")) {
-                    ((CombatHexagon) selectedObject).isHalfCover = true;
-                }
-                else {
-                    ((CombatHexagon) selectedObject).isHalfCover = false;
-                }
-                if (selectedObstacle.getTextureName().contains("table")) {
-                    ((CombatHexagon) selectedObject).isFullCover = true;
-                }
-                else {
-                    ((CombatHexagon) selectedObject).isFullCover = false;
-                }
-            }
-        }
-
-        //Eraser
-        if (hoveredObject instanceof CombatHexagon && inputHandler.isRightClicked()) {
-            ((CombatHexagon) hoveredObject).setIconTexture(scene.getTextureCache().getTexture("empty"));
-            hoveredObject.setTexture(scene.getTextureCache().getTexture("floor_01"));
-            ((CombatHexagon) hoveredObject).isHalfCover = false;
-            ((CombatHexagon) hoveredObject).isWall = false;
-            ((CombatHexagon) hoveredObject).isFullCover = false;
-        }
-
-        //Spell highlighting
-        if (hoveredObject instanceof CombatHexagon hoveredHex) {
-            //Line between hovered and selected hex specifically
-            if (selectedObject instanceof CombatHexagon selectedHex) {
-                if (spellType == 0) {
-                    spellHighlightedTiles = Hexagon.cubeLineDraw(hoveredHex.getCubeCoords(), selectedHex.getCubeCoords(), gridClass);
-                }
-            }
-            if (spellType == 1) {
-                spellHighlightedTiles = hexVisible(hoveredHex,spellSize[0], gridClass);
-            }
-            if (spellType == 2) {
-
-            }
-        }
-        for (Hexagon hex : spellHighlightedTiles) {
-            hex.setSpellHighlighted(true);
+            selectedObject = hoveredObject;
+            selectedObject.selected = true;
         }
 
         //Deselect
@@ -228,56 +240,74 @@ public class CombatEditor extends ImGuiWindow {
         ImGui.setNextWindowPos(center, ImGuiCond.Appearing, new ImVec2(0.5f, 0.5f));
         ImGui.setNextWindowSize(450 * imGuiManager.getScale(), 220 * imGuiManager.getScale());
         openCharacterCreator();
-
-        ImGui.setNextItemOpen(true);
-        if (ImGui.treeNode("Grid", "Terrain")) {
-            if (GuiUtils.createTerrainGrid(3, 1, terrainNames, scene, this)) {
-                selectedObstacle = null;
-            }
-        }
-
-        ImGui.setNextItemOpen(true);
-        if (ImGui.treeNode("Grid", "Obstacles")) {
-            if (GuiUtils.createObstacleGrid(3, 1, obstacleNames, scene, this)) {
-                selectedTerrain = null;
-            }
-        }
-
-        if (ImGui.button("Make all hexes floor")) {
-            for (int row = 0; row < gridClass.rows; row++) {
-                for (int col = 0; col < gridClass.columns; col++) {
-                    grid[row][col].setTexture(scene.getTextureCache().getTexture("floor_01"));
-                    ((CombatHexagon) grid[row][col]).isWall = false;
-                }
-            }
-        }
-
         if (ImGui.checkbox("Fog of War", fogOfWar)) {
             fogOfWar = !fogOfWar;
             clearReachableTiles(gridClass, fogOfWar);
         }
 
-        ImGui.separator();
-        if (ImGui.button("Select spell")) {
-            ImGui.openPopup("Select spell");
+        if (ImGui.imageButton(terrainButtonIcon, 35.0f, 35.0f)) {
+            menuCurrentlyOpen = 0;
         }
-        if (ImGui.beginPopup("Select spell")) {
-            if (ImGui.button("Line")) {
-                setSpellType(0);
-                ImGui.closeCurrentPopup();
-            }
-            if (ImGui.button("Circle")) {
-                setSpellType(1);
-                ImGui.closeCurrentPopup();
-            }
-            if (ImGui.button("Cone")) {
-                setSpellType(2);
-                ImGui.closeCurrentPopup();
-            }
-            ImGui.endPopup();
+        ImGui.sameLine();
+        if (ImGui.imageButton(spellButtonIcon, 35.0f, 35.0f)) {
+            menuCurrentlyOpen = 1;
+        }
+        ImGui.sameLine();
+        if (ImGui.imageButton(combatButtonIcon, 35.0f, 35.0f)) {
+            menuCurrentlyOpen = 2;
         }
 
-        ImGui.sliderInt("Spell size", spellSize, 1, 10 );
+
+        ImGui.separator();
+
+        //Terrain
+        if (menuCurrentlyOpen == 0) {
+            ImGui.setNextItemOpen(true);
+            if (ImGui.treeNode("Grid", "Terrain")) {
+                if (GuiUtils.createTerrainGrid(3, 1, terrainNames, scene, this)) {
+                    selectedObstacle = null;
+                }
+            }
+
+            ImGui.setNextItemOpen(true);
+            if (ImGui.treeNode("Grid", "Obstacles")) {
+                if (GuiUtils.createObstacleGrid(3, 1, obstacleNames, scene, this)) {
+                    selectedTerrain = null;
+                }
+            }
+
+            if (ImGui.button("Make all hexes floor")) {
+                for (int row = 0; row < gridClass.rows; row++) {
+                    for (int col = 0; col < gridClass.columns; col++) {
+                        grid[row][col].setTexture(scene.getTextureCache().getTexture("floor_01"));
+                        ((CombatHexagon) grid[row][col]).isWall = false;
+                    }
+                }
+            }
+        }
+        //Spells
+        if (menuCurrentlyOpen == 1) {
+            if (ImGui.button("Select spell")) {
+                ImGui.openPopup("Select spell");
+            }
+            if (ImGui.beginPopup("Select spell")) {
+                if (ImGui.button("Line")) {
+                    setSpellType(0);
+                    ImGui.closeCurrentPopup();
+                }
+                if (ImGui.button("Circle")) {
+                    setSpellType(1);
+                    ImGui.closeCurrentPopup();
+                }
+                if (ImGui.button("Cone")) {
+                    setSpellType(2);
+                    ImGui.closeCurrentPopup();
+                }
+                ImGui.endPopup();
+            }
+            ImGui.sliderInt("Spell size", spellSize, 1, 10 );
+        }
+
         ImGui.end();
     }
 

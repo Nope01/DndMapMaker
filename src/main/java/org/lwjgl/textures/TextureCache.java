@@ -28,8 +28,11 @@ public class TextureCache {
             "caravel",
             "castle",
             "coffer",
+            "magic",
             "old-key",
+            "repair-tools",
             "soda",
+            "sword",
             "table",
             "tavern",
     };

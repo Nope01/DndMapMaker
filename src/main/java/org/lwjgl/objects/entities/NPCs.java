@@ -26,7 +26,7 @@ public final class NPCs {
     public static final int PRIEST = 22;
     public static final int SKELETON = 23;
     public static final int VAMPIRE = 24;
-    public static final int Zombie = 25;
+    public static final int ZOMBIE = 25;
 
     public static final String[] npcList = new String[] {
             "Assassin",
