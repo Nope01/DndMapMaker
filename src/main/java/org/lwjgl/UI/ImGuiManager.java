@@ -3,7 +3,9 @@ package org.lwjgl.UI;
 import imgui.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.*;
+import imgui.internal.ImGuiContext;
 import org.lwjgl.data.MapSaveLoad;
+import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.opengl.GL;
@@ -17,7 +19,7 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static imgui.ImGui.getDrawData;
-import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class ImGuiManager {
     private long window;
@@ -29,6 +31,8 @@ public class ImGuiManager {
     private int screenWidth;
     private int screenHeight;
 
+    private ImGuiContext context;
+
     private float fontSize;
     private float scale = 1.5f;
     public boolean scaleFont = false;
@@ -36,6 +40,8 @@ public class ImGuiManager {
     public boolean continentOpen = false;
     public boolean cityOpen = false;
     public boolean combatOpen = false;
+
+    private static boolean initialized = false;
 
 
     public ImGuiManager(long window, int width, int height) {
@@ -46,19 +52,49 @@ public class ImGuiManager {
         this.fontSize = 16f * scale;
         imGuiGlfw = new ImGuiImplGlfw();
         imGuiGl3 = new ImGuiImplGl3();
+
         init();
+
+        setupCallbacks();
+        resizeFont();
+    }
+
+    private void setupCallbacks() {
+        // Store previous callbacks to chain them
+        GLFWMouseButtonCallbackI[] prevMouseCB = new GLFWMouseButtonCallbackI[1];
+        prevMouseCB[0] = glfwSetMouseButtonCallback(window, (w, button, action, mods) -> {
+            // Only process if this is our window
+            if (w == this.window) {
+                glfwMakeContextCurrent(this.window);
+                imGuiGlfw.mouseButtonCallback(w, button, action, mods);
+            }
+            // Chain to previous callback
+            if (prevMouseCB[0] != null) prevMouseCB[0].invoke(w, button, action, mods);
+        });
+
+        glfwSetScrollCallback(window, (w, xoffset, yoffset) -> {
+            imGuiGlfw.scrollCallback(w, xoffset, yoffset);
+        });
+
+        glfwSetKeyCallback(window, (w, key, scancode, action, mods) -> {
+            imGuiGlfw.keyCallback(w, key, scancode, action, mods);
+        });
+
+        glfwSetCharCallback(window, (w, codepoint) -> {
+            imGuiGlfw.charCallback(w, codepoint);
+        });
     }
 
     private void init() {
         // Ensure OpenGL context is active
-        GL.createCapabilities();
+        //GL.createCapabilities();
 
         // Initialize ImGui
-        ImGui.createContext();
+        context = ImGui.createContext();
         io = ImGui.getIO();
 
         // Initialize GLFW and OpenGL backends
-        imGuiGlfw.init(window, true);
+        imGuiGlfw.init(window, false);
         imGuiGl3.init("#version 330 core"); // Match your shader version
 
         // Set initial display size
@@ -67,7 +103,6 @@ public class ImGuiManager {
         glfwGetFramebufferSize(window, width, height);
         io.setDisplaySize(width[0], height[0]);
 
-        resizeFont();
     }
 
     public void update(float deltaTime, Scene scene, InputHandler inputHandler) {
@@ -117,7 +152,6 @@ public class ImGuiManager {
         ImGui.destroyContext();
     }
 
-    //TODO: make menu bar not break everything when changing map modes
     public void initContinentMap(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         scene.initContinentScene();
 

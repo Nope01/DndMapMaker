@@ -1,8 +1,5 @@
 package org.lwjgl;
 
-import imgui.ImFontAtlas;
-import imgui.ImGui;
-import imgui.ImGuiIO;
 import org.lwjgl.UI.ImGuiManager;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.input.InputHandler;
@@ -10,7 +7,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.shaders.ShaderProgramCache;
 
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -18,13 +15,20 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Main {
     private long window;
-    private int width;
-    private int height;
+    private long dmWindow;
+    private int mainWidth;
+    private int mainHeight;
+    private int dmWidth;
+    private int dmHeight;
     private long oldTime;
     private InputHandler inputHandler;
+    private InputHandler dmInputHandler;
     private Scene scene;
+    private Scene dmScene;
     private FloatBuffer matrixBuffer;
+    private FloatBuffer dmMatrixBuffer;
     private ImGuiManager imGuiManager;
+    private ImGuiManager dmImGuiManager;
     public ShaderProgramCache shaderCache;
 
     public static void main(String[] args) {
@@ -47,115 +51,158 @@ public class Main {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
         if (!glfwInit()) {
-            throw new IllegalStateException("Unable to initialize GLFW");
+            throw new IllegalStateException("Failed to initialize GLFW");
         }
 
-        //Monitor size
-        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+        matrixBuffer = BufferUtils.createFloatBuffer(16);  // For main window
+        dmMatrixBuffer = BufferUtils.createFloatBuffer(16); // For DM window
+
+        // Get monitor resolution
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        mainWidth = vidmode.width();
+        mainHeight = vidmode.height();
+        dmWidth = vidmode.width();
+        dmHeight = vidmode.height();
 
-        width = vidmode.width();
-        height = vidmode.height();
-
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        window = glfwCreateWindow(width, height, "DND map maker", NULL, NULL);
-        if (window == NULL) {
-            glfwTerminate();
-            throw new RuntimeException("Failed to create GLFW window");
-        }
+        // --- MAIN WINDOW SETUP ---
+        window = glfwCreateWindow(mainWidth, mainHeight, "DND Map Maker", NULL, NULL);
+        if (window == NULL) throw new RuntimeException("Failed to create main window");
 
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
+        System.out.println("Main window GL: " + glGetString(GL_VERSION));
 
-        int[] arrWidth = new int[1];
-        int[] arrHeight = new int[1];
-        glfwGetFramebufferSize(window, arrWidth, arrHeight);
-        width = arrWidth[0];
-        height = arrHeight[0];
-
-        // Set up OpenGL
+        // OpenGL state for main window
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-        glViewport(0, 0, width, height);
-
-        // Initialize camera and scene
-        inputHandler = new InputHandler(window, width, height);
-
-        // Create and compile shaders
+        // Initialize main scene
+        inputHandler = new InputHandler(window, mainWidth, mainHeight);
         shaderCache = new ShaderProgramCache();
+        scene = new Scene(mainWidth, mainHeight, inputHandler, shaderCache, window);
 
-        scene = new Scene(width, height, inputHandler, shaderCache, window);
+        // Initialize main ImGui
+        imGuiManager = new ImGuiManager(window, mainWidth, mainHeight);
+        imGuiManager.initMainMenu(imGuiManager, scene, inputHandler);
 
-        //UI init
+        // --- DM WINDOW SETUP ---
+        dmWindow = glfwCreateWindow(dmWidth, dmHeight, "DM View", NULL, window); // Share OpenGL resources
+        if (dmWindow == NULL) throw new RuntimeException("Failed to create DM window");
 
-        try {
-            imGuiManager = new ImGuiManager(window, width, height);
-            imGuiManager.initMainMenu(imGuiManager, scene, inputHandler);
-        }
-        catch (Exception e) {
-            System.err.println("Failed to load imGuiManager: " + e.getMessage());
-            e.printStackTrace();
-        }
+        glfwMakeContextCurrent(dmWindow);
+        GL.createCapabilities(); // Must call for new context
+        System.out.println("DM window GL: " + glGetString(GL_VERSION));
 
-        matrixBuffer = BufferUtils.createFloatBuffer(16);
+        // OpenGL state for DM window
+        glEnable(GL_DEPTH_TEST);
+        glClearColor(0.2f, 0.2f, 0.25f, 1.0f); // Different background
 
-        glfwSetFramebufferSizeCallback(window, (window, width, height) -> {
-            if (width > 0 && height > 0) {
-                glViewport(0, 0, width, height);
-                scene.getCamera().updateProjection(width, height);
-                if (imGuiManager != null) {
-                    imGuiManager.resize(width, height);
-                }
+        // Initialize DM scene
+        dmInputHandler = new InputHandler(dmWindow, dmWidth, dmHeight);
+        dmScene = new Scene(dmWidth, dmHeight, dmInputHandler, shaderCache, dmWindow);
+        //dmScene.initContinentScene();
+
+        // Initialize DM ImGui (separate context)
+        dmImGuiManager = new ImGuiManager(dmWindow, dmWidth, dmHeight);
+        dmImGuiManager.initMainMenu(dmImGuiManager, dmScene, dmInputHandler); // Custom DM UI
+
+        // Switch back to main window
+        glfwMakeContextCurrent(window);
+
+        // Resize callbacks
+        glfwSetFramebufferSizeCallback(window, (w, wWidth, wHeight) -> {
+            if (wWidth > 0 && wHeight > 0) {
+                glViewport(0, 0, wWidth, wHeight);
+                scene.getCamera().updateProjection(wWidth, wHeight);
+                imGuiManager.resize(wWidth, wHeight);
+                mainWidth = wWidth;
+                mainHeight = wHeight;
+            }
+        });
+
+        glfwSetFramebufferSizeCallback(dmWindow, (w, wWidth, wHeight) -> {
+            if (wWidth > 0 && wHeight > 0) {
+                glViewport(0, 0, wWidth, wHeight);
+                dmScene.getCamera().updateProjection(wWidth, wHeight);
+                dmImGuiManager.resize(wWidth, wHeight);
+                dmWidth = wWidth;
+                dmHeight = wHeight;
             }
         });
     }
 
     private void loop() {
-        IntBuffer widthBuf = BufferUtils.createIntBuffer(1);
-        IntBuffer heightBuf = BufferUtils.createIntBuffer(1);
-
         while (!glfwWindowShouldClose(window)) {
-            glfwGetFramebufferSize(window, widthBuf, heightBuf);
-            int width = widthBuf.get(0);
-            int height = heightBuf.get(0);
-
-            if (width <= 0 || height <= 0) {
-                // Skip rendering if size is invalid (e.g., minimized)
-                glfwPollEvents();
-                continue;
-            }
-
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            // Update time
             long time = System.currentTimeMillis();
             float deltaTime = (time - oldTime) / 1000f;
             oldTime = time;
 
-            // Render scene
+            glfwPollEvents();
+
+            // --- MAIN WINDOW RENDER ---
+            glfwMakeContextCurrent(window);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            inputHandler.update(mainWidth, mainHeight);
+            imGuiManager.update(deltaTime, scene, inputHandler);
+
+            //TODO: Move this to below update, requires change to highlighting timing
             scene.render();
 
-            // Update camera and scene
-            inputHandler.update(width, height);
+            // Update main scene
+
             scene.getCamera().update(inputHandler);
             scene.update(deltaTime);
 
-            //For each shader, set it as active then set uniforms
-            //Either do it once here or for each sceneObject
+            // Set shader uniforms for main window
             shaderCache.getShaderMap().values().forEach(shader -> {
-                // Set shader uniforms
                 glUseProgram(shader);
                 int projLoc = glGetUniformLocation(shader, "projection");
-                glUniformMatrix4fv(projLoc, false, scene.getCamera().getProjectionMatrix().get(matrixBuffer)); matrixBuffer.rewind();
+                glUniformMatrix4fv(projLoc, false, scene.getCamera().getProjectionMatrix().get(matrixBuffer));
+                matrixBuffer.rewind();
                 int viewLoc = glGetUniformLocation(shader, "view");
-                glUniformMatrix4fv(viewLoc, false, scene.getCamera().getViewMatrix().get(matrixBuffer)); matrixBuffer.rewind();
+                glUniformMatrix4fv(viewLoc, false, scene.getCamera().getViewMatrix().get(matrixBuffer));
+                matrixBuffer.rewind();
             });
 
-            if (imGuiManager != null) {
-                imGuiManager.update(deltaTime, scene, inputHandler);
-            }
+            // Render main ImGui
 
             glfwSwapBuffers(window);
+
+            // --- DM WINDOW RENDER ---
+            glfwMakeContextCurrent(dmWindow);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            dmInputHandler.update(mainWidth, mainHeight);
+            dmImGuiManager.update(deltaTime, dmScene, dmInputHandler);
+
+            // Render DM scene
+            dmScene.render();
+
+            // Update DM scene
+
+            dmScene.getCamera().update(dmInputHandler);
+            dmScene.update(deltaTime);
+
+            // Set shader uniforms for DM window (same shaders, but DM camera)
+            shaderCache.getShaderMap().values().forEach(shader -> {
+                glUseProgram(shader);
+                int projLoc = glGetUniformLocation(shader, "projection");
+                glUniformMatrix4fv(projLoc, false, dmScene.getCamera().getProjectionMatrix().get(matrixBuffer));
+                matrixBuffer.rewind();
+                int viewLoc = glGetUniformLocation(shader, "view");
+                glUniformMatrix4fv(viewLoc, false, dmScene.getCamera().getViewMatrix().get(matrixBuffer));
+                matrixBuffer.rewind();
+            });
+
+            // Render DM ImGui
+
+            glfwSwapBuffers(dmWindow);
+
+            // Poll events last
             glfwPollEvents();
         }
     }

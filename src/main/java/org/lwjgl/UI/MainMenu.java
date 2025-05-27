@@ -7,6 +7,8 @@ import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.utils.HelperMethods;
 
+import java.text.NumberFormat;
+
 public class MainMenu extends ImGuiWindow {
 
     public MainMenu(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
@@ -58,6 +60,13 @@ public class MainMenu extends ImGuiWindow {
             imGuiManager.initCombatMap(imGuiManager, scene, inputHandler);
             imGuiManager.removeWindow(this);
         }
+
+        NumberFormat nf = NumberFormat.getInstance();
+        ImGui.separator();
+        ImGui.text("Mouse pos: " + nf.format(inputHandler.getMousePos().x) + ", " + nf.format(inputHandler.getMousePos().y));
+        ImGui.text("Delta: " + nf.format(inputHandler.getMouseDelta().x) + ", " + nf.format(inputHandler.getMouseDelta().y));
+        ImGui.text("NDC pos: " + nf.format(inputHandler.getNdcPos().x) + ", " + nf.format(inputHandler.getNdcPos().y));
+        ImGui.text("World pos: " + nf.format(inputHandler.getWorldPos(scene).x) + ", " + nf.format(inputHandler.getWorldPos(scene).z));
 
         ImGui.end();
     }

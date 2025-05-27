@@ -41,7 +41,7 @@ public class InputHandler {
     }
 
     public void update(int width, int height) {
-        if (!ImGui.getIO().getWantCaptureMouse()) {
+        if (true) {
             double[] x = new double[1];
             double[] y = new double[1];
             glfwGetCursorPos(window, x, y);

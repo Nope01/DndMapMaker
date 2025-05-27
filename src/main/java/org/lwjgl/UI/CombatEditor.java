@@ -19,6 +19,7 @@ import org.lwjgl.objects.entities.Player;
 import org.lwjgl.textures.Texture;
 import org.lwjgl.utils.HelperMethods;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -314,6 +315,12 @@ public class CombatEditor extends ImGuiWindow {
             }
         }
 
+        NumberFormat nf = NumberFormat.getInstance();
+        ImGui.separator();
+        ImGui.text("Mouse pos: " + nf.format(inputHandler.getMousePos().x) + ", " + nf.format(inputHandler.getMousePos().y));
+        ImGui.text("Delta: " + nf.format(inputHandler.getMouseDelta().x) + ", " + nf.format(inputHandler.getMouseDelta().y));
+        ImGui.text("NDC pos: " + nf.format(inputHandler.getNdcPos().x) + ", " + nf.format(inputHandler.getNdcPos().y));
+        ImGui.text("World pos: " + nf.format(inputHandler.getWorldPos(scene).x) + ", " + nf.format(inputHandler.getWorldPos(scene).z));
         ImGui.end();
     }
 
