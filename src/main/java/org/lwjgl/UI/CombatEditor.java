@@ -328,6 +328,9 @@ public class CombatEditor extends ImGuiWindow {
                     player.addStatusEffect(INVISIBLE);
                     player.setHidden(true);
                 }
+                if (ImGui.button("Dash")) {
+                    player.addStatusEffect(DASHING);
+                }
             }
         }
 

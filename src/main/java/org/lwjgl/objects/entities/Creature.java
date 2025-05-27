@@ -191,6 +191,9 @@ public abstract class Creature extends SceneObject {
         if (statusEffects.contains(GRAPPLED) || statusEffects.contains(INCAPACITATED)) {
             return 0;
         }
+        if (statusEffects.contains(DASHING)) {
+            return moveSpeed * 2;
+        }
         return moveSpeed;
     }
 
