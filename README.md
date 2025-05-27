@@ -17,6 +17,8 @@ This map maker is an ongoing project, serving as a tool to help visualise DnD co
 To use the program for your own campaign, download the latest release [here](https://github.com/Nope01/DndMapMaker/releases/latest/download/DndMap.zip)
 
 Extract the zip folder, then open DndMap to run the program.
+
+If Windows warns you about the program being suspicious, simply click More info -> Run anyway to bypass this popup
     
 ## Feedback
 
