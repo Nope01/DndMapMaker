@@ -10,6 +10,7 @@ import org.joml.Vector3i;
 import org.lwjgl.Scene;
 import org.lwjgl.Spells;
 import org.lwjgl.combatMap.CombatHexagon;
+import org.lwjgl.dndMechanics.statusEffects.Blinded;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.objects.Grid;
 import org.lwjgl.objects.Hexagon;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.lwjgl.data.ApiCalls.getRandomName;
+import static org.lwjgl.dndMechanics.statusEffects.StatusEffects.*;
 import static org.lwjgl.objects.Hexagon.*;
 import static org.lwjgl.objects.entities.Classes.FIGHTER;
 import static org.lwjgl.objects.entities.Classes.classList;
@@ -311,6 +313,21 @@ public class CombatEditor extends ImGuiWindow {
             ImGui.text("Spell type: " + Spells.getSpellName(spellType) );
             if (spellType != 0) {
                 ImGui.sliderInt("Spell size", spellSize, 1, 10 );
+            }
+        }
+
+        if (menuCurrentlyOpen == 2) {
+            if (selectedObject instanceof Player player) {
+                if (ImGui.button("Blindness")) {
+                    player.addStatusEffect(BLINDED);
+                }
+                if (ImGui.button("Incapacitated")) {
+                    player.addStatusEffect(INCAPACITATED);
+                }
+                if (ImGui.button("Invisible")) {
+                    player.addStatusEffect(INVISIBLE);
+                    player.setHidden(true);
+                }
             }
         }
 

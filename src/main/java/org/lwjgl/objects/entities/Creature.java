@@ -4,13 +4,17 @@ import org.joml.Vector2i;
 import org.joml.Vector3i;
 import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.combatMap.CombatHexagon;
+import org.lwjgl.dndMechanics.statusEffects.Blinded;
+import org.lwjgl.dndMechanics.statusEffects.StatusEffect;
 import org.lwjgl.objects.Hexagon;
 import org.lwjgl.objects.ObjectUtils;
 import org.lwjgl.objects.SceneObject;
 import org.lwjgl.objects.models.opengl.HexagonShape;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.lwjgl.dndMechanics.statusEffects.StatusEffects.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -30,6 +34,9 @@ public abstract class Creature extends SceneObject {
     private int AC;
     private int dungeonVisibleRange;
 
+    private boolean isHidden;
+
+    private List<Integer> statusEffects = new ArrayList<>();
 
 
     /*
@@ -71,6 +78,8 @@ public abstract class Creature extends SceneObject {
         glUniform1i(selected, this.selected ? 1 : 0);
         int texCoords = glGetUniformLocation(shaderProgram, "texCoords");
         glUniform2f(texCoords, this.texCoords[0], this.texCoords[1]);
+        int isHidden = glGetUniformLocation(shaderProgram, "isHidden");
+        glUniform1i(isHidden, this.isHidden ? 1 : 0);
 
         glActiveTexture(GL_TEXTURE0);
         if (texture != null) {
@@ -179,6 +188,9 @@ public abstract class Creature extends SceneObject {
     }
 
     public int getMoveSpeed() {
+        if (statusEffects.contains(GRAPPLED) || statusEffects.contains(INCAPACITATED)) {
+            return 0;
+        }
         return moveSpeed;
     }
 
@@ -211,10 +223,37 @@ public abstract class Creature extends SceneObject {
     }
 
     public int getDungeonVisibleRange() {
+        if (statusEffects.contains(BLINDED)) {
+            return 1;
+        }
         return dungeonVisibleRange;
     }
 
     public void setDungeonVisibleRange(int dungeonVisibleRange) {
         this.dungeonVisibleRange = dungeonVisibleRange;
+    }
+
+    public void addStatusEffect(Integer statusEffect) {
+        statusEffects.add(statusEffect);
+    }
+
+    public void removeStatusEffect(Integer statusEffect) {
+        statusEffects.remove(statusEffect);
+    }
+
+    public void removeAllStatusEffects() {
+        statusEffects.clear();
+    }
+
+    public List<Integer> getStatusEffects() {
+        return statusEffects;
+    }
+
+    public boolean isHidden() {
+        return isHidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        isHidden = hidden;
     }
 }
