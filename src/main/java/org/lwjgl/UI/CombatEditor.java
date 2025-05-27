@@ -8,6 +8,7 @@ import imgui.type.ImInt;
 import imgui.type.ImString;
 import org.joml.Vector3i;
 import org.lwjgl.Scene;
+import org.lwjgl.Spells;
 import org.lwjgl.combatMap.CombatHexagon;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.objects.Grid;
@@ -188,15 +189,18 @@ public class CombatEditor extends ImGuiWindow {
                 }
             }
 
-            //Highlight moveable tiles
+            //Highlight moveable tiles for selected player
             if (selectedObject instanceof Player player) {
                 reachableTiles =
-                        hexReachable((CombatHexagon)selectedObject.parent, player.getMoveSpeed(), gridClass);
-                visibleTiles =
-                        hexVisible((CombatHexagon)selectedObject.parent, player.getDungeonVisibleRange(), gridClass);
+                        hexReachable((CombatHexagon)player.parent, player.getMoveSpeed(), gridClass);
                 for (Hexagon hex : reachableTiles) {
                     hex.setMovementHighlighted(true);
                 }
+            }
+            //Highlight all visible tiles
+            for (Creature player : characterList) {
+                visibleTiles =
+                        hexVisible((CombatHexagon)player.parent, player.getDungeonVisibleRange(), gridClass);
                 for (Hexagon hex : visibleTiles) {
                     hex.isVisible = true;
                 }
@@ -245,6 +249,7 @@ public class CombatEditor extends ImGuiWindow {
             clearReachableTiles(gridClass, fogOfWar);
         }
 
+        //Change which menu gets rendered
         if (ImGui.imageButton(terrainButtonIcon, 35.0f, 35.0f)) {
             menuCurrentlyOpen = 0;
         }
@@ -256,8 +261,6 @@ public class CombatEditor extends ImGuiWindow {
         if (ImGui.imageButton(combatButtonIcon, 35.0f, 35.0f)) {
             menuCurrentlyOpen = 2;
         }
-
-
         ImGui.separator();
 
         //Terrain
@@ -305,7 +308,10 @@ public class CombatEditor extends ImGuiWindow {
                 }
                 ImGui.endPopup();
             }
-            ImGui.sliderInt("Spell size", spellSize, 1, 10 );
+            ImGui.text("Spell type: " + Spells.getSpellName(spellType) );
+            if (spellType != 0) {
+                ImGui.sliderInt("Spell size", spellSize, 1, 10 );
+            }
         }
 
         ImGui.end();
