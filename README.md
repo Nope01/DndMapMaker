@@ -37,7 +37,7 @@ This will be an ongoing project as we learn more about the software development 
 
 ## Run Locally
 
-Clone the project
+If you'd like access to the source code, or to contribute, you can do so by cloning the repository
 
 ```bash
   git clone https://github.com/Nope01/DndMapMaker.git
