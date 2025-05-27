@@ -334,6 +334,8 @@ public class CombatEditor extends ImGuiWindow {
             }
         }
 
+        ImGui.text("Bingus");
+
         ImGui.end();
     }
 

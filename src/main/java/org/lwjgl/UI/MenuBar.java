@@ -2,10 +2,14 @@ package org.lwjgl.UI;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
+import org.lwjgl.data.update.UpdateChecker;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.data.MapSaveLoad;
 
+import java.io.IOException;
+//DEPRECATED
+//Menu bar is now handled by ImGuiManager
 public class MenuBar extends ImGuiWindow {
 
     public boolean continentOpen = false;
@@ -84,6 +88,34 @@ public class MenuBar extends ImGuiWindow {
                 InitiativeTracker initiativeTracker = new InitiativeTracker(imGuiManager, scene, inputHandler);
                 imGuiManager.addWindow(initiativeTracker);
                 initiativeTracker.placeUiWindow();
+            }
+            if (ImGui.menuItem("Map editor")) {
+
+            }
+            ImGui.endMenu();
+        }
+
+        if (ImGui.beginMenu("Update")) {
+            if (ImGui.menuItem("Update software to latest version")) {
+                try {
+                    String[] updateInfo = UpdateChecker.checkForUpdates();
+                    if (updateInfo == null) {
+                        GuiUtils.textCentered("No updates found");
+                    }
+                    else {
+                        //Popup to confirm
+                        String javaBin = System.getProperty("java.home") + "/bin/java";
+                        ProcessBuilder processBuilder = new ProcessBuilder(
+                                javaBin, "-jar", "updater.jar"
+                        );
+                        processBuilder.start();
+                        System.exit(0);
+                    }
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                    GuiUtils.textCentered("Failed to check for updates: " + e.getMessage());
+                }
             }
             ImGui.endMenu();
         }

@@ -4,10 +4,13 @@ import imgui.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.*;
 import org.lwjgl.data.MapSaveLoad;
+import org.lwjgl.data.update.UpdateChecker;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.opengl.GL;
 
+import java.awt.*;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,6 +39,7 @@ public class ImGuiManager {
     public boolean continentOpen = false;
     public boolean cityOpen = false;
     public boolean combatOpen = false;
+
 
 
     public ImGuiManager(long window, int width, int height) {
@@ -255,6 +259,32 @@ public class ImGuiManager {
                 InitiativeTracker initiativeTracker = new InitiativeTracker(imGuiManager, scene, inputHandler);
                 imGuiManager.addWindow(initiativeTracker);
                 initiativeTracker.placeUiWindow();
+            }
+            ImGui.endMenu();
+        }
+
+        if (ImGui.beginMenu("Update")) {
+            if (ImGui.menuItem("Update software to latest version")) {
+                try {
+                    String[] updateInfo = UpdateChecker.checkForUpdates();
+                    if (updateInfo == null) {
+                        System.out.println("No updates found");
+                    }
+                    else {
+                        System.out.println("Updating");
+                        //Popup to confirm
+                        String javaBin = System.getProperty("java.home") + "/bin/java";
+                        ProcessBuilder processBuilder = new ProcessBuilder(
+                                javaBin, "-jar", "updater.jar"
+                        );
+                        processBuilder.start();
+                        System.exit(0);
+                    }
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                    System.out.println("Failed to check for updates: " + e.getMessage());
+                }
             }
             ImGui.endMenu();
         }
