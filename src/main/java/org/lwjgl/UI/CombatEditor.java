@@ -68,6 +68,7 @@ public class CombatEditor extends ImGuiWindow {
     private CombatHexagon[] neighbours = new CombatHexagon[6];
 
     private boolean fogOfWar = false;
+    private boolean overrideMovement = false;
 
     private int spellType = 0;
     private int[] spellSize = new int[]{1};
@@ -219,6 +220,10 @@ public class CombatEditor extends ImGuiWindow {
                 selectedTerrain = null;
                 player.setReachableTiles
                         (hexReachable((CombatHexagon)selectedObject.parent, player.getMoveSpeed(), gridClass));
+                if (overrideMovement) {
+                    player.setReachableTiles(gridClass.getAllHexagons());
+                }
+
                 creatureToMove = player;
             }
 
@@ -285,6 +290,10 @@ public class CombatEditor extends ImGuiWindow {
         if (ImGui.checkbox("Fog of War", fogOfWar)) {
             fogOfWar = !fogOfWar;
             gridClass.applyFogOfWar(fogOfWar);
+        }
+        ImGui.sameLine();
+        if (ImGui.checkbox("Override movement", overrideMovement)) {
+            overrideMovement = !overrideMovement;
         }
 
         //Change which menu gets rendered
