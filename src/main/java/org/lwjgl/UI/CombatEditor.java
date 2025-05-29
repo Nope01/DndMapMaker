@@ -180,10 +180,11 @@ public class CombatEditor extends ImGuiWindow {
                 if (spellType == 2) {
 
                 }
+                for (Hexagon hex : spellHighlightedTiles) {
+                    hex.setSpellHighlighted(true);
+                }
             }
-            for (Hexagon hex : spellHighlightedTiles) {
-                hex.setSpellHighlighted(true);
-            }
+
         }
 
         //Combat
