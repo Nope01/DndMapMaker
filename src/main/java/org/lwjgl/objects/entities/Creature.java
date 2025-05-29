@@ -11,7 +11,9 @@ import org.lwjgl.objects.SceneObject;
 import org.lwjgl.objects.models.opengl.HexagonShape;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.lwjgl.dndMechanics.statusEffects.StatusEffects.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -36,8 +38,8 @@ public abstract class Creature extends SceneObject {
     private boolean isHidden;
 
     private List<StatusEffect> statusEffects = new ArrayList<>();
-    private List<Hexagon> visibleTiles = new ArrayList<>();
-    private List<Hexagon> reachableTiles = new ArrayList<>();
+    private Set<Hexagon> visibleTiles = new HashSet<>();
+    private Set<Hexagon> reachableTiles = new HashSet<>();
 
 
     /*
@@ -259,19 +261,33 @@ public abstract class Creature extends SceneObject {
         isHidden = hidden;
     }
 
-    public List<Hexagon> getVisibleTiles() {
+    public Set<Hexagon> getVisibleTiles() {
         return visibleTiles;
     }
 
-    public void setVisibleTiles(List<Hexagon> visibleTiles) {
+    public void setVisibleTiles(Set<Hexagon> visibleTiles) {
         this.visibleTiles = visibleTiles;
     }
 
-    public List<Hexagon> getReachableTiles() {
+    public Set<Hexagon> getReachableTiles() {
         return reachableTiles;
     }
 
-    public void setReachableTiles(List<Hexagon> reachableTiles) {
+    public void setReachableTiles(Set<Hexagon> reachableTiles) {
         this.reachableTiles = reachableTiles;
+    }
+
+    public void clearReachableTiles() {
+        for (Hexagon hexagon : reachableTiles) {
+            hexagon.setMovementHighlighted(false);
+        }
+        reachableTiles.clear();
+    }
+
+    public void clearVisibleTiles() {
+        for (Hexagon hexagon : visibleTiles) {
+            hexagon.setVisible(false);
+        }
+        visibleTiles.clear();
     }
 }

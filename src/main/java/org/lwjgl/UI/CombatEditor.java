@@ -70,13 +70,13 @@ public class CombatEditor extends ImGuiWindow {
     private int spellType = 0;
     private int[] spellSize = new int[]{1};
     private Set<Hexagon> spellHighlightedTiles = new HashSet<>();
-    private Set<Hexagon> reachableTiles = new HashSet<>();
-    private Set<Hexagon> visibleTiles = new HashSet<>();
 
     private int menuCurrentlyOpen = 0;
     private int terrainButtonIcon;
     private int spellButtonIcon;
     private int combatButtonIcon;
+
+    private Creature creatureToMove;
 
     public CombatEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "Combat Editor");
@@ -103,6 +103,17 @@ public class CombatEditor extends ImGuiWindow {
         grid = gridClass.getGrid();
 
         boolean clickInput = inputHandler.isLeftClicked();
+
+        //Selection logic
+        if (clickInput && hoveredObject != null) {
+            if (selectedObject != null) {
+                selectedObject.setSelected(false);
+            }
+            selectedObject = hoveredObject;
+            selectedObject.setSelected(true);
+        }
+
+
         //Terrain
         if (menuCurrentlyOpen == 0) {
             //Terrain
@@ -149,6 +160,12 @@ public class CombatEditor extends ImGuiWindow {
 
         //Spells
         else if (menuCurrentlyOpen == 1) {
+
+            //reset tiles
+            for (Hexagon hex : spellHighlightedTiles) {
+                hex.setSpellHighlighted(false);
+            }
+
             //Spell highlighting
             if (hoveredObject instanceof CombatHexagon hoveredHex) {
                 //Line between hovered and selected hex specifically
@@ -170,70 +187,76 @@ public class CombatEditor extends ImGuiWindow {
         }
 
         //Combat
-        if (inputHandler.isLeftClickedAndHeld()) {
+        if (clickInput) {
             //Movement logic
-            if (selectedObject instanceof Player) {
+            if (creatureToMove != null) {
+                if (creatureToMove.getReachableTiles().contains(selectedObject)) {
+                    creatureToMove.setParent(hoveredObject);
+                    creatureToMove.setOffsetPos(((Hexagon) selectedObject).getOffsetCoords());
+                    creatureToMove.initAabb();
+                    creatureToMove.clearReachableTiles();
+                    if (fogOfWar) {
+                        creatureToMove.clearVisibleTiles();
+                    }
+                    creatureToMove = null;
+                }
+                else {
+                    creatureToMove.clearReachableTiles();
+                    if (fogOfWar) {
+                        creatureToMove.clearVisibleTiles();
+                    }
+                    creatureToMove = null;
+                }
+            }
+
+            if (selectedObject instanceof Player player) {
                 selectedObstacle = null;
                 selectedTerrain = null;
-                reachableTiles = hexReachable((CombatHexagon)selectedObject.parent, ((Player) selectedObject).getMoveSpeed(), gridClass);
-                if (reachableTiles.contains(hoveredObject)) {
-                    selectedObject.setParent(hoveredObject);
-                    selectedObject.setOffsetPos(((Hexagon) selectedObject.parent).getOffsetCoords());
-                    selectedObject.initAabb();
-                    clearReachableTiles();
-                    clearVisibleTiles();
-                }
-                //Neighbours
-                if (selectedObject.parent instanceof CombatHexagon hexUnderPlayer) {
-                    Vector3i[] neighbourCoords = hexUnderPlayer.getAllNeighbours();
-                    for (int i = 0; i < neighbours.length; i++) {
-                        neighbours[i] = (CombatHexagon) gridClass.getHexagonAt(neighbourCoords[i]);
-                    }
-                }
+                player.setReachableTiles
+                        (hexReachable((CombatHexagon)selectedObject.parent, player.getMoveSpeed(), gridClass));
+                creatureToMove = player;
             }
 
-            //Highlight moveable tiles for selected player
-            if (selectedObject instanceof Player player) {
-                reachableTiles =
-                        hexReachable((CombatHexagon)player.parent, player.getMoveSpeed(), gridClass);
-                for (Hexagon hex : reachableTiles) {
-                    hex.setMovementHighlighted(true);
+
+            //Vision logic
+            if (selectedObject instanceof Creature creature) {
+                for (Creature character : characterList) {
+                    if (fogOfWar) {
+                        character.clearVisibleTiles();
+                    }
                 }
-                visibleTiles =
-                        hexVisible((CombatHexagon)player.parent, player.getDungeonVisibleRange(), gridClass);
-                for (Hexagon hex : visibleTiles) {
-                    hex.setVisible(true);
-                }
+                creature.setVisibleTiles(
+                        hexVisible((CombatHexagon)creature.parent, creature.getDungeonVisibleRange(), gridClass));
             }
             else {
-                //Highlight all visible tiles
-                for (Creature player : characterList) {
-                    visibleTiles =
-                            hexVisible((CombatHexagon)player.parent, player.getDungeonVisibleRange(), gridClass);
-                    for (Hexagon hex : visibleTiles) {
-                        hex.setVisible(true);
-                    }
+                for (Creature creature : characterList) {
+                    creature.setVisibleTiles(
+                            hexVisible((CombatHexagon)creature.parent, creature.getDungeonVisibleRange(), gridClass));
                 }
             }
-        }
 
-        //Selection logic
-        if (clickInput && hoveredObject != null) {
-            clearReachableTiles();
-            if (selectedObject != null) {
-                selectedObject.setSelected(false);
-            }
-            selectedObject = hoveredObject;
-            selectedObject.setSelected(true);
         }
 
         //Deselect
         if (selectedObject != null && inputHandler.isRightClicked()) {
             selectedObject.setSelected(false);
             selectedObject = null;
-            clearReachableTiles();
             selectedObstacle = null;
             selectedTerrain = null;
+
+            if (creatureToMove != null) {
+                if (fogOfWar) {
+                    creatureToMove.clearVisibleTiles();
+                }
+                creatureToMove.clearReachableTiles();
+                creatureToMove = null;
+            }
+        }
+
+        if (inputHandler.isRightClicked()) {
+            for (Hexagon hex : spellHighlightedTiles) {
+                hex.setSpellHighlighted(false);
+            }
             spellHighlightedTiles.clear();
         }
     }
@@ -328,7 +351,6 @@ public class CombatEditor extends ImGuiWindow {
             if (selectedObject instanceof Player player) {
                 if (ImGui.button("Blindness")) {
                     player.addStatusEffect(new Blinded(player));
-                    clearVisibleTiles();
                 }
                 ImGui.sameLine();
                 if (ImGui.button("Clear")) {
@@ -354,6 +376,20 @@ public class CombatEditor extends ImGuiWindow {
 
         ImGui.separator();
 
+        if (creatureToMove != null) {
+            ImGui.text(creatureToMove.getName() + " is moving!");
+        }
+        if (selectedObject != null) {
+            ImGui.text(selectedObject.getId());
+            if (selectedObject instanceof Player player) {
+                ImGui.text(player.getReachableTiles().size() + " reachable tiles");
+                ImGui.text(player.getVisibleTiles().size() + " visible tiles");
+            }
+        }
+
+        if (hoveredObject != null) {
+            ImGui.text(hoveredObject.getId());
+        }
 
         ImGui.end();
     }
@@ -463,22 +499,5 @@ public class CombatEditor extends ImGuiWindow {
         if (spellType == 0) {
 
         }
-    }
-
-    public void clearReachableTiles() {
-        for (Hexagon hex : reachableTiles) {
-            hex.setMovementHighlighted(false);
-        }
-        reachableTiles.clear();
-    }
-
-    public void clearVisibleTiles() {
-        if (!fogOfWar) {
-            return;
-        }
-        for (Hexagon hex : visibleTiles) {
-            hex.setVisible(false);
-        }
-        visibleTiles.clear();
     }
 }

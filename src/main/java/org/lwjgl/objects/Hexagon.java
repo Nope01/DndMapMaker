@@ -372,6 +372,7 @@ public abstract class Hexagon extends SceneObject {
                         if (!visited.contains(neighbor)) {
                             visited.add(neighbor);
                             fringes.get(k).add(neighbor);
+                            neighbor.setMovementHighlighted(true);
                         }
                     }
                 }
@@ -391,6 +392,7 @@ public abstract class Hexagon extends SceneObject {
         for (Hexagon target : inRange) {
             if (hasLineOfSight(start, target, gridClass)) {
                 visible.add(target);
+                target.setVisible(true);
                 // If this is a wall, we stop checking further along this line
                 if (target instanceof CombatHexagon && ((CombatHexagon) target).isWall) {
                     continue; // Don't check what's behind this wall
