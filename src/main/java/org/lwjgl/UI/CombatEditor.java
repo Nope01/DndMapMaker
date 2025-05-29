@@ -11,6 +11,9 @@ import org.lwjgl.Scene;
 import org.lwjgl.Spells;
 import org.lwjgl.combatMap.CombatHexagon;
 import org.lwjgl.dndMechanics.statusEffects.Blinded;
+import org.lwjgl.dndMechanics.statusEffects.Dash;
+import org.lwjgl.dndMechanics.statusEffects.Grappled;
+import org.lwjgl.dndMechanics.statusEffects.Invisible;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.objects.Grid;
 import org.lwjgl.objects.Hexagon;
@@ -26,7 +29,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.lwjgl.data.ApiCalls.getRandomName;
-import static org.lwjgl.dndMechanics.statusEffects.StatusEffects.*;
 import static org.lwjgl.objects.Hexagon.*;
 import static org.lwjgl.objects.entities.Classes.FIGHTER;
 import static org.lwjgl.objects.entities.Classes.classList;
@@ -355,19 +357,41 @@ public class CombatEditor extends ImGuiWindow {
                 if (ImGui.button("Blindness")) {
                     player.addStatusEffect(new Blinded(player));
                 }
-                ImGui.sameLine();
-                if (ImGui.button("Clear")) {
-                    player.removeStatusEffect(Blinded.class);
+                if (player.hasStatusEffect(Blinded.class)) {
+                    ImGui.sameLine();
+                    if (ImGui.button("Clear")) {
+                        player.removeStatusEffect(Blinded.class);
+                    }
                 }
-                if (ImGui.button("Incapacitated")) {
-                    //player.addStatusEffect(INCAPACITATED);
-                }
-                if (ImGui.button("Invisible")) {
-                    //player.addStatusEffect(INVISIBLE);
-                    //player.setHidden(true);
-                }
-                if (ImGui.button("Dash")) {
 
+                if (ImGui.button("Grappled")) {
+                    player.addStatusEffect(new Grappled(player));
+                }
+                if (player.hasStatusEffect(Grappled.class)) {
+                    ImGui.sameLine();
+                    if (ImGui.button("Clear")) {
+                        player.removeStatusEffect(Grappled.class);
+                    }
+                }
+
+                if (ImGui.button("Invisible")) {
+                    player.addStatusEffect(new Invisible(player));
+                }
+                if (player.hasStatusEffect(Invisible.class)) {
+                    ImGui.sameLine();
+                    if (ImGui.button("Clear")) {
+                        player.removeStatusEffect(Invisible.class);
+                    }
+                }
+
+                if (ImGui.button("Dash")) {
+                    player.addStatusEffect(new Dash(player));
+                }
+                if (player.hasStatusEffect(Dash.class)) {
+                    ImGui.sameLine();
+                    if (ImGui.button("Clear")) {
+                        player.removeStatusEffect(Dash.class);
+                    }
                 }
 
                 ImGui.separator();
@@ -394,7 +418,9 @@ public class CombatEditor extends ImGuiWindow {
                     deathSave.drawDeathSaveUI();
                 }
             }
+
         }
+
         ImGui.end();
     }
 

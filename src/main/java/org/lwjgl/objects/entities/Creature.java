@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.lwjgl.dndMechanics.statusEffects.StatusEffects.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -35,7 +34,7 @@ public abstract class Creature extends SceneObject {
     private int AC;
     private int dungeonVisibleRange;
 
-    private boolean isHidden;
+    private boolean isVisible;
 
     private List<StatusEffect> statusEffects = new ArrayList<>();
     private Set<Hexagon> visibleTiles = new HashSet<>();
@@ -82,7 +81,7 @@ public abstract class Creature extends SceneObject {
         int texCoords = glGetUniformLocation(shaderProgram, "texCoords");
         glUniform2f(texCoords, this.texCoords[0], this.texCoords[1]);
         int isHidden = glGetUniformLocation(shaderProgram, "isHidden");
-        glUniform1i(isHidden, this.isHidden ? 1 : 0);
+        glUniform1i(isHidden, this.isVisible ? 1 : 0);
 
         glActiveTexture(GL_TEXTURE0);
         if (texture != null) {
@@ -234,6 +233,18 @@ public abstract class Creature extends SceneObject {
         statusEffects.add(statusEffect);
     }
 
+    public boolean hasStatusEffect(Class<? extends StatusEffect> statusEffect) {
+        return statusEffects.stream()
+                .anyMatch(e -> e.getClass() == statusEffect);
+    }
+    public boolean hasStatusEffect(StatusEffect statusEffect) {
+        return statusEffects.contains(statusEffect);
+    }
+    public boolean hasStatusEffect(String statusEffect) {
+        return statusEffects.stream()
+                .anyMatch(e -> e.getName().equals(statusEffect));
+    }
+
     public void removeStatusEffect(Class<? extends StatusEffect> statusEffect) {
         statusEffects.stream()
                 .filter(e -> e.getClass() == statusEffect)
@@ -253,12 +264,12 @@ public abstract class Creature extends SceneObject {
         return statusEffects;
     }
 
-    public boolean isHidden() {
-        return isHidden;
+    public boolean isVisible() {
+        return isVisible;
     }
 
-    public void setHidden(boolean hidden) {
-        isHidden = hidden;
+    public void setVisible(boolean visible) {
+        isVisible = visible;
     }
 
     public Set<Hexagon> getVisibleTiles() {
