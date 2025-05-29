@@ -6,7 +6,6 @@ import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
-import org.joml.Vector3i;
 import org.lwjgl.Scene;
 import org.lwjgl.Spells;
 import org.lwjgl.combatMap.CombatHexagon;
@@ -72,6 +71,7 @@ public class CombatEditor extends ImGuiWindow {
 
     private int spellType = 0;
     private int[] spellSize = new int[]{1};
+    private int[] spellDirection = new int[]{N};
     private Set<Hexagon> spellHighlightedTiles = new HashSet<>();
 
     private int menuCurrentlyOpen = 0;
@@ -180,10 +180,12 @@ public class CombatEditor extends ImGuiWindow {
                     }
                 }
                 if (spellType == 1) {
-                    spellHighlightedTiles = hexVisible(hoveredHex,spellSize[0], gridClass);
+                    spellHighlightedTiles =
+                            hexVisible(hoveredHex,spellSize[0], gridClass);
                 }
                 if (spellType == 2) {
-
+                    spellHighlightedTiles =
+                            Hexagon.hexCone(hoveredHex.getCubeCoords(), spellDirection[0], spellSize[0], gridClass);
                 }
                 for (Hexagon hex : spellHighlightedTiles) {
                     hex.setSpellHighlighted(true);
@@ -357,7 +359,8 @@ public class CombatEditor extends ImGuiWindow {
             }
             ImGui.text("Spell type: " + Spells.getSpellName(spellType) );
             if (spellType != 0) {
-                ImGui.sliderInt("Spell size", spellSize, 1, 10 );
+                ImGui.sliderInt("Spell size", spellSize, 1, 10);
+                ImGui.sliderInt("Direction", spellDirection, 0, 5, Hexagon.intToDirection(spellDirection[0]));
             }
         }
 

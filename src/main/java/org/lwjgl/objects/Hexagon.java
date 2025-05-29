@@ -456,6 +456,64 @@ public abstract class Hexagon extends SceneObject {
         return true;
     }
 
+    public static Set<Hexagon> hexCone(Vector3i origin, int direction, int size, Grid gridClass) {
+        Set<Hexagon> cone = new HashSet<>();
+        cone.add(gridClass.getHexagonAt(origin));  // Origin is always part of cone
+
+        if (size == 0) {
+            return cone;
+        }
+
+        // Get primary direction vector
+        Vector3i primaryDir = cubeDirection(direction);
+
+        // For each step along primary direction
+        for (int r = 1; r <= size; r++) {
+            // Current position along primary direction
+            Vector3i current = new Vector3i(
+                    origin.x + primaryDir.x * r,
+                    origin.y + primaryDir.y * r,
+                    origin.z + primaryDir.z * r
+            );
+
+            Hexagon hex = gridClass.getHexagonAt(current);
+            if (hex != null) {
+                cone.add(hex);
+            }
+
+            // Get left and right perpendicular directions
+            int leftDir = (direction + 2) % 6;
+            int rightDir = (direction + 4) % 6;
+
+            // Expand perpendicularly to form cone
+            for (int s = 1; s < r; s++) {
+                // Left side
+                Vector3i left = cubeAddDirection(current,
+                        cubeDirection(leftDir).mul(s, new Vector3i()));
+                Hexagon leftHex = gridClass.getHexagonAt(left);
+                if (leftHex != null) {
+                    cone.add(leftHex);
+                }
+
+                // Right side
+                Vector3i right = cubeAddDirection(current,
+                        cubeDirection(rightDir).mul(s, new Vector3i()));
+                Hexagon rightHex = gridClass.getHexagonAt(right);
+                if (rightHex != null) {
+                    cone.add(rightHex);
+                }
+            }
+        }
+
+        return cone;
+    }
+
+    public static Set<Hexagon> hexCone(Hexagon origin, int direction, int size, Grid gridClass) {
+        return hexCone(origin.getCubeCoords(), direction, size, gridClass);
+    }
+
+
+
     public boolean isMovementHighlighted() {
         return movementHighlighted;
     }
