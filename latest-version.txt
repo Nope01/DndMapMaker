@@ -1,2 +1,2 @@
 0.1.0
-https://github.com/Nope01/DndMapMaker/releases/latest/download/AlternateMap-1.0-SNAPSHOT.jar
+https://github.com/Nope01/DndMapMaker/releases/latest/download/DndMap.zip

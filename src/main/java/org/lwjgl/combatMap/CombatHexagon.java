@@ -27,11 +27,11 @@ public class CombatHexagon extends Hexagon implements Serializable {
 
         glUseProgram(shaderProgram);
         int selected = glGetUniformLocation(shaderProgram, "selected");
-        glUniform1i(selected, this.selected ? 1 : 0);
+        glUniform1i(selected, this.getSelected() ? 1 : 0);
         int highlighted = glGetUniformLocation(shaderProgram, "highlighted");
         glUniform1i(highlighted, this.highlighted ? 1 : 0);
         int isVisible = glGetUniformLocation(shaderProgram, "isVisible");
-        glUniform1i(isVisible, this.isVisible ? 1 : 0);
+        glUniform1i(isVisible, this.isVisible() ? 1 : 0);
         int movementHighlighted = glGetUniformLocation(shaderProgram, "movementHighlighted");
         glUniform1i(movementHighlighted, this.isMovementHighlighted() ? 1 : 0);
         int spellHighlighted = glGetUniformLocation(shaderProgram, "spellHighlighted");

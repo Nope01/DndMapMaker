@@ -100,7 +100,7 @@ public class Grid extends SceneObject {
         CombatHexagon combatHexagon = new CombatHexagon(new Vector2i(col, row));
         combatHexagon.setId("combat-" + row + "-" + col);
         combatHexagon.setPosition(pos.x, pos.y, pos.z);
-        combatHexagon.isVisible = true;
+        combatHexagon.setVisible(true);
         combatHexagon.setParent(this);
         return combatHexagon;
     }
@@ -189,11 +189,19 @@ public class Grid extends SceneObject {
     public void clearHoveredHexagons() {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
-                grid[row][col].hovered = false;
-                grid[row][col].setSpellHighlighted(false);
+                grid[row][col].setHovered(false);
             }
         }
     }
+
+    public void applyFogOfWar(boolean fogOfWar) {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
+                grid[row][col].setVisible(!fogOfWar);
+            }
+        }
+    }
+
 
 //    public void removeColumn(int old, int current) {
 ////        for (int row = 0; row < rows; row++) {

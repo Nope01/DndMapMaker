@@ -132,13 +132,12 @@ public class Main {
             float deltaTime = (time - oldTime) / 1000f;
             oldTime = time;
 
-            // Render scene
-            scene.render();
-
             // Update camera and scene
             inputHandler.update(width, height);
             scene.getCamera().update(inputHandler);
             scene.update(deltaTime);
+            // Render scene
+            scene.render();
 
             //For each shader, set it as active then set uniforms
             //Either do it once here or for each sceneObject

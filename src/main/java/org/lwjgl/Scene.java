@@ -156,9 +156,9 @@ public class Scene extends SceneObject {
             ObjectSelection.hoverObject(this, inputHandler, rootObjects);
         }
 
-        if (hoveredObject != null) {
-            hoveredObject.update(this, deltaTime, inputHandler);
-        }
+//        if (hoveredObject != null) {
+//            hoveredObject.update(this, deltaTime, inputHandler);
+//        }
     }
 
     public void render() {

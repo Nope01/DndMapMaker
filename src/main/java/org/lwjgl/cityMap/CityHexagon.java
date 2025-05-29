@@ -37,7 +37,7 @@ public class CityHexagon extends Hexagon implements Serializable {
     public void render() {
         glUseProgram(shaderProgram);
         int selected = glGetUniformLocation(shaderProgram, "selected");
-        glUniform1i(selected, this.selected ? 1 : 0);
+        glUniform1i(selected, this.getSelected() ? 1 : 0);
         int highlighted = glGetUniformLocation(shaderProgram, "highlighted");
         glUniform1i(highlighted, this.highlighted ? 1 : 0);
         super.render();

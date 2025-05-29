@@ -31,11 +31,11 @@ public abstract class Hexagon extends SceneObject {
     protected Vector3i cubeCoords;
     protected Vector2i axialCoords;
 
-    public boolean highlighted;
+    protected boolean highlighted;
     private boolean movementHighlighted;
     private boolean spellHighlighted;
 
-    public boolean isVisible;
+    private boolean isVisible;
 
     public static final float SIZE = 1.0f;
     public static final int N = 0;
@@ -88,7 +88,7 @@ public abstract class Hexagon extends SceneObject {
         int colorLoc = glGetUniformLocation(shaderProgram, "color");
         glUniform3f(colorLoc, colour.x, colour.y, colour.z);
         int hovered = glGetUniformLocation(shaderProgram, "hovered");
-        glUniform1i(hovered, this.hovered ? 1 : 0);
+        glUniform1i(hovered, this.getHovered() ? 1 : 0);
         int inLine = glGetUniformLocation(shaderProgram, "inLine");
         glUniform1i(inLine, this.inLine ? 1 : 0);
         int texCoords = glGetUniformLocation(shaderProgram, "texCoords");
@@ -468,5 +468,13 @@ public abstract class Hexagon extends SceneObject {
 
     public void setSpellHighlighted(boolean spellHighlighted) {
         this.spellHighlighted = spellHighlighted;
+    }
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
     }
 }

@@ -43,7 +43,7 @@ public class Trap extends TileTrigger{
         int modelLoc = glGetUniformLocation(shaderProgram, "model");
         glUniformMatrix4fv(modelLoc, false, worldMatrix.get(new float[16]));
         int hovered = glGetUniformLocation(shaderProgram, "hovered");
-        glUniform1i(hovered, this.hovered ? 1 : 0);
+        glUniform1i(hovered, this.getHovered() ? 1 : 0);
         int texCoords = glGetUniformLocation(shaderProgram, "texCoords");
         glUniform2f(texCoords, this.texCoords[0], this.texCoords[1]);
         int isHidden = glGetUniformLocation(shaderProgram, "isHidden");

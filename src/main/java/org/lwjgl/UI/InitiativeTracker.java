@@ -56,7 +56,7 @@ public class InitiativeTracker extends ImGuiWindow {
 
         if (selectedIndex > -1) {
             currentTurn = initiativeList.get(selectedIndex).getLeft();
-            currentTurn.hovered = true;
+            currentTurn.setHovered(true);
         }
     }
 

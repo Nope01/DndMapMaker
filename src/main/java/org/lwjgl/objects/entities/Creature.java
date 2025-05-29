@@ -4,7 +4,6 @@ import org.joml.Vector2i;
 import org.joml.Vector3i;
 import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.combatMap.CombatHexagon;
-import org.lwjgl.dndMechanics.statusEffects.Blinded;
 import org.lwjgl.dndMechanics.statusEffects.StatusEffect;
 import org.lwjgl.objects.Hexagon;
 import org.lwjgl.objects.ObjectUtils;
@@ -36,7 +35,9 @@ public abstract class Creature extends SceneObject {
 
     private boolean isHidden;
 
-    private List<Integer> statusEffects = new ArrayList<>();
+    private List<StatusEffect> statusEffects = new ArrayList<>();
+    private List<Hexagon> visibleTiles = new ArrayList<>();
+    private List<Hexagon> reachableTiles = new ArrayList<>();
 
 
     /*
@@ -73,9 +74,9 @@ public abstract class Creature extends SceneObject {
         int modelLoc = glGetUniformLocation(shaderProgram, "model");
         glUniformMatrix4fv(modelLoc, false, worldMatrix.get(new float[16]));
         int hovered = glGetUniformLocation(shaderProgram, "hovered");
-        glUniform1i(hovered, this.hovered ? 1 : 0);
+        glUniform1i(hovered, this.getHovered() ? 1 : 0);
         int selected = glGetUniformLocation(shaderProgram, "selected");
-        glUniform1i(selected, this.selected ? 1 : 0);
+        glUniform1i(selected, this.getSelected() ? 1 : 0);
         int texCoords = glGetUniformLocation(shaderProgram, "texCoords");
         glUniform2f(texCoords, this.texCoords[0], this.texCoords[1]);
         int isHidden = glGetUniformLocation(shaderProgram, "isHidden");
@@ -188,12 +189,6 @@ public abstract class Creature extends SceneObject {
     }
 
     public int getMoveSpeed() {
-        if (statusEffects.contains(GRAPPLED) || statusEffects.contains(INCAPACITATED)) {
-            return 0;
-        }
-        if (statusEffects.contains(DASHING)) {
-            return moveSpeed * 2;
-        }
         return moveSpeed;
     }
 
@@ -226,9 +221,6 @@ public abstract class Creature extends SceneObject {
     }
 
     public int getDungeonVisibleRange() {
-        if (statusEffects.contains(BLINDED)) {
-            return 1;
-        }
         return dungeonVisibleRange;
     }
 
@@ -236,19 +228,26 @@ public abstract class Creature extends SceneObject {
         this.dungeonVisibleRange = dungeonVisibleRange;
     }
 
-    public void addStatusEffect(Integer statusEffect) {
+    public void addStatusEffect(StatusEffect statusEffect) {
         statusEffects.add(statusEffect);
     }
 
-    public void removeStatusEffect(Integer statusEffect) {
-        statusEffects.remove(statusEffect);
+    public void removeStatusEffect(Class<? extends StatusEffect> statusEffect) {
+        statusEffects.stream()
+                .filter(e -> e.getClass() == statusEffect)
+                .findFirst()
+                .ifPresent(e -> {
+                    e.removeEffect(this);
+                    statusEffects.remove(e);
+                });
     }
 
     public void removeAllStatusEffects() {
+        new ArrayList<>(statusEffects).forEach(e -> removeStatusEffect(e.getClass()));
         statusEffects.clear();
     }
 
-    public List<Integer> getStatusEffects() {
+    public List<StatusEffect> getStatusEffects() {
         return statusEffects;
     }
 
@@ -258,5 +257,21 @@ public abstract class Creature extends SceneObject {
 
     public void setHidden(boolean hidden) {
         isHidden = hidden;
+    }
+
+    public List<Hexagon> getVisibleTiles() {
+        return visibleTiles;
+    }
+
+    public void setVisibleTiles(List<Hexagon> visibleTiles) {
+        this.visibleTiles = visibleTiles;
+    }
+
+    public List<Hexagon> getReachableTiles() {
+        return reachableTiles;
+    }
+
+    public void setReachableTiles(List<Hexagon> reachableTiles) {
+        this.reachableTiles = reachableTiles;
     }
 }

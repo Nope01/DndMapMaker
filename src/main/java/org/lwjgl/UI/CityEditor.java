@@ -95,10 +95,10 @@ public class CityEditor extends ImGuiWindow {
         if (clickInput && hoveredObject != null) {
             clearReachableTiles(gridClass);
             if (selectedObject != null) {
-                selectedObject.selected = false;
+                selectedObject.setSelected(false);
             }
             selectedObject = hoveredObject;
-            selectedObject.selected = true;
+            selectedObject.setSelected(true);
 
             //Highlight moveable tiles
             if (selectedObject instanceof Player) {
@@ -117,7 +117,7 @@ public class CityEditor extends ImGuiWindow {
 
         //Deselect
         if (selectedObject != null && inputHandler.isRightClicked()) {
-            selectedObject.selected = false;
+            selectedObject.setSelected(false);
             selectedObject = null;
             clearReachableTiles(gridClass);
             selectedTerrain = null;

@@ -170,9 +170,9 @@ public class CombatEditor extends ImGuiWindow {
         }
 
         //Combat
-        if (true) {
+        if (inputHandler.isLeftClickedAndHeld()) {
             //Movement logic
-            if (clickInput && selectedObject instanceof Player) {
+            if (selectedObject instanceof Player) {
                 selectedObstacle = null;
                 selectedTerrain = null;
                 reachableTiles = hexReachable((CombatHexagon)selectedObject.parent, ((Player) selectedObject).getMoveSpeed(), gridClass);
@@ -180,7 +180,8 @@ public class CombatEditor extends ImGuiWindow {
                     selectedObject.setParent(hoveredObject);
                     selectedObject.setOffsetPos(((Hexagon) selectedObject.parent).getOffsetCoords());
                     selectedObject.initAabb();
-                    clearReachableTiles(gridClass, fogOfWar);
+                    clearReachableTiles();
+                    clearVisibleTiles();
                 }
                 //Neighbours
                 if (selectedObject.parent instanceof CombatHexagon hexUnderPlayer) {
@@ -198,32 +199,39 @@ public class CombatEditor extends ImGuiWindow {
                 for (Hexagon hex : reachableTiles) {
                     hex.setMovementHighlighted(true);
                 }
-            }
-            //Highlight all visible tiles
-            for (Creature player : characterList) {
                 visibleTiles =
                         hexVisible((CombatHexagon)player.parent, player.getDungeonVisibleRange(), gridClass);
                 for (Hexagon hex : visibleTiles) {
-                    hex.isVisible = true;
+                    hex.setVisible(true);
+                }
+            }
+            else {
+                //Highlight all visible tiles
+                for (Creature player : characterList) {
+                    visibleTiles =
+                            hexVisible((CombatHexagon)player.parent, player.getDungeonVisibleRange(), gridClass);
+                    for (Hexagon hex : visibleTiles) {
+                        hex.setVisible(true);
+                    }
                 }
             }
         }
 
         //Selection logic
         if (clickInput && hoveredObject != null) {
-            clearReachableTiles(gridClass, fogOfWar);
+            clearReachableTiles();
             if (selectedObject != null) {
-                selectedObject.selected = false;
+                selectedObject.setSelected(false);
             }
             selectedObject = hoveredObject;
-            selectedObject.selected = true;
+            selectedObject.setSelected(true);
         }
 
         //Deselect
         if (selectedObject != null && inputHandler.isRightClicked()) {
-            selectedObject.selected = false;
+            selectedObject.setSelected(false);
             selectedObject = null;
-            clearReachableTiles(gridClass, fogOfWar);
+            clearReachableTiles();
             selectedObstacle = null;
             selectedTerrain = null;
             spellHighlightedTiles.clear();
@@ -248,7 +256,7 @@ public class CombatEditor extends ImGuiWindow {
         openCharacterCreator();
         if (ImGui.checkbox("Fog of War", fogOfWar)) {
             fogOfWar = !fogOfWar;
-            clearReachableTiles(gridClass, fogOfWar);
+            gridClass.applyFogOfWar(fogOfWar);
         }
 
         //Change which menu gets rendered
@@ -319,22 +327,33 @@ public class CombatEditor extends ImGuiWindow {
         if (menuCurrentlyOpen == 2) {
             if (selectedObject instanceof Player player) {
                 if (ImGui.button("Blindness")) {
-                    player.addStatusEffect(BLINDED);
+                    player.addStatusEffect(new Blinded(player));
+                    clearVisibleTiles();
+                }
+                ImGui.sameLine();
+                if (ImGui.button("Clear")) {
+                    player.removeStatusEffect(Blinded.class);
                 }
                 if (ImGui.button("Incapacitated")) {
-                    player.addStatusEffect(INCAPACITATED);
+                    //player.addStatusEffect(INCAPACITATED);
                 }
                 if (ImGui.button("Invisible")) {
-                    player.addStatusEffect(INVISIBLE);
-                    player.setHidden(true);
+                    //player.addStatusEffect(INVISIBLE);
+                    //player.setHidden(true);
                 }
                 if (ImGui.button("Dash")) {
-                    player.addStatusEffect(DASHING);
+
+                }
+
+                ImGui.separator();
+                if (ImGui.button("Clear all status effects")) {
+                    player.removeAllStatusEffects();
                 }
             }
         }
 
-        ImGui.text("Bingus");
+        ImGui.separator();
+
 
         ImGui.end();
     }
@@ -444,5 +463,22 @@ public class CombatEditor extends ImGuiWindow {
         if (spellType == 0) {
 
         }
+    }
+
+    public void clearReachableTiles() {
+        for (Hexagon hex : reachableTiles) {
+            hex.setMovementHighlighted(false);
+        }
+        reachableTiles.clear();
+    }
+
+    public void clearVisibleTiles() {
+        if (!fogOfWar) {
+            return;
+        }
+        for (Hexagon hex : visibleTiles) {
+            hex.setVisible(false);
+        }
+        visibleTiles.clear();
     }
 }

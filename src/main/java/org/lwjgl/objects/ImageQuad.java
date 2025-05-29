@@ -46,7 +46,7 @@ public class ImageQuad extends SceneObject{
         int colorLoc = glGetUniformLocation(shaderProgram, "color");
         glUniform3f(colorLoc, colour.x, colour.y, colour.z);
         int hovered = glGetUniformLocation(shaderProgram, "hovered");
-        glUniform1i(hovered, this.hovered ? 1 : 0);
+        glUniform1i(hovered, this.getHovered() ? 1 : 0);
         int texCoords = glGetUniformLocation(shaderProgram, "texCoords");
         glUniform2f(texCoords, this.texCoords[0], this.texCoords[1]);
 

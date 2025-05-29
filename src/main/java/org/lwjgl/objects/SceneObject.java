@@ -24,8 +24,8 @@ public abstract class SceneObject implements Serializable {
     protected Vector3f[] verticesVecs;
     protected int numFloats;
     protected int[] indices;
-    public boolean hovered;
-    public boolean selected;
+    private boolean hovered;
+    private boolean selected;
     protected Vector2i offsetPos;
     protected Vector3i cubePos;
     protected Vector3f colour;
@@ -277,4 +277,19 @@ public abstract class SceneObject implements Serializable {
     public abstract void cleanup();
 
 
+    public void setHovered(boolean b) {
+        hovered = b;
+    }
+
+    public boolean getHovered() {
+        return hovered;
+    }
+
+    public void setSelected(boolean b) {
+        selected = b;
+    }
+
+    public boolean getSelected() {
+        return selected;
+    }
 }
