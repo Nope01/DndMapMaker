@@ -2,6 +2,7 @@ package org.lwjgl.objects.entities;
 
 import org.joml.Vector2i;
 import org.lwjgl.Scene;
+import org.lwjgl.UI.DeathSave;
 import org.lwjgl.utils.HelperMethods;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.objects.Hexagon;

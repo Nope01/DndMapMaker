@@ -78,6 +78,8 @@ public class CombatEditor extends ImGuiWindow {
 
     private Creature creatureToMove;
 
+    private List<DeathSave> deathSavesList = new ArrayList<>();
+
     public CombatEditor(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "Combat Editor");
         uiWidth = 400 * imGuiManager.getScale();
@@ -372,26 +374,27 @@ public class CombatEditor extends ImGuiWindow {
                 if (ImGui.button("Clear all status effects")) {
                     player.removeAllStatusEffects();
                 }
+                ImGui.separator();
+                if (ImGui.button("Toggle death save")) {
+                    deathSavesList.add(new DeathSave(player));
+                }
+                ImGui.sameLine();
+                if (!deathSavesList.isEmpty()) {
+                    for (DeathSave deathSave : deathSavesList) {
+                        if (ImGui.button(deathSave.getPlayerName()) && player.getName().equals(deathSave.getPlayerName())) {
+                            deathSavesList.remove(deathSave);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!deathSavesList.isEmpty()) {
+                for (DeathSave deathSave : deathSavesList) {
+                    deathSave.drawDeathSaveUI();
+                }
             }
         }
-
-        ImGui.separator();
-
-        if (creatureToMove != null) {
-            ImGui.text(creatureToMove.getName() + " is moving!");
-        }
-        if (selectedObject != null) {
-            ImGui.text(selectedObject.getId());
-            if (selectedObject instanceof Player player) {
-                ImGui.text(player.getReachableTiles().size() + " reachable tiles");
-                ImGui.text(player.getVisibleTiles().size() + " visible tiles");
-            }
-        }
-
-        if (hoveredObject != null) {
-            ImGui.text(hoveredObject.getId());
-        }
-
         ImGui.end();
     }
 
@@ -428,6 +431,9 @@ public class CombatEditor extends ImGuiWindow {
             }
             ImGui.sameLine();
             if (ImGui.button("Add player")) {
+                if (name.isEmpty()) {
+                    name = new ImString("Bingus");
+                }
                 Player player = createCreatureRandomPos(name.toString(), classType.intValue(), raceType.intValue(), moveSpeed[0], AC[0], HP.intValue());
                 player.setTexture(scene.getTextureCache().getTexture("sandvich"));
                 player.setId(name.toString());
