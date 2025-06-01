@@ -7,7 +7,6 @@ import org.lwjgl.textures.Texture;
 
 import java.io.Serializable;
 import java.lang.Math;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -26,8 +25,8 @@ public abstract class SceneObject implements Serializable {
     protected int[] indices;
     private boolean hovered;
     private boolean selected;
-    protected Vector2i offsetPos;
-    protected Vector3i cubePos;
+    private Vector2i offsetPos;
+    private Vector3i cubePos;
     protected Vector3f colour;
     protected Texture texture;
     protected float[] texCoords;
@@ -181,8 +180,21 @@ public abstract class SceneObject implements Serializable {
         return aabbMax;
     }
 
+
+    //TODO: offset might be fucked
     public Vector2i getOffsetPos() {
         return offsetPos;
+    }
+    public Vector3i getCubePos() {
+        return cubePos;
+    }
+    public void setCubePos(Vector3i cubePos) {
+        this.cubePos = cubePos;
+    }
+
+    public void setOffsetAndCubePos(Vector2i offsetPos) {
+        this.offsetPos = offsetPos;
+        this.cubePos = Hexagon.offsetToCubeCoords(offsetPos);
     }
 
     public void setOffsetPos(Vector2i offsetPos) {

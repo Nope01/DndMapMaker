@@ -30,11 +30,11 @@ public abstract class Creature extends SceneObject {
     private int classType;
     private int raceType;
     private int moveSpeed;
+    private int maxMoveSpeed;
     private int HP;
     private int maxHP;
     private int AC;
     private int dungeonVisibleRange;
-
     private boolean isVisible;
 
     private List<StatusEffect> statusEffects = new ArrayList<>();
@@ -134,8 +134,8 @@ public abstract class Creature extends SceneObject {
             System.out.println("Selected destination is not a Hexagon");
         }
         else {
-            Vector3i originCoords = ((Hexagon) origin.parent).getCubeCoords();
-            Vector3i destinationCoords = ((Hexagon) destination).getCubeCoords();
+            Vector3i originCoords = ((Hexagon) origin.parent).getCubePos();
+            Vector3i destinationCoords = ((Hexagon) destination).getCubePos();
 
             if (isValidMove(originCoords, destinationCoords)) {
                 if (destination instanceof CityHexagon) {
@@ -309,5 +309,17 @@ public abstract class Creature extends SceneObject {
 
     public void setMaxHP(int maxHP) {
         this.maxHP = maxHP;
+    }
+
+    public int getMaxMoveSpeed() {
+        return maxMoveSpeed;
+    }
+
+    public void setMaxMoveSpeed(int maxMoveSpeed) {
+        this.maxMoveSpeed = maxMoveSpeed;
+    }
+
+    public int getDistanceToHexagon(Hexagon hexagon) {
+        return Hexagon.cubeDistance(this.getCubePos(), hexagon.getCubePos());
     }
 }

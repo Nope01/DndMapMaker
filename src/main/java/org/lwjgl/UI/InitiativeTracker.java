@@ -40,6 +40,7 @@ public class InitiativeTracker extends ImGuiWindow {
 
     @Override
     protected void update() {
+        //TODO: only update character list on list change, rather than every frame
         if (imGuiManager.combatOpen) {
             CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
             characterList = combatEditor.getCharacterList();
@@ -54,11 +55,6 @@ public class InitiativeTracker extends ImGuiWindow {
             tempList.add(creature.getName());
         }
         nameList = tempList.toArray(nameList);
-
-        if (selectedIndex > -1) {
-            currentTurn = initiativeList.get(selectedIndex).getLeft();
-            currentTurn.setHovered(true);
-        }
     }
 
     @Override
@@ -91,6 +87,10 @@ public class InitiativeTracker extends ImGuiWindow {
         }
 
         ImGui.text("Current turn: " + (currentTurn == null ? "None" : currentTurn.getName()));
+
+        if (ImGui.button("End turn")) {
+            endTurn();
+        }
 
         ImVec2 center = ImGui.getMainViewport().getCenter();
         ImGui.setNextWindowPos(center, ImGuiCond.Appearing, new ImVec2(0.5f, 0.5f));
@@ -134,5 +134,29 @@ public class InitiativeTracker extends ImGuiWindow {
             }
             ImGui.endPopup();
         }
+    }
+
+    private void endTurn() {
+        if (currentTurn != null) {
+            resetStats(currentTurn);
+            currentTurn.setHovered(false);
+            currentTurn = null;
+            selectedIndex++;
+            if (selectedIndex >= initiativeList.size()) {
+                selectedIndex = 0;
+            }
+        }
+        else {
+            System.out.println("No current turn!");
+        }
+
+        if (selectedIndex > -1) {
+            currentTurn = initiativeList.get(selectedIndex).getLeft();
+            currentTurn.setHovered(true);
+        }
+    }
+
+    private void resetStats(Creature creature) {
+        creature.setMoveSpeed(creature.getMaxMoveSpeed());
     }
 }

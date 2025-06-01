@@ -64,11 +64,11 @@ public class TestWindow extends ImGuiWindow {
         }
         else {
             if (hoveredObject instanceof ContinentHexagon)
-            ImGui.textUnformatted("Cube coords: " + ((ContinentHexagon) hoveredObject).getCubeCoords().x + ", "
-                    + ((ContinentHexagon) hoveredObject).getCubeCoords().y + " ,"
-                    + ((ContinentHexagon) hoveredObject).getCubeCoords().z);
-            ImGui.textUnformatted("Offset coords: " + ((ContinentHexagon) hoveredObject).getOffsetCoords().x + ", "
-                    + ((ContinentHexagon) hoveredObject).getOffsetCoords().y);
+            ImGui.textUnformatted("Cube coords: " + ((ContinentHexagon) hoveredObject).getCubePos().x + ", "
+                    + ((ContinentHexagon) hoveredObject).getCubePos().y + " ,"
+                    + ((ContinentHexagon) hoveredObject).getCubePos().z);
+            ImGui.textUnformatted("Offset coords: " + ((ContinentHexagon) hoveredObject).getOffsetPos().x + ", "
+                    + ((ContinentHexagon) hoveredObject).getOffsetPos().y);
             ImGui.textUnformatted("Tile type: " + type);
             ImGui.textUnformatted("ID: " + hoveredObject.getId());
             ImGui.textUnformatted("Colour: " + hoveredObject.getColour().x + ", "

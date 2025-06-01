@@ -181,7 +181,7 @@ public class Grid extends SceneObject {
     public Hexagon getHexagonAt(Vector3i cubeCoords) {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
-                if (grid[row][col].getCubeCoords().equals(cubeCoords)) {
+                if (grid[row][col].getCubePos().equals(cubeCoords)) {
                     return grid[row][col];
                 }
             }

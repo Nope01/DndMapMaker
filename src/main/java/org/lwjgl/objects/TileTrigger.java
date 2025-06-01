@@ -1,7 +1,6 @@
 package org.lwjgl.objects;
 
 import org.joml.Vector2i;
-import org.joml.Vector3f;
 import org.joml.Vector3i;
 
 public abstract class TileTrigger extends SceneObject {
@@ -12,8 +11,8 @@ public abstract class TileTrigger extends SceneObject {
     public TileTrigger(int triggerRadius, Vector2i offsetPos) {
         super();
         this.triggerRadius = triggerRadius;
-        this.offsetPos = offsetPos;
-        this.cubePos = Hexagon.offsetToCubeCoords(offsetPos);
+        this.setOffsetAndCubePos(offsetPos);
+        this.setCubePos(Hexagon.offsetToCubeCoords(offsetPos));
     }
 
     public int getTriggerRadius() {
@@ -41,7 +40,7 @@ public abstract class TileTrigger extends SceneObject {
     }
 
     public boolean isInRange(Vector3i position) {
-        if (Hexagon.cubeDistance(position, cubePos) < triggerRadius) {
+        if (Hexagon.cubeDistance(position, getCubePos()) < triggerRadius) {
             return true;
         }
         return false;

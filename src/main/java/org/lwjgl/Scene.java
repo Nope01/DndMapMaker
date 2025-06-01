@@ -66,7 +66,7 @@ public class Scene extends SceneObject {
         grid.makeCityGrid(this);
         addObject(grid);
 
-        Trap trap = new Trap(2, grid.getHexagonAt(20, 40).getOffsetCoords());
+        Trap trap = new Trap(2, grid.getHexagonAt(20, 40).getOffsetPos());
         trap.setShaderProgram(this.getShaderCache().getShader("trap"));
         trap.setId("trap");
         trap.setParent(grid.getHexagonAt(20, 40));
@@ -74,7 +74,7 @@ public class Scene extends SceneObject {
         trap.setTexture(this.getTextureCache().getTexture("sandvich"));
         trap.setIsHidden(false);
 
-        Player player = new Player(grid.getHexagonAt(20, 45).getOffsetCoords());
+        Player player = new Player(grid.getHexagonAt(20, 45).getOffsetPos());
         player.setId("player");
         player.setShaderProgram(this.getShaderCache().getShader("creature"));
         player.setParent(grid.getHexagonAt(20, 45));

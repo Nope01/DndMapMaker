@@ -80,7 +80,7 @@ public class CityEditor extends ImGuiWindow {
             selectedTerrain = null;
             if (((Player) selectedObject).canMoveCreature(selectedObject, hoveredObject)) {
                 selectedObject.setParent(hoveredObject);
-                selectedObject.setOffsetPos(((Hexagon) selectedObject.parent).getOffsetCoords());
+                selectedObject.setOffsetAndCubePos(((Hexagon) selectedObject.parent).getOffsetPos());
                 selectedObject.initAabb();
             }
             //Neighbours

@@ -28,8 +28,6 @@ public abstract class Hexagon extends SceneObject {
     protected Texture iconTexture;
     protected int numFloats = 7 * 3;
     protected static Vector3i[] cubeDirectionVectors;
-    protected Vector2i offsetCoords;
-    protected Vector3i cubeCoords;
     protected Vector2i axialCoords;
 
     protected boolean highlighted;
@@ -52,9 +50,9 @@ public abstract class Hexagon extends SceneObject {
         colour = new Vector3f(0.2f, 0.2f, 0.2f);
         initGeometry();
         initAabb();
-        this.offsetCoords = offsetPos;
-        this.cubeCoords = offsetToCubeCoords(offsetPos);
-        this.axialCoords = cubeToAxialCoords(cubeCoords);
+        this.setOffsetAndCubePos(offsetPos);
+        this.setCubePos(offsetToCubeCoords(offsetPos));
+        this.axialCoords = cubeToAxialCoords(getCubePos());
         this.inLine = false;
         cubeDirectionVectors = new Vector3i[]{
                 new Vector3i(0, -1, 1), //N
@@ -78,7 +76,7 @@ public abstract class Hexagon extends SceneObject {
         // Bind shader and set uniforms
         int e = glGetError();
         if (e != GL_NO_ERROR) {
-            System.out.println("Error hex: " + offsetCoords.x + "," + offsetCoords.y + "-" + e);
+            System.out.println("Error hex: " + getOffsetPos().x + "," + getOffsetPos().y + "-" + e);
         }
         glUseProgram(shaderProgram);
         glEnable(GL_BLEND);
@@ -166,17 +164,6 @@ public abstract class Hexagon extends SceneObject {
         return iconTexture;
     }
 
-    public Vector2i getOffsetCoords() {
-        return offsetCoords;
-    }
-
-    public Vector3i getCubeCoords() {
-        return cubeCoords;
-    }
-
-    public Vector2i getAxialCoords() {
-        return axialCoords;
-    }
 
     public Vector3f[] getVerticesAsVecs() {
         return verticesVecs;
@@ -250,7 +237,7 @@ public abstract class Hexagon extends SceneObject {
     }
 
     public Vector3i[] getAllNeighbours() {
-        Vector3i hex = this.cubeCoords;
+        Vector3i hex = this.getCubePos();
         Vector3i[] neighbours = new Vector3i[6];
         for (int i = 0; i < 6; i++) {
             neighbours[i] = getCubeNeighbour(hex, i);
@@ -259,7 +246,7 @@ public abstract class Hexagon extends SceneObject {
     }
 
     public Vector3i getCubeNeighbour(int direction) {
-        return cubeAddDirection(cubeCoords, cubeDirection(direction));
+        return cubeAddDirection(getCubePos(), cubeDirection(direction));
     }
 
     //Distances
@@ -273,7 +260,7 @@ public abstract class Hexagon extends SceneObject {
     }
 
     public int cubeDistance(Vector3i a) {
-        return cubeDistance(a, cubeCoords);
+        return cubeDistance(a, getCubePos());
     }
 
     //Line
@@ -323,7 +310,7 @@ public abstract class Hexagon extends SceneObject {
         Hexagon[][] grid = gridClass.getGrid();
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
-                if (grid[i][j].cubeDistance(hexagon.getCubeCoords()) <= moveRange) {
+                if (grid[i][j].cubeDistance(hexagon.getCubePos()) <= moveRange) {
                     Hexagon hex = grid[i][j];
                     //Basic removal of invalid tiles
                     if (hex instanceof CombatHexagon combatHexagon) {
@@ -368,7 +355,7 @@ public abstract class Hexagon extends SceneObject {
             fringes.add(new ArrayList<>());
             for (Hexagon hex : fringes.get(k-1)) {
                 for (int dir = 0; dir < 6; dir++) {
-                    Hexagon neighbor = gridClass.getHexagonAt(getCubeNeighbour(hex.getCubeCoords(), dir));
+                    Hexagon neighbor = gridClass.getHexagonAt(getCubeNeighbour(hex.getCubePos(), dir));
                     if (neighbor instanceof CombatHexagon && !((CombatHexagon) neighbor).isBlocked()) {
                         if (!visited.contains(neighbor)) {
                             visited.add(neighbor);
@@ -422,7 +409,7 @@ public abstract class Hexagon extends SceneObject {
             }
 
             for (int dir = 0; dir < 6; dir++) {
-                Hexagon neighbor = gridClass.getHexagonAt(getCubeNeighbour(current.getCubeCoords(), dir));
+                Hexagon neighbor = gridClass.getHexagonAt(getCubeNeighbour(current.getCubePos(), dir));
                 if (neighbor != null && !distances.containsKey(neighbor)) {
                     distances.put(neighbor, currentDist + 1);
                     inRange.add(neighbor);
@@ -436,8 +423,8 @@ public abstract class Hexagon extends SceneObject {
     private static boolean hasLineOfSight(Hexagon start, Hexagon end, Grid gridClass) {
         if (start.equals(end)) return true;
 
-        Vector3i a = start.getCubeCoords();
-        Vector3i b = end.getCubeCoords();
+        Vector3i a = start.getCubePos();
+        Vector3i b = end.getCubePos();
         int distance = cubeDistance(a, b);
 
         // Walk along the line
@@ -510,7 +497,7 @@ public abstract class Hexagon extends SceneObject {
     }
 
     public static Set<Hexagon> hexCone(Hexagon origin, int direction, int size, Grid gridClass) {
-        return hexCone(origin.getCubeCoords(), direction, size, gridClass);
+        return hexCone(origin.getCubePos(), direction, size, gridClass);
     }
 
 

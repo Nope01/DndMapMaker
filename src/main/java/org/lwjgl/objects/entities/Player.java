@@ -4,7 +4,6 @@ import org.joml.Vector2i;
 import org.lwjgl.Scene;
 import org.lwjgl.utils.VectorUtils;
 import org.lwjgl.input.InputHandler;
-import org.lwjgl.objects.Hexagon;
 
 import static org.lwjgl.objects.entities.Classes.BARD;
 import static org.lwjgl.objects.entities.Races.HUMAN;
@@ -23,13 +22,13 @@ public class Player extends Creature {
         this.setClassType(classType);
         this.setRaceType(raceType);
         this.setMoveSpeed(moveSpeed);
+        this.setMaxMoveSpeed(moveSpeed);
         this.setAC(AC);
         this.setHP(HP);
         this.setMaxHP(HP);
         this.setDungeonVisibleRange(10);
 
-        this.offsetPos = offsetPos;
-        this.cubePos = Hexagon.offsetToCubeCoords(offsetPos);
+        this.setOffsetAndCubePos(offsetPos);
     }
 
     @Override
@@ -47,7 +46,7 @@ public class Player extends Creature {
     }
 
     public static Player createCreatureRandomPos(String name, int classType, int raceType, int moveSpeed, int AC, int HP) {
-        Vector2i offsetPos = new Vector2i(VectorUtils.randomInt(10, 30), VectorUtils.randomInt(20, 60));
-        return new Player(name, classType, raceType, moveSpeed, AC, HP, offsetPos);
+        Vector2i offset = new Vector2i(VectorUtils.randomInt(10, 30), VectorUtils.randomInt(20, 60));
+        return new Player(name, classType, raceType, moveSpeed, AC, HP, offset);
     }
 }

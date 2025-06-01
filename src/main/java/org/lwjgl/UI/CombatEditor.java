@@ -2,13 +2,13 @@ package org.lwjgl.UI;
 
 import imgui.ImGui;
 import imgui.ImVec2;
-import imgui.ImVec4;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiDir;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
+import org.joml.Vector2i;
 import org.lwjgl.Scene;
 import org.lwjgl.dndMechanics.spells.Spells;
 import org.lwjgl.combatMap.CombatHexagon;
@@ -182,7 +182,7 @@ public class CombatEditor extends ImGuiWindow {
                 //Line between hovered and selected hex specifically
                 if (selectedObject instanceof CombatHexagon selectedHex) {
                     if (spellType == 0) {
-                        spellHighlightedTiles = Hexagon.cubeLineDraw(hoveredHex.getCubeCoords(), selectedHex.getCubeCoords(), gridClass);
+                        spellHighlightedTiles = Hexagon.cubeLineDraw(hoveredHex.getCubePos(), selectedHex.getCubePos(), gridClass);
                     }
                 }
                 if (spellType == 1) {
@@ -191,7 +191,7 @@ public class CombatEditor extends ImGuiWindow {
                 }
                 if (spellType == 2) {
                     spellHighlightedTiles =
-                            Hexagon.hexCone(hoveredHex.getCubeCoords(), spellDirection[0], spellSize[0], gridClass);
+                            Hexagon.hexCone(hoveredHex.getCubePos(), spellDirection[0], spellSize[0], gridClass);
                 }
                 for (Hexagon hex : spellHighlightedTiles) {
                     hex.setSpellHighlighted(true);
@@ -205,13 +205,17 @@ public class CombatEditor extends ImGuiWindow {
             //Movement logic
             if (creatureToMove != null) {
                 if (creatureToMove.getReachableTiles().contains(selectedObject)) {
-                    creatureToMove.setParent(hoveredObject);
-                    creatureToMove.setOffsetPos(((Hexagon) selectedObject).getOffsetCoords());
+                    //Turn logic
+                    creatureToMove.setMoveSpeed(creatureToMove.getMoveSpeed() - creatureToMove.getDistanceToHexagon((Hexagon) hoveredObject));
+
+                    creatureToMove.setParent(selectedObject);
+                    creatureToMove.setOffsetAndCubePos(selectedObject.getOffsetPos());
                     creatureToMove.initAabb();
                     creatureToMove.clearReachableTiles();
                     if (fogOfWar) {
                         creatureToMove.clearVisibleTiles();
                     }
+
                     creatureToMove = null;
                 }
                 else {
@@ -441,6 +445,14 @@ public class CombatEditor extends ImGuiWindow {
             //Player stat block
             if (selectedObject instanceof Player player) {
                 renderStatBlock();
+                ImGui.text(player.getCubePos().x + ", " + player.getCubePos().y + ", " + player.getCubePos().z);
+                if (player.parent instanceof CombatHexagon hex) {
+                    ImGui.text(hex.getCubePos().x + ", " + hex.getCubePos().y + ", " + hex.getCubePos().z);
+                }
+
+            }
+            if (hoveredObject instanceof CombatHexagon hex) {
+                ImGui.text(hex.getCubePos().x + ", " + hex.getCubePos().y + ", " + hex.getCubePos().z);
             }
 
         }
@@ -488,7 +500,7 @@ public class CombatEditor extends ImGuiWindow {
                 player.setTexture(scene.getTextureCache().getTexture("sandvich"));
                 player.setId(name.toString());
                 player.setShaderProgram(scene.getShaderCache().getShader("creature"));
-                player.setParent(gridClass.getHexagonAt(player.getOffsetPos()));
+                player.setParent(gridClass.getHexagonAt(player.getCubePos()));
                 player.setPosition(0.0f, 0.2f, 0.0f);
                 characterList.add(player);
 
