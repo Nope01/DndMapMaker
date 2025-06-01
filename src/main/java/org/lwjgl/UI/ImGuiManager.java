@@ -153,6 +153,10 @@ public class ImGuiManager {
 
         CombatEditor combatEditor = new CombatEditor(imGuiManager, scene, inputHandler);
         imGuiManager.addWindow(combatEditor);
+
+        InitiativeTracker initiativeTracker = new InitiativeTracker(imGuiManager, scene, inputHandler);
+        imGuiManager.addWindow(initiativeTracker);
+        initiativeTracker.placeUiWindow();
     }
 
     public void initMainMenu(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {

@@ -4,10 +4,8 @@ import org.lwjgl.objects.entities.Creature;
 
 public class Dash implements StatusEffect {
 
-    private final int originalMoveSpeed;
     public Dash(Creature creature) {
-        originalMoveSpeed = creature.getMoveSpeed();
-        creature.setMoveSpeed(originalMoveSpeed*2);
+        creature.setMoveSpeed(creature.getMoveSpeed() + creature.getMaxMoveSpeed());
     }
 
     @Override
@@ -32,6 +30,6 @@ public class Dash implements StatusEffect {
 
     @Override
     public void removeEffect(Creature creature) {
-        creature.setMoveSpeed(originalMoveSpeed);
+        creature.setMoveSpeed(creature.getMaxMoveSpeed());
     }
 }

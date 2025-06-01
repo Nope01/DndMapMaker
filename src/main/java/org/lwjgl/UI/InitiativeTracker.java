@@ -6,6 +6,7 @@ import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import org.lwjgl.Scene;
+import org.lwjgl.dndMechanics.statusEffects.Dash;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.objects.entities.Creature;
 import org.lwjgl.utils.GuiUtils;
@@ -173,6 +174,10 @@ public class InitiativeTracker extends ImGuiWindow {
         creature.setActions(creature.getMaxActions());
         creature.setBonusActions(creature.getMaxBonusActions());
         creature.setReaction(1);
+        if (creature.hasStatusEffect(Dash.class)) {
+            creature.removeStatusEffect(Dash.class);
+        }
+
     }
 
     public void setCurrentTurnToIndex() {
