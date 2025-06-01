@@ -338,6 +338,9 @@ public abstract class Creature extends SceneObject {
 
     public void subAction() {
         actions--;
+        if (actions < 0) {
+            actions = 0;
+        }
     }
 
     public void addAction() {
@@ -362,6 +365,9 @@ public abstract class Creature extends SceneObject {
 
     public void subBonusAction() {
         bonusActions--;
+        if (bonusActions < 0) {
+            bonusActions = 0;
+        }
     }
 
     public void addBonusAction() {
@@ -385,6 +391,9 @@ public abstract class Creature extends SceneObject {
     }
     public void subReaction() {
         reaction--;
+        if (reaction < 0) {
+            reaction = 0;
+        }
     }
 
     public void addReaction() {
