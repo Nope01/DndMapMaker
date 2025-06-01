@@ -7,14 +7,19 @@ import org.lwjgl.UI.ImGuiManager;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLDebugMessageCallback;
 import org.lwjgl.shaders.ShaderProgramCache;
+import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL43.glDebugMessageCallback;
+import static org.lwjgl.opengl.GL43C.GL_DEBUG_OUTPUT;
 import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.utils.Debugging.*;
 
 public class Main {
     private long window;
@@ -67,7 +72,18 @@ public class Main {
 
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
-
+        glEnable(GL_DEBUG_OUTPUT);
+        glDebugMessageCallback(new GLDebugMessageCallback() {
+            @Override
+            public void invoke(int source, int type, int id, int severity, int length, long message, long userParam) {
+                String msg = MemoryUtil.memUTF8(message); // Convert pointer to String
+                System.err.printf("[GL ERROR] Source=%s, Type=%s, Severity=%s: %s\n",
+                        getDebugSource(source),
+                        getDebugType(type),
+                        getDebugSeverity(severity),
+                        msg);
+            }
+        }, NULL);
         int[] arrWidth = new int[1];
         int[] arrHeight = new int[1];
         glfwGetFramebufferSize(window, arrWidth, arrHeight);

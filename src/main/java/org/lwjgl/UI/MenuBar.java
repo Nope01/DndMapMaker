@@ -47,10 +47,23 @@ public class MenuBar extends ImGuiWindow {
         ImGui.beginMenuBar();
         if (ImGui.beginMenu("File")) {
             if (ImGui.menuItem("Save")) {
-                scene.saveMap();
+                if (combatOpen) {
+                    scene.saveCombatMap();
+                }
+                if (continentOpen) {
+                    scene.saveContinentMap();
+                }
             }
             if (ImGui.menuItem("Load")) {
-                scene.loadMap();
+                if (combatOpen) {
+                    scene.loadCombatMap();
+                    CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
+                    combatEditor.setCharacterList(scene.loadCreaturesFromMap(scene.getGrid()));
+                }
+                if (continentOpen) {
+                    scene.loadContinentMap();
+                }
+
             }
             if (ImGui.menuItem("Screenshot")) {
                 scene.saveImage();

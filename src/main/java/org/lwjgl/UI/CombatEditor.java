@@ -568,6 +568,9 @@ public class CombatEditor extends ImGuiWindow {
     public List<Creature> getCharacterList() {
         return characterList;
     }
+    public void setCharacterList(List<Creature> characterList) {
+        this.characterList = characterList;
+    }
 
     public void setSelectedObstacle(Texture texture) {
         selectedObstacle = texture;

@@ -7,14 +7,15 @@ import org.lwjgl.data.MapSaveLoad;
 import org.lwjgl.data.update.UpdateChecker;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
+import org.lwjgl.objects.entities.Creature;
 import org.lwjgl.opengl.GL;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -215,10 +216,25 @@ public class ImGuiManager {
         ImGui.beginMenuBar();
         if (ImGui.beginMenu("File")) {
             if (ImGui.menuItem("Save")) {
-                scene.saveMap();
+                if (combatOpen) {
+                    scene.saveCombatMap();
+                }
+                if (continentOpen) {
+                    scene.saveContinentMap();
+                }
             }
             if (ImGui.menuItem("Load")) {
-                scene.loadMap();
+                if (combatOpen) {
+                    if (scene.loadCombatMap()) {
+                        CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
+                        combatEditor.setCharacterList(new ArrayList<>());
+                       combatEditor.setCharacterList(scene.loadCreaturesFromMap(scene.getGrid()));
+                    }
+                }
+                if (continentOpen) {
+                    scene.loadContinentMap();
+                }
+
             }
             if (ImGui.menuItem("Screenshot")) {
                 scene.saveImage();
