@@ -1,9 +1,11 @@
 package org.lwjgl.utils;
 
+import imgui.ImVec4;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
-public class HelperMethods {
+public class VectorUtils {
     public static Vector3f RGBToVec3(int r, int g, int b) {
         return new Vector3f((float) r /255, (float) g /255, (float) b /255);
     }
@@ -46,6 +48,7 @@ public class HelperMethods {
         return result;
     }
 
+    //TODO: move out of this class
     public static Vector2f getCenterOfScreen(float screenWidth, float screenHeight, float uiWidth, float uiHeight) {
         Vector2f result = new Vector2f();
         result.x = (screenWidth / 2) - (uiWidth/2);
@@ -55,6 +58,23 @@ public class HelperMethods {
 
     public static int randomInt(int min, int max) {
         return (int) (Math.random() * (max - min) + min);
+    }
+
+    public static ImVec4 vec4ToImVec4(Vector4f vec) {
+        ImVec4 result = new ImVec4();
+        result.x = vec.x;
+        result.y = vec.y;
+        result.z = vec.z;
+        result.w = vec.w;
+        return result;
+    }
+
+    public static Vector4f rgbToVec4(int r, int g, int b, int a) {
+        return new Vector4f((float) r /255, (float) g /255, (float) b /255, (float) a /255);
+    }
+
+    public static ImVec4 rgbToImVec4(int r, int g, int b, int a) {
+        return new ImVec4((float) r /255, (float) g /255, (float) b /255, (float) a /255);
     }
 
 }

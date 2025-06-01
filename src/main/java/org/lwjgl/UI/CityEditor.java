@@ -10,7 +10,8 @@ import org.joml.Vector3i;
 import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.objects.entities.Creature;
 import org.lwjgl.textures.Texture;
-import org.lwjgl.utils.HelperMethods;
+import org.lwjgl.utils.GuiUtils;
+import org.lwjgl.utils.VectorUtils;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.objects.*;
@@ -215,12 +216,12 @@ public class CityEditor extends ImGuiWindow {
             ImGui.combo("Class", classType, classList);
             ImGui.sameLine();
             if (ImGui.button("Random##class")) {
-                classType = new ImInt(HelperMethods.randomInt(0, classList.length-1));
+                classType = new ImInt(VectorUtils.randomInt(0, classList.length-1));
             }
             ImGui.combo("Race", raceType, raceList);
             ImGui.sameLine();
             if (ImGui.button("Random##race")) {
-                raceType = new ImInt(HelperMethods.randomInt(0, raceList.length-1));
+                raceType = new ImInt(VectorUtils.randomInt(0, raceList.length-1));
             }
             ImGui.sliderInt("Move speed", moveSpeed, 0, 10, "");
             ImGui.sameLine();
@@ -229,8 +230,8 @@ public class CityEditor extends ImGuiWindow {
             ImGui.inputInt("Health", HP);
 
             if (ImGui.button("Surprise me:)")) {
-                classType = new ImInt(HelperMethods.randomInt(0, classList.length-1));
-                raceType = new ImInt(HelperMethods.randomInt(0, raceList.length-1));
+                classType = new ImInt(VectorUtils.randomInt(0, classList.length-1));
+                raceType = new ImInt(VectorUtils.randomInt(0, raceList.length-1));
                 name = new ImString(getRandomName());
             }
             ImGui.sameLine();

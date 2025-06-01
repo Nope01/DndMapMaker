@@ -1,7 +1,10 @@
-package org.lwjgl.UI;
+package org.lwjgl.utils;
 
 import imgui.ImGui;
 import org.lwjgl.Scene;
+import org.lwjgl.UI.CityEditor;
+import org.lwjgl.UI.CombatEditor;
+import org.lwjgl.UI.ContinentEditor;
 import org.lwjgl.textures.Texture;
 
 public class GuiUtils {

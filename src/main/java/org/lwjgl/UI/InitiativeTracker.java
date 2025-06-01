@@ -8,6 +8,7 @@ import imgui.type.ImInt;
 import org.lwjgl.Scene;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.objects.entities.Creature;
+import org.lwjgl.utils.GuiUtils;
 import org.lwjgl.utils.Pair;
 
 import java.util.ArrayList;

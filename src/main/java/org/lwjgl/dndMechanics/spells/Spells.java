@@ -1,4 +1,4 @@
-package org.lwjgl;
+package org.lwjgl.dndMechanics.spells;
 
 public final class Spells {
     public static final int LINE = 0;

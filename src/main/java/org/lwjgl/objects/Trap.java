@@ -1,11 +1,10 @@
 package org.lwjgl.objects;
 
 import org.joml.Vector2i;
-import org.joml.Vector3f;
 import org.lwjgl.Scene;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.objects.models.opengl.HexagonShape;
-import org.lwjgl.objects.models.opengl.Plane;
+import org.lwjgl.utils.ObjectUtils;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;

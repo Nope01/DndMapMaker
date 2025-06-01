@@ -2,13 +2,15 @@ package org.lwjgl.UI;
 
 import imgui.ImGui;
 import imgui.ImVec2;
+import imgui.ImVec4;
+import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiDir;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import org.lwjgl.Scene;
-import org.lwjgl.Spells;
+import org.lwjgl.dndMechanics.spells.Spells;
 import org.lwjgl.combatMap.CombatHexagon;
 import org.lwjgl.dndMechanics.statusEffects.Blinded;
 import org.lwjgl.dndMechanics.statusEffects.Dash;
@@ -23,7 +25,8 @@ import org.lwjgl.objects.entities.Creature;
 import org.lwjgl.objects.entities.Player;
 import org.lwjgl.objects.entities.Races;
 import org.lwjgl.textures.Texture;
-import org.lwjgl.utils.HelperMethods;
+import org.lwjgl.utils.GuiUtils;
+import org.lwjgl.utils.VectorUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,6 +39,7 @@ import static org.lwjgl.objects.entities.Classes.FIGHTER;
 import static org.lwjgl.objects.entities.Classes.classList;
 import static org.lwjgl.objects.entities.Player.createCreatureRandomPos;
 import static org.lwjgl.objects.entities.Races.*;
+import static org.lwjgl.utils.VectorUtils.rgbToImVec4;
 
 public class CombatEditor extends ImGuiWindow {
     private String[] terrainNames = new String[]{
@@ -457,12 +461,12 @@ public class CombatEditor extends ImGuiWindow {
             ImGui.combo("Class", classType, classList);
             ImGui.sameLine();
             if (ImGui.button("Random##class")) {
-                classType = new ImInt(HelperMethods.randomInt(0, classList.length-1));
+                classType = new ImInt(VectorUtils.randomInt(0, classList.length-1));
             }
             ImGui.combo("Race", raceType, raceList);
             ImGui.sameLine();
             if (ImGui.button("Random##race")) {
-                raceType = new ImInt(HelperMethods.randomInt(0, raceList.length-1));
+                raceType = new ImInt(VectorUtils.randomInt(0, raceList.length-1));
             }
             ImGui.sliderInt("Move speed", moveSpeed, 0, 10, "");
             ImGui.sameLine();
@@ -471,8 +475,8 @@ public class CombatEditor extends ImGuiWindow {
             ImGui.inputInt("Health", maxHP);
 
             if (ImGui.button("Surprise me:)")) {
-                classType = new ImInt(HelperMethods.randomInt(0, classList.length-1));
-                raceType = new ImInt(HelperMethods.randomInt(0, raceList.length-1));
+                classType = new ImInt(VectorUtils.randomInt(0, classList.length-1));
+                raceType = new ImInt(VectorUtils.randomInt(0, raceList.length-1));
                 name = new ImString(getRandomName());
             }
             ImGui.sameLine();
@@ -525,6 +529,7 @@ public class CombatEditor extends ImGuiWindow {
         ImGui.text("Move speed: " + player.getMoveSpeed() * 5);
         ImGui.text("AC: " + player.getAC());
         ImGui.text("Health");
+        ImGui.sameLine();
         if (ImGui.arrowButton("Health arrow left", ImGuiDir.Left)) {
             player.setHP(player.getHP() - 1);
         }
@@ -534,7 +539,9 @@ public class CombatEditor extends ImGuiWindow {
         if (ImGui.arrowButton("Health arrow right", ImGuiDir.Right)) {
             player.setHP(player.getHP() + 1);
         }
+        ImGui.pushStyleColor(ImGuiCol.PlotHistogram, rgbToImVec4(136, 8, 8, 255));
         ImGui.progressBar((float) player.getHP() / player.getMaxHP(), player.getHP() + "/" +  player.getMaxHP() );
+        ImGui.popStyleColor();
     }
 
     public List<Creature> getCharacterList() {

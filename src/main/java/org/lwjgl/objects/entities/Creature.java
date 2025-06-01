@@ -6,7 +6,7 @@ import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.combatMap.CombatHexagon;
 import org.lwjgl.dndMechanics.statusEffects.StatusEffect;
 import org.lwjgl.objects.Hexagon;
-import org.lwjgl.objects.ObjectUtils;
+import org.lwjgl.utils.ObjectUtils;
 import org.lwjgl.objects.SceneObject;
 import org.lwjgl.objects.models.opengl.HexagonShape;
 

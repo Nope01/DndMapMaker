@@ -1,11 +1,11 @@
 package org.lwjgl.UI;
 
 import imgui.ImGui;
-import imgui.flag.ImGuiWindowFlags;
 import org.lwjgl.data.update.UpdateChecker;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.data.MapSaveLoad;
+import org.lwjgl.utils.GuiUtils;
 
 import java.io.IOException;
 //DEPRECATED

@@ -8,6 +8,7 @@ import org.lwjgl.input.InputHandler;
 import org.lwjgl.objects.Grid;
 import org.lwjgl.objects.SceneObject;
 import org.lwjgl.textures.Texture;
+import org.lwjgl.utils.GuiUtils;
 
 public class ContinentEditor extends ImGuiWindow{
 
