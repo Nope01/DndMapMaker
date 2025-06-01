@@ -3,6 +3,7 @@ package org.lwjgl.UI;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiDir;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
@@ -17,8 +18,10 @@ import org.lwjgl.input.InputHandler;
 import org.lwjgl.objects.Grid;
 import org.lwjgl.objects.Hexagon;
 import org.lwjgl.objects.SceneObject;
+import org.lwjgl.objects.entities.Classes;
 import org.lwjgl.objects.entities.Creature;
 import org.lwjgl.objects.entities.Player;
+import org.lwjgl.objects.entities.Races;
 import org.lwjgl.textures.Texture;
 import org.lwjgl.utils.HelperMethods;
 
@@ -32,8 +35,7 @@ import static org.lwjgl.objects.Hexagon.*;
 import static org.lwjgl.objects.entities.Classes.FIGHTER;
 import static org.lwjgl.objects.entities.Classes.classList;
 import static org.lwjgl.objects.entities.Player.createCreatureRandomPos;
-import static org.lwjgl.objects.entities.Races.AASIMAR;
-import static org.lwjgl.objects.entities.Races.raceList;
+import static org.lwjgl.objects.entities.Races.*;
 
 public class CombatEditor extends ImGuiWindow {
     private String[] terrainNames = new String[]{
@@ -60,7 +62,7 @@ public class CombatEditor extends ImGuiWindow {
     ImInt classType = new ImInt(FIGHTER);
     ImInt raceType = new ImInt(AASIMAR);
     int[] moveSpeed = new int[] {4};
-    ImInt HP = new ImInt(15);
+    ImInt maxHP = new ImInt(15);
     int[] AC = new int[] {12};
 
     private List<Creature> characterList = new ArrayList<>();
@@ -366,6 +368,7 @@ public class CombatEditor extends ImGuiWindow {
 
         if (menuCurrentlyOpen == 2) {
             if (selectedObject instanceof Player player) {
+                ImGui.separator();
                 if (ImGui.button("Blindness")) {
                     player.addStatusEffect(new Blinded(player));
                 }
@@ -414,8 +417,8 @@ public class CombatEditor extends ImGuiWindow {
                 if (ImGui.button("Toggle death save")) {
                     deathSavesList.add(new DeathSave(player));
                 }
-                ImGui.sameLine();
                 if (!deathSavesList.isEmpty()) {
+                    ImGui.sameLine();
                     for (DeathSave deathSave : deathSavesList) {
                         if (ImGui.button(deathSave.getPlayerName()) && player.getName().equals(deathSave.getPlayerName())) {
                             deathSavesList.remove(deathSave);
@@ -429,6 +432,11 @@ public class CombatEditor extends ImGuiWindow {
                 for (DeathSave deathSave : deathSavesList) {
                     deathSave.drawDeathSaveUI();
                 }
+            }
+
+            //Player stat block
+            if (selectedObject instanceof Player player) {
+                renderStatBlock();
             }
 
         }
@@ -460,7 +468,7 @@ public class CombatEditor extends ImGuiWindow {
             ImGui.sameLine();
             ImGui.text(String.valueOf(moveSpeed[0] * 5));
             ImGui.sliderInt("AC", AC, 0, 25);
-            ImGui.inputInt("Health", HP);
+            ImGui.inputInt("Health", maxHP);
 
             if (ImGui.button("Surprise me:)")) {
                 classType = new ImInt(HelperMethods.randomInt(0, classList.length-1));
@@ -472,7 +480,7 @@ public class CombatEditor extends ImGuiWindow {
                 if (name.isEmpty()) {
                     name = new ImString("Bingus");
                 }
-                Player player = createCreatureRandomPos(name.toString(), classType.intValue(), raceType.intValue(), moveSpeed[0], AC[0], HP.intValue());
+                Player player = createCreatureRandomPos(name.toString(), classType.intValue(), raceType.intValue(), moveSpeed[0], AC[0], maxHP.intValue());
                 player.setTexture(scene.getTextureCache().getTexture("sandvich"));
                 player.setId(name.toString());
                 player.setShaderProgram(scene.getShaderCache().getShader("creature"));
@@ -506,6 +514,27 @@ public class CombatEditor extends ImGuiWindow {
 
             ImGui.endPopup();
         }
+    }
+
+    private void renderStatBlock() {
+        Player player = (Player) selectedObject;
+        ImGui.separator();
+        ImGui.text("Name: " + player.getName());
+        ImGui.text("Class: " + Classes.getClassAsString(player.getClassType()));
+        ImGui.text("Race: " + Races.getRaceAsString(player.getRaceType()));
+        ImGui.text("Move speed: " + player.getMoveSpeed() * 5);
+        ImGui.text("AC: " + player.getAC());
+        ImGui.text("Health");
+        if (ImGui.arrowButton("Health arrow left", ImGuiDir.Left)) {
+            player.setHP(player.getHP() - 1);
+        }
+        ImGui.sameLine();
+        ImGui.text(String.valueOf(player.getHP()));
+        ImGui.sameLine();
+        if (ImGui.arrowButton("Health arrow right", ImGuiDir.Right)) {
+            player.setHP(player.getHP() + 1);
+        }
+        ImGui.progressBar((float) player.getHP() / player.getMaxHP(), player.getHP() + "/" +  player.getMaxHP() );
     }
 
     public List<Creature> getCharacterList() {

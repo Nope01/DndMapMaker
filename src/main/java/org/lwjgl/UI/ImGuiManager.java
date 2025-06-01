@@ -260,6 +260,7 @@ public class ImGuiManager {
                 imGuiManager.addWindow(initiativeTracker);
                 initiativeTracker.placeUiWindow();
             }
+
             ImGui.endMenu();
         }
 

@@ -12,7 +12,6 @@ public class DeathSave {
 
     public DeathSave(Player player) {
         this.player = player;
-
     }
     public void drawDeathSaveUI() {
         ImGui.text("Its death time for " + player.getName() + "!");

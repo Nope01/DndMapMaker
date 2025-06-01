@@ -31,6 +31,7 @@ public abstract class Creature extends SceneObject {
     private int raceType;
     private int moveSpeed;
     private int HP;
+    private int maxHP;
     private int AC;
     private int dungeonVisibleRange;
 
@@ -300,5 +301,13 @@ public abstract class Creature extends SceneObject {
             hexagon.setVisible(false);
         }
         visibleTiles.clear();
+    }
+
+    public int getMaxHP() {
+        return maxHP;
+    }
+
+    public void setMaxHP(int maxHP) {
+        this.maxHP = maxHP;
     }
 }

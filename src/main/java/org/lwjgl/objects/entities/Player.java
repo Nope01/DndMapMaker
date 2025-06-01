@@ -15,16 +15,7 @@ public class Player extends Creature {
     public Player(Vector2i offsetPos) {
         super(offsetPos);
 
-        this.setName("A dude");
-        this.setClassType(BARD);
-        this.setRaceType(HUMAN);
-        this.setMoveSpeed(moveSpeedToHexSpeed(20));
-        this.setHP(25);
-        this.setAC(16);
-        this.setDungeonVisibleRange(10);
-
-        this.offsetPos = offsetPos;
-        this.cubePos = Hexagon.offsetToCubeCoords(offsetPos);
+        new Player("A dude", BARD, HUMAN, 10, 10, 100, offsetPos);
     }
 
     public Player(String name, int classType, int raceType, int moveSpeed, int AC, int HP, Vector2i offsetPos) {
@@ -35,6 +26,7 @@ public class Player extends Creature {
         this.setMoveSpeed(moveSpeed);
         this.setAC(AC);
         this.setHP(HP);
+        this.setMaxHP(HP);
         this.setDungeonVisibleRange(10);
 
         this.offsetPos = offsetPos;

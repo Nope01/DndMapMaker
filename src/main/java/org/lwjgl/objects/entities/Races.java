@@ -24,4 +24,8 @@ public final class Races {
             "Orc",
             "Tiefling",
     };
+
+    public static String getRaceAsString(int race) {
+        return raceList[race];
+    }
 }

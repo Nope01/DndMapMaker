@@ -31,4 +31,16 @@ public final class Classes {
             "Wizard",
             "Artificer",
     };
+
+    public static String getClassAsString(int classType) {
+        return classList[classType];
+    }
+    public static int getClassType(String className) {
+        for (int i = 0; i < classList.length; i++) {
+            if (classList[i].equals(className)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }
