@@ -36,6 +36,11 @@ public abstract class Creature extends SceneObject {
     private int AC;
     private int dungeonVisibleRange;
     private boolean isVisible;
+    private int actions;
+    private int maxActions;
+    private int bonusActions;
+    private int maxBonusActions;
+    private int reaction;
 
     private List<StatusEffect> statusEffects = new ArrayList<>();
     private Set<Hexagon> visibleTiles = new HashSet<>();
@@ -321,5 +326,68 @@ public abstract class Creature extends SceneObject {
 
     public int getDistanceToHexagon(Hexagon hexagon) {
         return Hexagon.cubeDistance(this.getCubePos(), hexagon.getCubePos());
+    }
+
+    public int getActions() {
+        return actions;
+    }
+
+    public void setActions(int actions) {
+        this.actions = actions;
+    }
+
+    public void subAction() {
+        actions--;
+    }
+
+    public void addAction() {
+        actions++;
+    }
+
+    public int getMaxActions() {
+        return maxActions;
+    }
+
+    public void setMaxActions(int maxActions) {
+        this.maxActions = maxActions;
+    }
+
+    public int getBonusActions() {
+        return bonusActions;
+    }
+
+    public void setBonusActions(int bonusActions) {
+        this.bonusActions = bonusActions;
+    }
+
+    public void subBonusAction() {
+        bonusActions--;
+    }
+
+    public void addBonusAction() {
+        bonusActions++;
+    }
+
+    public int getMaxBonusActions() {
+        return maxBonusActions;
+    }
+
+    public void setMaxBonusActions(int maxBonusActions) {
+        this.maxBonusActions = maxBonusActions;
+    }
+
+    public int getReaction() {
+        return reaction;
+    }
+
+    public void setReaction(int reaction) {
+        this.reaction = reaction;
+    }
+    public void subReaction() {
+        reaction--;
+    }
+
+    public void addReaction() {
+        reaction++;
     }
 }

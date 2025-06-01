@@ -14,6 +14,7 @@ import org.lwjgl.utils.Pair;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class InitiativeTracker extends ImGuiWindow {
     private List<Pair<Creature, Integer>> initiativeList;
@@ -83,7 +84,7 @@ public class InitiativeTracker extends ImGuiWindow {
             String label = entry.getLeft().getName() + " " + entry.getRight();
             if (ImGui.selectable(label, selectedIndex == i)) {
                 selectedIndex = i;
-                setSelectedIndex();
+                setCurrentTurnToIndex();
             }
         }
 
@@ -91,6 +92,7 @@ public class InitiativeTracker extends ImGuiWindow {
 
         if (ImGui.button("End turn")) {
             endTurn();
+            startTurn();
         }
 
         ImVec2 center = ImGui.getMainViewport().getCenter();
@@ -112,17 +114,23 @@ public class InitiativeTracker extends ImGuiWindow {
             if (ImGui.button("Add")) {
                 Pair<Creature, Integer> initiativeEntry =
                         new Pair<>(characterList.get(characterInt.intValue()), initiative.intValue());
-
-                initiativeList.add(initiativeEntry);
-                //Funky way of sorting the pair
-                initiativeList.sort(Comparator.comparing(p -> -p.getRight()));
+                boolean creatureExists = false;
+                for (Pair<Creature, Integer> entry : initiativeList) {
+                    if (entry.getLeft().getName().equals(initiativeEntry.getLeft().getName())) {
+                        creatureExists = true;
+                    }
+                }
+                if (!creatureExists) {
+                    initiativeList.add(initiativeEntry);
+                    //Funky way of sorting the pair
+                    initiativeList.sort(Comparator.comparing(p -> -p.getRight()));
+                }
             }
             if (ImGui.button("Close")) {
                 ImGui.closeCurrentPopup();
             }
             ImGui.endPopup();
         }
-
     }
 
     private void openEmptyListPopup() {
@@ -137,29 +145,32 @@ public class InitiativeTracker extends ImGuiWindow {
         }
     }
 
+    private void startTurn() {
+        selectedIndex++;
+        if (selectedIndex >= initiativeList.size()) {
+            selectedIndex = 0;
+        }
+        setCurrentTurnToIndex();
+        resetStats(currentTurn);
+    }
     private void endTurn() {
         if (currentTurn != null) {
-            resetStats(currentTurn);
             currentTurn.setHovered(false);
             currentTurn = null;
-            selectedIndex++;
-            if (selectedIndex >= initiativeList.size()) {
-                selectedIndex = 0;
-            }
         }
         else {
             System.out.println("No current turn!");
         }
-
-        setSelectedIndex();
-
     }
 
     private void resetStats(Creature creature) {
         creature.setMoveSpeed(creature.getMaxMoveSpeed());
+        creature.setActions(creature.getMaxActions());
+        creature.setBonusActions(creature.getMaxBonusActions());
+        creature.setReaction(1);
     }
 
-    public void setSelectedIndex() {
+    public void setCurrentTurnToIndex() {
         if (selectedIndex > -1) {
             currentTurn = initiativeList.get(selectedIndex).getLeft();
             currentTurn.setHovered(true);

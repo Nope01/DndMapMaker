@@ -444,16 +444,7 @@ public class CombatEditor extends ImGuiWindow {
             //Player stat block
             if (selectedObject instanceof Player player) {
                 renderStatBlock();
-                ImGui.text(player.getCubePos().x + ", " + player.getCubePos().y + ", " + player.getCubePos().z);
-                if (player.parent instanceof CombatHexagon hex) {
-                    ImGui.text(hex.getCubePos().x + ", " + hex.getCubePos().y + ", " + hex.getCubePos().z);
-                }
-
             }
-            if (hoveredObject instanceof CombatHexagon hex) {
-                ImGui.text(hex.getCubePos().x + ", " + hex.getCubePos().y + ", " + hex.getCubePos().z);
-            }
-
         }
 
         ImGui.end();
@@ -537,8 +528,9 @@ public class CombatEditor extends ImGuiWindow {
         ImGui.text("Name: " + player.getName());
         ImGui.text("Class: " + Classes.getClassAsString(player.getClassType()));
         ImGui.text("Race: " + Races.getRaceAsString(player.getRaceType()));
-        ImGui.text("Move speed: " + player.getMoveSpeed() * 5);
         ImGui.text("AC: " + player.getAC());
+
+        ImGui.text("Movement left: " + player.getMoveSpeed() * 5);
         ImGui.text("Health");
         ImGui.sameLine();
         if (ImGui.arrowButton("Health arrow left", ImGuiDir.Left)) {
@@ -553,6 +545,24 @@ public class CombatEditor extends ImGuiWindow {
         ImGui.pushStyleColor(ImGuiCol.PlotHistogram, rgbToImVec4(136, 8, 8, 255));
         ImGui.progressBar((float) player.getHP() / player.getMaxHP(), player.getHP() + "/" +  player.getMaxHP() );
         ImGui.popStyleColor();
+        ImGui.separator();
+
+        ImGui.text("Actions: " + player.getActions());
+        ImGui.sameLine();
+        if (ImGui.button("Use##Action")) {
+            player.subAction();
+        }
+        ImGui.text("Bonus actions: " + player.getBonusActions());
+        ImGui.sameLine();
+        if (ImGui.button("Use##Bonus action")) {
+            player.subBonusAction();
+        }
+
+        ImGui.text("Reactions: " + player.getReaction());
+        ImGui.sameLine();
+        if (ImGui.button("Use##Reaction")) {
+            player.subReaction();
+        }
     }
 
     public List<Creature> getCharacterList() {

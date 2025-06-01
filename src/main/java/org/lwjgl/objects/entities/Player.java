@@ -29,6 +29,13 @@ public class Player extends Creature {
         this.setMaxHP(HP);
         this.setDungeonVisibleRange(10);
 
+        this.setMaxActions(1);
+        this.setMaxBonusActions(1);
+
+        this.setActions(getMaxActions());
+        this.setBonusActions(getMaxBonusActions());
+        this.setReaction(1);
+
         this.setOffsetPos(offsetPos);
         this.setCubePos(Hexagon.offsetToCubeCoords(offsetPos));
     }
