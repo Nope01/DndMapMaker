@@ -83,6 +83,7 @@ public class InitiativeTracker extends ImGuiWindow {
             String label = entry.getLeft().getName() + " " + entry.getRight();
             if (ImGui.selectable(label, selectedIndex == i)) {
                 selectedIndex = i;
+                setSelectedIndex();
             }
         }
 
@@ -150,13 +151,18 @@ public class InitiativeTracker extends ImGuiWindow {
             System.out.println("No current turn!");
         }
 
-        if (selectedIndex > -1) {
-            currentTurn = initiativeList.get(selectedIndex).getLeft();
-            currentTurn.setHovered(true);
-        }
+        setSelectedIndex();
+
     }
 
     private void resetStats(Creature creature) {
         creature.setMoveSpeed(creature.getMaxMoveSpeed());
+    }
+
+    public void setSelectedIndex() {
+        if (selectedIndex > -1) {
+            currentTurn = initiativeList.get(selectedIndex).getLeft();
+            currentTurn.setHovered(true);
+        }
     }
 }

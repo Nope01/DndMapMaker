@@ -256,7 +256,6 @@ public class CombatEditor extends ImGuiWindow {
                             hexVisible((CombatHexagon)creature.parent, creature.getDungeonVisibleRange(), gridClass));
                 }
             }
-
         }
 
         //Deselect
