@@ -90,9 +90,12 @@ public class InitiativeTracker extends ImGuiWindow {
 
         ImGui.text("Current turn: " + (currentTurn == null ? "None" : currentTurn.getName()));
 
-        if (ImGui.button("End turn")) {
-            endTurn();
-            startTurn();
+        //Only reveal button if there are entries in the list
+        if (!initiativeList.isEmpty()) {
+            if (ImGui.button("End turn")) {
+                endTurn();
+                startTurn();
+            }
         }
 
         ImVec2 center = ImGui.getMainViewport().getCenter();
@@ -114,6 +117,8 @@ public class InitiativeTracker extends ImGuiWindow {
             if (ImGui.button("Add")) {
                 Pair<Creature, Integer> initiativeEntry =
                         new Pair<>(characterList.get(characterInt.intValue()), initiative.intValue());
+
+                //Duplicate entry check
                 boolean creatureExists = false;
                 for (Pair<Creature, Integer> entry : initiativeList) {
                     if (entry.getLeft().getName().equals(initiativeEntry.getLeft().getName())) {
