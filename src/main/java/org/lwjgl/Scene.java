@@ -1,6 +1,8 @@
 package org.lwjgl;
 
 import imgui.ImGui;
+import org.lwjgl.combatMap.CombatHexagon;
+import org.lwjgl.data.CombatFileManager;
 import org.lwjgl.data.ImageGeneration;
 import org.lwjgl.data.MapSaveLoad;
 import org.lwjgl.continentMap.ContinentHexagon;
@@ -9,6 +11,7 @@ import org.lwjgl.input.ObjectSelection;
 import org.lwjgl.objects.Grid;
 import org.lwjgl.objects.SceneObject;
 import org.lwjgl.objects.Trap;
+import org.lwjgl.objects.entities.Creature;
 import org.lwjgl.objects.entities.Player;
 import org.lwjgl.shaders.ShaderProgramCache;
 import org.lwjgl.textures.TextureCache;
@@ -30,6 +33,7 @@ public class Scene extends SceneObject {
     private TextureCache textureCache;
     private ShaderProgramCache shaderCache;
     private MapSaveLoad mapSaveLoad;
+    private CombatFileManager combatFileManager;
 
     public Scene(int width, int height, InputHandler inputHandler, ShaderProgramCache shaderCache, long window) {
         //CopyOnWriteArrayList
@@ -42,7 +46,9 @@ public class Scene extends SceneObject {
         this.hoveredObject = null;
         this.textureCache = new TextureCache();
         this.shaderCache = shaderCache;
+
         this.mapSaveLoad = new MapSaveLoad();
+        this.combatFileManager = new CombatFileManager();
 
         setupScene(width, height);
     }
@@ -243,14 +249,30 @@ public class Scene extends SceneObject {
         return grid;
     }
 
-    public void saveMap() {
+    public void saveContinentMap() {
         mapSaveLoad.saveFile(grid);
     }
-    public void loadMap() {
+
+    public void saveCombatMap() {
+        combatFileManager.saveMapFile(grid);
+    }
+
+    public void loadContinentMap() {
         Grid temp = mapSaveLoad.loadFile();
         if (temp != null) {
             grid.setGridFromLoad(temp.getGrid(), temp.rows, temp.columns);
         }
+    }
+
+    public boolean loadCombatMap() {
+        Grid temp = combatFileManager.loadMapFile();
+        if (temp == null) {
+            return false;
+        }
+
+        grid.makeGridFromLoadedGrid(temp);
+
+        return true;
     }
 
     public void saveImage() {

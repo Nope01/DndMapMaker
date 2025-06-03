@@ -186,6 +186,7 @@ public class CombatEditor extends ImGuiWindow {
                     }
                 }
                 if (spellType == 1) {
+                    //TODO: change this to not reveal hexes
                     spellHighlightedTiles =
                             hexVisible(hoveredHex,spellSize[0], gridClass);
                 }
@@ -375,6 +376,12 @@ public class CombatEditor extends ImGuiWindow {
 
         if (menuCurrentlyOpen == 2) {
             if (selectedObject instanceof Player player) {
+                if (ImGui.button("Delete character")) {
+                    scene.removeObject(player);
+                    characterList.remove(player);
+                    player.cleanup();
+                    selectedObject = null;
+                }
                 ImGui.separator();
                 if (ImGui.button("Blindness")) {
                     player.addStatusEffect(new Blinded(player));
@@ -567,6 +574,9 @@ public class CombatEditor extends ImGuiWindow {
 
     public List<Creature> getCharacterList() {
         return characterList;
+    }
+    public void setCharacterList(List<Creature> characterList) {
+        this.characterList = characterList;
     }
 
     public void setSelectedObstacle(Texture texture) {

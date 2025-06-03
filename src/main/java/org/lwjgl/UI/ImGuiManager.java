@@ -3,24 +3,28 @@ package org.lwjgl.UI;
 import imgui.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.*;
+import org.lwjgl.data.CombatFileManager;
 import org.lwjgl.data.MapSaveLoad;
 import org.lwjgl.data.update.UpdateChecker;
 import org.lwjgl.input.InputHandler;
 import org.lwjgl.Scene;
+import org.lwjgl.objects.entities.Creature;
+import org.lwjgl.objects.entities.Player;
 import org.lwjgl.opengl.GL;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static imgui.ImGui.getDrawData;
 import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
+import static org.lwjgl.objects.entities.Player.remakePlayer;
 
 public class ImGuiManager {
     private long window;
@@ -211,14 +215,63 @@ public class ImGuiManager {
         imGuiGl3.createFontsTexture();
     }
 
+    //TODO: make the saving items look nicer
+    //TODO: create methods for repeated code
+    //TODO: use fileManagers within this instead of scene
+    //TODO: check for what is likely many more bugs with saving/loading
     public void drawMenuBar(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         ImGui.beginMenuBar();
         if (ImGui.beginMenu("File")) {
-            if (ImGui.menuItem("Save")) {
-                scene.saveMap();
+            if (ImGui.menuItem("Save map")) {
+                if (combatOpen) {
+                    scene.saveCombatMap();
+                }
+                if (continentOpen) {
+                    scene.saveContinentMap();
+                }
             }
-            if (ImGui.menuItem("Load")) {
-                scene.loadMap();
+            if (combatOpen) {
+                if (ImGui.menuItem("Save characters")) {
+                    CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
+                    List<Creature> characterList = combatEditor.getCharacterList();
+                    CombatFileManager combatFileManager = new CombatFileManager();
+                    combatFileManager.saveCharacterFile(characterList);
+                }
+            }
+            if (ImGui.menuItem("Load map")) {
+                if (combatOpen) {
+                    if (scene.loadCombatMap()) {
+                        CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
+                        List<Creature> characterList = combatEditor.getCharacterList();
+
+                        for (int i = 0; i < characterList.size(); i++) {
+                            Creature character = characterList.get(i);
+                            if (character instanceof Player player) {
+                                characterList.set(i, remakePlayer(player, scene.getGrid()));
+                            }
+                        }
+                        combatEditor.setCharacterList(characterList);
+                    }
+                }
+                if (continentOpen) {
+                    scene.loadContinentMap();
+                }
+            }
+            if (combatOpen) {
+                if (ImGui.menuItem("Load characters")) {
+                    CombatFileManager combatFileManager = new CombatFileManager();
+                    List<Creature> characterList = combatFileManager.loadCharacterFile();
+                    List<Creature> newCharacterList = new ArrayList<>();
+
+                    for (int i = 0; i < characterList.size(); i++) {
+                        Creature character = characterList.get(i);
+                        if (character instanceof Player player) {
+                            newCharacterList.add(remakePlayer(player, scene.getGrid()));
+                        }
+                    }
+                    CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
+                    combatEditor.setCharacterList(newCharacterList);
+                }
             }
             if (ImGui.menuItem("Screenshot")) {
                 scene.saveImage();

@@ -13,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class SceneObject implements Serializable {
     protected String id;
     protected int shaderProgram;
-    protected int vaoId, vboId;
+    protected transient int vaoId, vboId;
     protected Vector3f position;    // Local position
     protected Vector3f rotation;    // Local rotation (Euler angles in degrees)
     protected Vector3f scale;       // Local scale
