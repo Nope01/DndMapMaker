@@ -57,8 +57,6 @@ public class MenuBar extends ImGuiWindow {
             if (ImGui.menuItem("Load")) {
                 if (combatOpen) {
                     scene.loadCombatMap();
-                    CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
-                    combatEditor.setCharacterList(scene.loadCreaturesFromMap(scene.getGrid()));
                 }
                 if (continentOpen) {
                     scene.loadContinentMap();

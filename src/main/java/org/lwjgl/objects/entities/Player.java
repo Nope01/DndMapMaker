@@ -2,6 +2,7 @@ package org.lwjgl.objects.entities;
 
 import org.joml.Vector2i;
 import org.lwjgl.Scene;
+import org.lwjgl.objects.Grid;
 import org.lwjgl.objects.Hexagon;
 import org.lwjgl.utils.VectorUtils;
 import org.lwjgl.input.InputHandler;
@@ -61,5 +62,23 @@ public class Player extends Creature {
     public static Player createCreatureRandomPos(String name, int classType, int raceType, int moveSpeed, int AC, int HP) {
         Vector2i offset = new Vector2i(VectorUtils.randomInt(30, 50), VectorUtils.randomInt(20, 30));
         return new Player(name, classType, raceType, moveSpeed, AC, HP, offset);
+    }
+
+    public static Player remakePlayer(Player oldPlayer, Grid grid) {
+        Player newPlayer = new Player(oldPlayer.getName(),
+                oldPlayer.getClassType(),
+                oldPlayer.getRaceType(),
+                oldPlayer.getMoveSpeed(),
+                oldPlayer.getAC(),
+                oldPlayer.getHP(),
+                oldPlayer.getOffsetPos());
+
+        newPlayer.setTexture(oldPlayer.getTexture());
+        newPlayer.setParent(grid.getHexagonAt(oldPlayer.parent.getCubePos()));
+        newPlayer.setPosition(0.0f, 0.2f, 0.0f);
+        newPlayer.setShaderProgram(oldPlayer.getShaderProgram());
+        newPlayer.setId(oldPlayer.getId());
+
+        return newPlayer;
     }
 }

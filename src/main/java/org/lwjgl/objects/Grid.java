@@ -32,18 +32,6 @@ public class Grid extends SceneObject {
         this(scene, 2, 2);
     }
 
-    public Grid(Scene scene, Grid loadedGrid) {
-        this(scene, loadedGrid.columns, loadedGrid.rows);
-        makeGridFromLoadedGrid(loadedGrid);
-        for (SceneObject child : children) {
-            child.setParent(this);
-        }
-        this.grid = loadedGrid.grid;
-        this.columns = loadedGrid.columns;
-        this.rows = loadedGrid.rows;
-        this.shaderProgram = loadedGrid.shaderProgram;
-    }
-
     public void makeGridFromLoadedGrid(Grid loadedGrid) {
         CombatHexagon[][] grid = new CombatHexagon[loadedGrid.rows][loadedGrid.columns];
 

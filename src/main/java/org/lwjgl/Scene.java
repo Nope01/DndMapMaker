@@ -256,6 +256,7 @@ public class Scene extends SceneObject {
     public void saveCombatMap() {
         combatFileManager.saveMapFile(grid);
     }
+
     public void loadContinentMap() {
         Grid temp = mapSaveLoad.loadFile();
         if (temp != null) {
@@ -265,31 +266,13 @@ public class Scene extends SceneObject {
 
     public boolean loadCombatMap() {
         Grid temp = combatFileManager.loadMapFile();
+        if (temp == null) {
+            return false;
+        }
 
         grid.makeGridFromLoadedGrid(temp);
 
         return true;
-    }
-
-    public List<Creature> loadCreaturesFromMap(Grid grid) {
-        System.out.println("Loading creatures from map");
-        CombatHexagon[][] tempGrid = (CombatHexagon[][]) grid.getGrid();
-        List<Creature> combatCreatures = new ArrayList<>();
-
-        for (int col = 0; col < grid.columns; col++ ) {
-            for (int row = 0; row < grid.rows; row++) {
-                if (tempGrid[row][col] != null) {
-                    if (!tempGrid[row][col].children.isEmpty()) {
-                        if (tempGrid[row][col].children.getFirst() instanceof Creature creature) {
-                            Creature creature1 = creature;
-                            combatCreatures.add(creature1);
-                        }
-                    }
-                }
-            }
-        }
-
-        return combatCreatures;
     }
 
     public void saveImage() {

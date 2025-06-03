@@ -186,6 +186,7 @@ public class CombatEditor extends ImGuiWindow {
                     }
                 }
                 if (spellType == 1) {
+                    //TODO: change this to not reveal hexes
                     spellHighlightedTiles =
                             hexVisible(hoveredHex,spellSize[0], gridClass);
                 }

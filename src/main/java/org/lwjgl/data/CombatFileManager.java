@@ -1,11 +1,13 @@
 package org.lwjgl.data;
 
 import org.lwjgl.objects.Grid;
+import org.lwjgl.objects.entities.Creature;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import java.io.*;
+import java.util.List;
 
 import static org.lwjgl.data.MapSaveLoad.fileOverridePopup;
 
@@ -71,6 +73,10 @@ public class CombatFileManager {
         }
     }
 
+    public void saveCharacterFile(List<Creature> object) {
+        saveMapFile(object);
+    }
+
     public Grid loadMapFile() {
         File file;
 
@@ -79,7 +85,21 @@ public class CombatFileManager {
             file = loadMapChooser.getSelectedFile();
             System.out.println("Loading file: " + file.getAbsolutePath());
             if (file.exists()) {
-                return deserializeObject(file);
+                return deserializeGrid(file);
+            }
+        }
+        return null;
+    }
+
+    public List<Creature> loadCharacterFile() {
+        File file;
+
+        int returnVal = loadMapChooser.showOpenDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            file = loadMapChooser.getSelectedFile();
+            System.out.println("Loading file: " + file.getAbsolutePath());
+            if (file.exists()) {
+                return deserializeList(file);
             }
         }
         return null;
@@ -99,15 +119,29 @@ public class CombatFileManager {
         }
     }
 
-    private static Grid deserializeObject(File file) {
+    private static Grid deserializeGrid(File file) {
         try {
             FileInputStream fileIn = new FileInputStream(file);
             ObjectInputStream in = new ObjectInputStream(fileIn);
-            Grid returnObject = (Grid)in.readObject();
-            System.out.println("Deserialised Combat map");
-            return returnObject;
+            return (Grid)in.readObject();
         } catch (IOException e) {
             System.out.println("Error reading file");
+            e.printStackTrace();
+        }
+        catch (ClassNotFoundException e) {
+            System.out.println("Error deserializing file");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static List<Creature> deserializeList(File file) {
+        try {
+            FileInputStream fileIn = new FileInputStream(file);
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            return (List<Creature>)in.readObject();
+        } catch (IOException e) {
+            System.out.println("Error reading list file");
             e.printStackTrace();
         }
         catch (ClassNotFoundException e) {
