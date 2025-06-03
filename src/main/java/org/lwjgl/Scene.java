@@ -264,15 +264,11 @@ public class Scene extends SceneObject {
     }
 
     public boolean loadCombatMap() {
-        System.out.println("Loading combat map");
         Grid temp = combatFileManager.loadMapFile();
-        if (temp != null) {
-            System.out.println("Loading grid");
-            grid.setGridFromLoad(temp.getGrid(), temp.rows, temp.columns);
-            System.out.println("Grid loaded");
-            return true;
-        }
-        return false;
+
+        grid.makeGridFromLoadedGrid(temp);
+
+        return true;
     }
 
     public List<Creature> loadCreaturesFromMap(Grid grid) {

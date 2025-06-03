@@ -28,7 +28,6 @@ public abstract class Hexagon extends SceneObject {
     protected Texture iconTexture;
     protected int numFloats = 7 * 3;
     protected static Vector3i[] cubeDirectionVectors;
-    protected Vector2i axialCoords;
 
     protected boolean highlighted;
     private boolean movementHighlighted;
@@ -52,7 +51,6 @@ public abstract class Hexagon extends SceneObject {
         initAabb();
         this.setOffsetAndCubePos(offsetPos);
         this.setCubePos(offsetToCubeCoords(offsetPos));
-        this.axialCoords = cubeToAxialCoords(getCubePos());
         this.inLine = false;
         cubeDirectionVectors = new Vector3i[]{
                 new Vector3i(0, -1, 1), //N

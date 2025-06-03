@@ -77,11 +77,14 @@ public class Main {
             @Override
             public void invoke(int source, int type, int id, int severity, int length, long message, long userParam) {
                 String msg = MemoryUtil.memUTF8(message); // Convert pointer to String
-                System.err.printf("[GL ERROR] Source=%s, Type=%s, Severity=%s: %s\n",
-                        getDebugSource(source),
-                        getDebugType(type),
-                        getDebugSeverity(severity),
-                        msg);
+                if (severity != 33387) {
+                    System.err.printf("[GL ERROR] Source=%s, Type=%s, Severity=%s: %s\n",
+                            getDebugSource(source),
+                            getDebugType(type),
+                            getDebugSeverity(severity),
+                            msg);
+                }
+
             }
         }, NULL);
         int[] arrWidth = new int[1];

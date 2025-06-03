@@ -32,6 +32,33 @@ public class Grid extends SceneObject {
         this(scene, 2, 2);
     }
 
+    public Grid(Scene scene, Grid loadedGrid) {
+        this(scene, loadedGrid.columns, loadedGrid.rows);
+        makeGridFromLoadedGrid(loadedGrid);
+        for (SceneObject child : children) {
+            child.setParent(this);
+        }
+        this.grid = loadedGrid.grid;
+        this.columns = loadedGrid.columns;
+        this.rows = loadedGrid.rows;
+        this.shaderProgram = loadedGrid.shaderProgram;
+    }
+
+    public void makeGridFromLoadedGrid(Grid loadedGrid) {
+        CombatHexagon[][] grid = new CombatHexagon[loadedGrid.rows][loadedGrid.columns];
+
+        for (int col = 0; col < loadedGrid.columns; col++) {
+            for (int row = 0; row < loadedGrid.rows; row++) {
+                CombatHexagon combatHexagon = createCombatHexagon(row, col);
+                combatHexagon.setShaderProgram(loadedGrid.getHexagonAt(row, col).getShaderProgram());
+                grid[row][col] = combatHexagon;
+                combatHexagon.setTexture(loadedGrid.getHexagonAt(row, col).getTexture());
+                combatHexagon.setIconTexture(loadedGrid.getHexagonAt(row, col).getIconTexture());
+            }
+        }
+        this.grid = grid;
+    }
+
     public void makeContinentGrid(Scene scene) {
         ContinentHexagon[][] grid = new ContinentHexagon[rows][columns];
 
@@ -160,6 +187,8 @@ public class Grid extends SceneObject {
     public void setGrid(Hexagon[][] grid) {
         this.grid = grid;
     }
+
+    //Pretty bad when vbos and vaos are involved, avoid for now
     public void setGridFromLoad(Hexagon[][] newGrid, int rows, int cols) {
         //This logic might help with resizing the grid bug?
         this.grid = newGrid;

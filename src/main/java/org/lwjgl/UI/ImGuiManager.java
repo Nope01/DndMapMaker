@@ -227,8 +227,8 @@ public class ImGuiManager {
                 if (combatOpen) {
                     if (scene.loadCombatMap()) {
                         CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
-                        combatEditor.setCharacterList(new ArrayList<>());
-                       combatEditor.setCharacterList(scene.loadCreaturesFromMap(scene.getGrid()));
+//                        combatEditor.setCharacterList(new ArrayList<>());
+//                        combatEditor.setCharacterList(scene.loadCreaturesFromMap(scene.getGrid()));
                     }
                 }
                 if (continentOpen) {

@@ -8,6 +8,9 @@ import org.lwjgl.input.InputHandler;
 
 import static org.lwjgl.objects.entities.Classes.BARD;
 import static org.lwjgl.objects.entities.Races.HUMAN;
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 
 public class Player extends Creature {
 
@@ -51,7 +54,8 @@ public class Player extends Creature {
 
     @Override
     public void cleanup() {
-
+        glDeleteBuffers(vboId);
+        glDeleteVertexArrays(vaoId);
     }
 
     public static Player createCreatureRandomPos(String name, int classType, int raceType, int moveSpeed, int AC, int HP) {

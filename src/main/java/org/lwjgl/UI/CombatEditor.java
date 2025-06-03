@@ -375,6 +375,12 @@ public class CombatEditor extends ImGuiWindow {
 
         if (menuCurrentlyOpen == 2) {
             if (selectedObject instanceof Player player) {
+                if (ImGui.button("Delete character")) {
+                    scene.removeObject(player);
+                    characterList.remove(player);
+                    player.cleanup();
+                    selectedObject = null;
+                }
                 ImGui.separator();
                 if (ImGui.button("Blindness")) {
                     player.addStatusEffect(new Blinded(player));
