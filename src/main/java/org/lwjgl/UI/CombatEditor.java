@@ -47,9 +47,26 @@ import static org.lwjgl.utils.VectorUtils.rgbToImVec4;
 
 public class CombatEditor extends ImGuiWindow {
     private String[] terrainNames = new String[]{
+            "dirt_01",
+            "dirt_02",
+            "dirt_03",
+            "dirt_04",
+            "floor_01",
+            "forest_01",
+            "grass_05",
+            "lava_01",
+            "path_01",
+            "rock_01",
+            "rock_02",
+            "rock_03",
+            "sand_01",
+            "snow_01",
+            "water_01",
+    };
+
+    private String[] wallNames = new String[] {
             "wall_01",
             "wall_02",
-            "floor_01",
     };
     private String[] obstacleNames = new String[]{
             "barrel",
@@ -283,7 +300,14 @@ public class CombatEditor extends ImGuiWindow {
         if (menuCurrentlyOpen == 0) {
             ImGui.setNextItemOpen(true);
             if (ImGui.treeNode("Grid", "Terrain")) {
-                if (GuiUtils.createTerrainGrid(3, 1, terrainNames, scene, this)) {
+                if (GuiUtils.createTerrainGrid(4, 3, terrainNames, scene, this)) {
+                    selectedObstacle = null;
+                }
+            }
+
+            ImGui.setNextItemOpen(true);
+            if (ImGui.treeNode("Grid", "Walls")) {
+                if (GuiUtils.createTerrainGrid(2, 1, wallNames, scene, this)) {
                     selectedObstacle = null;
                 }
             }

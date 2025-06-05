@@ -81,7 +81,7 @@ public class CombatHexagon extends Hexagon implements Serializable {
 
     public void clearAllTerrainFeatures(TextureCache textureCache) {
         this.setIconTexture(textureCache.getTexture("empty"));
-        this.setTexture(textureCache.getTexture("floor_01"));
+        this.setTexture(textureCache.getTexture("default_tile"));
         this.isHalfCover = false;
         this.isWall = false;
         this.isFullCover = false;
