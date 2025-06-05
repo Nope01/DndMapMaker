@@ -40,6 +40,7 @@ import static org.lwjgl.objects.Hexagon.*;
 import static org.lwjgl.objects.entities.Classes.FIGHTER;
 import static org.lwjgl.objects.entities.Classes.classList;
 import static org.lwjgl.objects.entities.Player.createCreatureRandomPos;
+import static org.lwjgl.objects.entities.Player.remakePlayer;
 import static org.lwjgl.objects.entities.Races.*;
 import static org.lwjgl.utils.GridUtils.*;
 import static org.lwjgl.utils.VectorUtils.rgbToImVec4;
@@ -147,7 +148,14 @@ public class CombatEditor extends ImGuiWindow {
             clearSpellHighlightedTiles(spellHighlightedTiles);
 
             //Spell highlighting
-            if (hoveredObject instanceof CombatHexagon hoveredHex) {
+            if (hoveredObject instanceof CombatHexagon || hoveredObject instanceof Creature) {
+                CombatHexagon hoveredHex;
+                if (hoveredObject instanceof CombatHexagon) {
+                    hoveredHex = (CombatHexagon) hoveredObject;
+                }
+                else {
+                    hoveredHex = (CombatHexagon) hoveredObject.parent;
+                }
                 //Line between hovered and selected hex specifically
                 if (selectedObject instanceof CombatHexagon selectedHex) {
                     if (spellType == 0) {
@@ -320,6 +328,18 @@ public class CombatEditor extends ImGuiWindow {
             if (spellType != 0) {
                 ImGui.sliderInt("Spell size", spellSize, 1, 10);
                 ImGui.sliderInt("Direction", spellDirection, 0, 5, Hexagon.intToDirection(spellDirection[0]));
+
+                int scrollDirection = inputHandler.isMouseWheelMoved();
+                ImGui.text(String.valueOf(scrollDirection));
+                if (scrollDirection != 0) {
+                    spellDirection[0] += scrollDirection;
+                    if (spellDirection[0] > 5) {
+                        spellDirection[0] = 0;
+                    }
+                    if (spellDirection[0] < 0) {
+                        spellDirection[0] = 5;
+                    }
+                }
             }
         }
 
@@ -527,6 +547,14 @@ public class CombatEditor extends ImGuiWindow {
     public void setCharacterList(List<Creature> characterList) {
         this.characterList = characterList;
     }
+    public void clearCharacterList() {
+        for (Creature creature : characterList) {
+            scene.removeObject(creature);
+            creature.cleanup();
+        }
+        characterList.clear();
+
+    }
 
     public void setSelectedObstacle(Texture texture) {
         selectedObstacle = texture;
@@ -560,5 +588,24 @@ public class CombatEditor extends ImGuiWindow {
         if (spellType == 0) {
 
         }
+    }
+
+    public void remakeSameCharacterList() {
+        for (int i = 0; i < characterList.size(); i++) {
+            Creature character = characterList.get(i);
+            if (character instanceof Player player) {
+                characterList.set(i,remakePlayer(player, scene.getGrid()));
+            }
+        }
+    }
+
+    public void remakeLoadedCharacterList(List<Creature> characterList) {
+        for (int i = 0; i < characterList.size(); i++) {
+            Creature character = characterList.get(i);
+            if (character instanceof Player player) {
+                characterList.set(i,remakePlayer(player, scene.getGrid()));
+            }
+        }
+        setCharacterList(characterList);
     }
 }

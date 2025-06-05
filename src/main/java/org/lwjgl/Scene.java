@@ -264,17 +264,6 @@ public class Scene extends SceneObject {
         }
     }
 
-    public boolean loadCombatMap() {
-        Grid temp = combatFileManager.loadMapFile();
-        if (temp == null) {
-            return false;
-        }
-
-        grid.makeGridFromLoadedGrid(temp);
-
-        return true;
-    }
-
     public void saveImage() {
         ImageGeneration.saveImageAsFile(window, screenWidth, screenHeight);
     }

@@ -187,9 +187,8 @@ public abstract class Creature extends SceneObject {
             this.setParent(selectedObject);
             this.setOffsetAndCubePos(selectedObject.getOffsetPos());
             this.initAabb();
-
-            this.clearReachableTiles();
         }
+        this.clearReachableTiles();
     }
 
 

@@ -44,6 +44,8 @@ public class ImGuiManager {
     public boolean cityOpen = false;
     public boolean combatOpen = false;
 
+    private CombatFileManager combatFileManager;
+
 
 
     public ImGuiManager(long window, int width, int height) {
@@ -54,6 +56,7 @@ public class ImGuiManager {
         this.fontSize = 16f * scale;
         imGuiGlfw = new ImGuiImplGlfw();
         imGuiGl3 = new ImGuiImplGl3();
+        combatFileManager = new CombatFileManager();
         init();
     }
 
@@ -125,7 +128,6 @@ public class ImGuiManager {
         ImGui.destroyContext();
     }
 
-    //TODO: make menu bar not break everything when changing map modes
     public void initContinentMap(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         scene.initContinentScene();
 
@@ -222,63 +224,20 @@ public class ImGuiManager {
     public void drawMenuBar(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         ImGui.beginMenuBar();
         if (ImGui.beginMenu("File")) {
-            if (ImGui.menuItem("Save map")) {
-                if (combatOpen) {
-                    scene.saveCombatMap();
-                }
+            if (ImGui.menuItem("Save")) {
                 if (continentOpen) {
                     scene.saveContinentMap();
                 }
             }
-            if (combatOpen) {
-                if (ImGui.menuItem("Save characters")) {
-                    CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
-                    List<Creature> characterList = combatEditor.getCharacterList();
-                    CombatFileManager combatFileManager = new CombatFileManager();
-                    combatFileManager.saveCharacterFile(characterList);
-                }
-            }
-            if (ImGui.menuItem("Load map")) {
-                if (combatOpen) {
-                    if (scene.loadCombatMap()) {
-                        CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
-                        List<Creature> characterList = combatEditor.getCharacterList();
-
-                        for (int i = 0; i < characterList.size(); i++) {
-                            Creature character = characterList.get(i);
-                            if (character instanceof Player player) {
-                                characterList.set(i, remakePlayer(player, scene.getGrid()));
-                            }
-                        }
-                        combatEditor.setCharacterList(characterList);
-                    }
-                }
+            if (ImGui.menuItem("Load")) {
                 if (continentOpen) {
                     scene.loadContinentMap();
-                }
-            }
-            if (combatOpen) {
-                if (ImGui.menuItem("Load characters")) {
-                    CombatFileManager combatFileManager = new CombatFileManager();
-                    List<Creature> characterList = combatFileManager.loadCharacterFile();
-                    List<Creature> newCharacterList = new ArrayList<>();
-
-                    for (int i = 0; i < characterList.size(); i++) {
-                        Creature character = characterList.get(i);
-                        if (character instanceof Player player) {
-                            newCharacterList.add(remakePlayer(player, scene.getGrid()));
-                        }
-                    }
-                    CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
-                    combatEditor.setCharacterList(newCharacterList);
                 }
             }
             if (ImGui.menuItem("Screenshot")) {
                 scene.saveImage();
             }
-            if (ImGui.menuItem("Test")) {
-                MapSaveLoad.fileOverridePopup();
-            }
+
             ImGui.endMenu();
         }
 
@@ -321,30 +280,38 @@ public class ImGuiManager {
             ImGui.endMenu();
         }
 
-        if (ImGui.beginMenu("Update")) {
-            if (ImGui.menuItem("Update software to latest version")) {
-                try {
-                    String[] updateInfo = UpdateChecker.checkForUpdates();
-                    if (updateInfo == null) {
-                        System.out.println("No updates found");
-                    }
-                    else {
-                        System.out.println("Updating");
-                        //Popup to confirm
-                        String javaBin = System.getProperty("java.home") + "/bin/java";
-                        ProcessBuilder processBuilder = new ProcessBuilder(
-                                javaBin, "-jar", "updater.jar"
-                        );
-                        processBuilder.start();
-                        System.exit(0);
-                    }
+        if (combatOpen) {
+            if (ImGui.beginMenu("Map")) {
+                if (ImGui.menuItem("Save##map")) {
+                    combatFileManager.saveMapFile(scene.getGrid());
                 }
-                catch (IOException e) {
-                    e.printStackTrace();
-                    System.out.println("Failed to check for updates: " + e.getMessage());
+
+                if (ImGui.menuItem("Load##map")) {
+                    //TODO: reset walls and obstacle states
+                    scene.getGrid().makeGridFromLoadedGrid(combatFileManager.loadMapFile());
+
+                    CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
+                    combatEditor.remakeSameCharacterList();
+
                 }
+                ImGui.endMenu();
             }
-            ImGui.endMenu();
+
+            if (ImGui.beginMenu("Characters")) {
+                if (ImGui.menuItem("Save##characters")) {
+                    CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
+                    combatFileManager.saveCharacterFile(combatEditor.getCharacterList());
+                }
+
+                if (ImGui.menuItem("Load##characters")) {
+                    CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
+                    combatEditor.clearCharacterList();
+                    List<Creature> characterList = combatFileManager.loadCharacterFile();
+
+                    combatEditor.remakeLoadedCharacterList(characterList);
+                }
+                ImGui.endMenu();
+            }
         }
 
         ImGui.endMenuBar();
