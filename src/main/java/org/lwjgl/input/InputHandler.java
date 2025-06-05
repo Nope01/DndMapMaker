@@ -3,7 +3,6 @@ package org.lwjgl.input;
 import imgui.ImGui;
 import org.joml.*;
 import org.lwjgl.Scene;
-import org.lwjgl.glfw.GLFW;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -18,6 +17,7 @@ public class InputHandler {
     private Vector3f worldPos;
 
     public boolean leftMouseJustPressed = false;
+    private int justScrolled = 0;
 
     public InputHandler(long window, int width, int height) {
         this.window = window;
@@ -68,6 +68,10 @@ public class InputHandler {
 
             }
         });
+
+        glfwSetScrollCallback(window, (window, x, y) -> {
+            justScrolled = (int) y;
+        });
     }
 
     // Keyboard input queries
@@ -98,6 +102,18 @@ public class InputHandler {
 
     public boolean isMiddleClicked() {
         return glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_3) == GLFW_PRESS;
+    }
+
+    public int isMouseWheelMoved() {
+        if (justScrolled > 0) {
+            justScrolled = 0;
+            return 1;
+        }
+        if (justScrolled < 0) {
+            justScrolled = 0;
+            return -1;
+        }
+        return 0;
     }
 
     // Mouse input queries

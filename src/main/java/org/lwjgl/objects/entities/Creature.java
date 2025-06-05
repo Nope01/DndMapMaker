@@ -2,6 +2,7 @@ package org.lwjgl.objects.entities;
 
 import org.joml.Vector2i;
 import org.joml.Vector3i;
+import org.lwjgl.Scene;
 import org.lwjgl.cityMap.CityHexagon;
 import org.lwjgl.combatMap.CombatHexagon;
 import org.lwjgl.dndMechanics.statusEffects.StatusEffect;
@@ -129,6 +130,8 @@ public abstract class Creature extends SceneObject {
         glBindVertexArray(0);
     }
 
+    //Continent useage, should get rid of soon
+    //TODO replace these in continent editor
     public static int moveSpeedToHexSpeed(int moveSpeed) {
         return moveSpeed / 5;
     }
@@ -177,6 +180,17 @@ public abstract class Creature extends SceneObject {
     private boolean isValidMove(Vector3i from, Vector3i to) {
         return Hexagon.cubeDistance(from, to) <= moveSpeed;
     }
+
+    public void moveIfValid(SceneObject selectedObject, SceneObject hoveredObject) {
+        if (reachableTiles.contains(selectedObject)) {
+            this.setMoveSpeed(this.getMoveSpeed() - this.getDistanceToHexagon((Hexagon) hoveredObject));
+            this.setParent(selectedObject);
+            this.setOffsetAndCubePos(selectedObject.getOffsetPos());
+            this.initAabb();
+        }
+        this.clearReachableTiles();
+    }
+
 
     //Getters and setters
     public String getName() {
@@ -283,7 +297,11 @@ public abstract class Creature extends SceneObject {
     }
 
     public void setVisibleTiles(Set<Hexagon> visibleTiles) {
+        for (Hexagon hex : visibleTiles) {
+            hex.setVisible(true);
+        }
         this.visibleTiles = visibleTiles;
+
     }
 
     public Set<Hexagon> getReachableTiles() {

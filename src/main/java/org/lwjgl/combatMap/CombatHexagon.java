@@ -2,6 +2,8 @@ package org.lwjgl.combatMap;
 
 import org.joml.Vector2i;
 import org.lwjgl.objects.Hexagon;
+import org.lwjgl.textures.Texture;
+import org.lwjgl.textures.TextureCache;
 
 import java.io.Serializable;
 
@@ -12,6 +14,8 @@ import static org.lwjgl.opengl.GL20.glUniform1i;
 public class CombatHexagon extends Hexagon implements Serializable {
     private int movementModifier;
     private int visibilityModifier;
+
+    //TODO: use static ints instead of booleans for tile types
     public boolean isHalfCover;
     public boolean isFullCover;
     public boolean isWall;
@@ -41,5 +45,45 @@ public class CombatHexagon extends Hexagon implements Serializable {
 
     public boolean isBlocked() {
         return isWall || isFullCover || isHalfCover;
+    }
+
+    public void paintTerrainTexture(Texture selectedTerrain) {
+        if (selectedTerrain != null) {
+            this.setTexture(selectedTerrain);
+
+            if (selectedTerrain.getTextureName().contains("wall")) {
+                this.isWall = true;
+            }
+            else {
+                this.isWall = false;
+            }
+        }
+    }
+
+    public void paintIconTexture(Texture selectedObstacle) {
+        if (selectedObstacle != null) {
+            this.setIconTexture(selectedObstacle);
+
+            if (selectedObstacle.getTextureName().contains("barrel")) {
+                this.isHalfCover = true;
+            }
+            else {
+                this.isHalfCover = false;
+            }
+            if (selectedObstacle.getTextureName().contains("table")) {
+                this.isFullCover = true;
+            }
+            else {
+                this.isFullCover = false;
+            }
+        }
+    }
+
+    public void clearAllTerrainFeatures(TextureCache textureCache) {
+        this.setIconTexture(textureCache.getTexture("empty"));
+        this.setTexture(textureCache.getTexture("default_tile"));
+        this.isHalfCover = false;
+        this.isWall = false;
+        this.isFullCover = false;
     }
 }

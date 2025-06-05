@@ -34,18 +34,39 @@ import java.util.List;
 import java.util.Set;
 
 import static org.lwjgl.data.ApiCalls.getRandomName;
+import static org.lwjgl.dndMechanics.spells.Spells.clearSpellHighlightedTiles;
+import static org.lwjgl.input.InputUtils.*;
 import static org.lwjgl.objects.Hexagon.*;
 import static org.lwjgl.objects.entities.Classes.FIGHTER;
 import static org.lwjgl.objects.entities.Classes.classList;
 import static org.lwjgl.objects.entities.Player.createCreatureRandomPos;
+import static org.lwjgl.objects.entities.Player.remakePlayer;
 import static org.lwjgl.objects.entities.Races.*;
+import static org.lwjgl.utils.GridUtils.*;
 import static org.lwjgl.utils.VectorUtils.rgbToImVec4;
 
 public class CombatEditor extends ImGuiWindow {
     private String[] terrainNames = new String[]{
+            "dirt_01",
+            "dirt_02",
+            "dirt_03",
+            "dirt_04",
+            "floor_01",
+            "forest_01",
+            "grass_05",
+            "lava_01",
+            "path_01",
+            "rock_01",
+            "rock_02",
+            "rock_03",
+            "sand_01",
+            "snow_01",
+            "water_01",
+    };
+
+    private String[] wallNames = new String[] {
             "wall_01",
             "wall_02",
-            "floor_01",
     };
     private String[] obstacleNames = new String[]{
             "barrel",
@@ -117,115 +138,71 @@ public class CombatEditor extends ImGuiWindow {
 
         //Selection logic
         if (clickInput && hoveredObject != null) {
-            if (selectedObject != null) {
-                selectedObject.setSelected(false);
-            }
-            selectedObject = hoveredObject;
-            selectedObject.setSelected(true);
+            selectedObject = selectHovered(hoveredObject, selectedObject);
         }
-
 
         //Terrain
         if (menuCurrentlyOpen == 0) {
             //Terrain
-            if (inputHandler.isLeftClickedAndHeld() && hoveredObject instanceof CombatHexagon) {
-                if (selectedTerrain != null) {
-                    ((CombatHexagon) hoveredObject).setTexture(selectedTerrain);
-                    if (selectedTerrain.getTextureName().contains("wall")) {
-                        ((CombatHexagon) hoveredObject).isWall = true;
-                    }
-                    else {
-                        ((CombatHexagon) hoveredObject).isWall = false;
-                    }
-                }
+            if (inputHandler.isLeftClickedAndHeld() && hoveredObject instanceof CombatHexagon combatHexagon) {
+                //Paint terrain
+                combatHexagon.paintTerrainTexture(selectedTerrain);
             }
 
             //Icons
-            if (clickInput && selectedObject instanceof CombatHexagon) {
-                if (selectedObstacle != null) {
-                    ((CombatHexagon) selectedObject).setIconTexture(selectedObstacle);
-                    if (selectedObstacle.getTextureName().contains("barrel")) {
-                        ((CombatHexagon) selectedObject).isHalfCover = true;
-                    }
-                    else {
-                        ((CombatHexagon) selectedObject).isHalfCover = false;
-                    }
-                    if (selectedObstacle.getTextureName().contains("table")) {
-                        ((CombatHexagon) selectedObject).isFullCover = true;
-                    }
-                    else {
-                        ((CombatHexagon) selectedObject).isFullCover = false;
-                    }
-                }
+            if (clickInput && selectedObject instanceof CombatHexagon combatHexagon) {
+                combatHexagon.paintIconTexture(selectedObstacle);
             }
 
             //Eraser
             if (hoveredObject instanceof CombatHexagon hoveredHex && inputHandler.isRightClicked()) {
-                hoveredHex.setIconTexture(scene.getTextureCache().getTexture("empty"));
-                hoveredHex.setTexture(scene.getTextureCache().getTexture("floor_01"));
-                hoveredHex.isHalfCover = false;
-                hoveredHex.isWall = false;
-                hoveredHex.isFullCover = false;
+                hoveredHex.clearAllTerrainFeatures(scene.getTextureCache());
             }
         }
 
         //Spells
         else if (menuCurrentlyOpen == 1) {
-
-            //reset tiles
-            for (Hexagon hex : spellHighlightedTiles) {
-                hex.setSpellHighlighted(false);
-            }
+            clearSpellHighlightedTiles(spellHighlightedTiles);
 
             //Spell highlighting
-            if (hoveredObject instanceof CombatHexagon hoveredHex) {
+            if (hoveredObject instanceof CombatHexagon || hoveredObject instanceof Creature) {
+                CombatHexagon hoveredHex;
+                if (hoveredObject instanceof CombatHexagon) {
+                    hoveredHex = (CombatHexagon) hoveredObject;
+                }
+                else {
+                    hoveredHex = (CombatHexagon) hoveredObject.parent;
+                }
                 //Line between hovered and selected hex specifically
                 if (selectedObject instanceof CombatHexagon selectedHex) {
                     if (spellType == 0) {
-                        spellHighlightedTiles = Hexagon.cubeLineDraw(hoveredHex.getCubePos(), selectedHex.getCubePos(), gridClass);
+                        spellHighlightedTiles = Spells.getHexesInLineSpell(selectedHex, hoveredHex, gridClass);
                     }
                 }
                 if (spellType == 1) {
-                    //TODO: change this to not reveal hexes
                     spellHighlightedTiles =
-                            hexVisible(hoveredHex,spellSize[0], gridClass);
+                            Spells.getHexesInCircleSpell(hoveredHex, spellSize[0], gridClass);
                 }
                 if (spellType == 2) {
                     spellHighlightedTiles =
-                            Hexagon.hexCone(hoveredHex.getCubePos(), spellDirection[0], spellSize[0], gridClass);
+                            Spells.getHexesInConeSpell(hoveredHex, spellDirection[0], spellSize[0], gridClass);
                 }
                 for (Hexagon hex : spellHighlightedTiles) {
                     hex.setSpellHighlighted(true);
                 }
             }
-
         }
 
         //Combat
         if (clickInput) {
             //Movement logic
             if (creatureToMove != null) {
-                if (creatureToMove.getReachableTiles().contains(selectedObject)) {
-                    //Turn logic
-                    creatureToMove.setMoveSpeed(creatureToMove.getMoveSpeed() - creatureToMove.getDistanceToHexagon((Hexagon) hoveredObject));
+                creatureToMove.moveIfValid(selectedObject, hoveredObject);
 
-                    creatureToMove.setParent(selectedObject);
-                    creatureToMove.setOffsetAndCubePos(selectedObject.getOffsetPos());
-                    creatureToMove.initAabb();
-                    creatureToMove.clearReachableTiles();
-                    if (fogOfWar) {
-                        creatureToMove.clearVisibleTiles();
-                    }
-
-                    creatureToMove = null;
+                if (fogOfWar) {
+                    creatureToMove.clearVisibleTiles();
                 }
-                else {
-                    creatureToMove.clearReachableTiles();
-                    if (fogOfWar) {
-                        creatureToMove.clearVisibleTiles();
-                    }
-                    creatureToMove = null;
-                }
+                creatureToMove = null;
             }
 
             if (selectedObject instanceof Player player) {
@@ -240,8 +217,11 @@ public class CombatEditor extends ImGuiWindow {
                 creatureToMove = player;
             }
 
+        }
 
+        if (clickInput || inputHandler.isRightClicked()) {
             //Vision logic
+            //Highlight all visible tiles unless a creature is selected, then only show their visible tiles
             if (selectedObject instanceof Creature creature) {
                 for (Creature character : characterList) {
                     if (fogOfWar) {
@@ -267,19 +247,13 @@ public class CombatEditor extends ImGuiWindow {
             selectedTerrain = null;
 
             if (creatureToMove != null) {
-                if (fogOfWar) {
-                    creatureToMove.clearVisibleTiles();
-                }
                 creatureToMove.clearReachableTiles();
                 creatureToMove = null;
             }
         }
 
         if (inputHandler.isRightClicked()) {
-            for (Hexagon hex : spellHighlightedTiles) {
-                hex.setSpellHighlighted(false);
-            }
-            spellHighlightedTiles.clear();
+            clearSpellHighlightedTiles(spellHighlightedTiles);
         }
     }
 
@@ -326,7 +300,14 @@ public class CombatEditor extends ImGuiWindow {
         if (menuCurrentlyOpen == 0) {
             ImGui.setNextItemOpen(true);
             if (ImGui.treeNode("Grid", "Terrain")) {
-                if (GuiUtils.createTerrainGrid(3, 1, terrainNames, scene, this)) {
+                if (GuiUtils.createTerrainGrid(4, 3, terrainNames, scene, this)) {
+                    selectedObstacle = null;
+                }
+            }
+
+            ImGui.setNextItemOpen(true);
+            if (ImGui.treeNode("Grid", "Walls")) {
+                if (GuiUtils.createTerrainGrid(2, 1, wallNames, scene, this)) {
                     selectedObstacle = null;
                 }
             }
@@ -371,6 +352,17 @@ public class CombatEditor extends ImGuiWindow {
             if (spellType != 0) {
                 ImGui.sliderInt("Spell size", spellSize, 1, 10);
                 ImGui.sliderInt("Direction", spellDirection, 0, 5, Hexagon.intToDirection(spellDirection[0]));
+
+                int scrollDirection = inputHandler.isMouseWheelMoved();
+                if (scrollDirection != 0) {
+                    spellDirection[0] += scrollDirection;
+                    if (spellDirection[0] > 5) {
+                        spellDirection[0] = 0;
+                    }
+                    if (spellDirection[0] < 0) {
+                        spellDirection[0] = 5;
+                    }
+                }
             }
         }
 
@@ -578,6 +570,14 @@ public class CombatEditor extends ImGuiWindow {
     public void setCharacterList(List<Creature> characterList) {
         this.characterList = characterList;
     }
+    public void clearCharacterList() {
+        for (Creature creature : characterList) {
+            scene.removeObject(creature);
+            creature.cleanup();
+        }
+        characterList.clear();
+
+    }
 
     public void setSelectedObstacle(Texture texture) {
         selectedObstacle = texture;
@@ -611,5 +611,24 @@ public class CombatEditor extends ImGuiWindow {
         if (spellType == 0) {
 
         }
+    }
+
+    public void remakeSameCharacterList() {
+        for (int i = 0; i < characterList.size(); i++) {
+            Creature character = characterList.get(i);
+            if (character instanceof Player player) {
+                characterList.set(i,remakePlayer(player, scene.getGrid()));
+            }
+        }
+    }
+
+    public void remakeLoadedCharacterList(List<Creature> characterList) {
+        for (int i = 0; i < characterList.size(); i++) {
+            Creature character = characterList.get(i);
+            if (character instanceof Player player) {
+                characterList.set(i,remakePlayer(player, scene.getGrid()));
+            }
+        }
+        setCharacterList(characterList);
     }
 }

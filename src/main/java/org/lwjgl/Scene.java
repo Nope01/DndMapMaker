@@ -253,26 +253,11 @@ public class Scene extends SceneObject {
         mapSaveLoad.saveFile(grid);
     }
 
-    public void saveCombatMap() {
-        combatFileManager.saveMapFile(grid);
-    }
-
     public void loadContinentMap() {
         Grid temp = mapSaveLoad.loadFile();
         if (temp != null) {
             grid.setGridFromLoad(temp.getGrid(), temp.rows, temp.columns);
         }
-    }
-
-    public boolean loadCombatMap() {
-        Grid temp = combatFileManager.loadMapFile();
-        if (temp == null) {
-            return false;
-        }
-
-        grid.makeGridFromLoadedGrid(temp);
-
-        return true;
     }
 
     public void saveImage() {

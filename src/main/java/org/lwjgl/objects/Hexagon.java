@@ -378,7 +378,7 @@ public abstract class Hexagon extends SceneObject {
         for (Hexagon target : inRange) {
             if (hasLineOfSight(start, target, gridClass)) {
                 visible.add(target);
-                target.setVisible(true);
+                //target.setVisible(true);
                 // If this is a wall, we stop checking further along this line
                 if (target instanceof CombatHexagon && ((CombatHexagon) target).isWall) {
                     continue; // Don't check what's behind this wall
