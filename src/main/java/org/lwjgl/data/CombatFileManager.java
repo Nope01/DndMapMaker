@@ -13,41 +13,41 @@ import static org.lwjgl.data.MapSaveLoad.fileOverridePopup;
 
 public class CombatFileManager {
 
-    private JFileChooser saveMapChooser;
-    private JFileChooser loadMapChooser;
+    private JFileChooser saveChooser;
+    private JFileChooser loadChooser;
 
-    private JFileChooser saveCharacterChooser;
-    private JFileChooser loadCharacterChooser;
+    private FileNameExtensionFilter mapFilter;
+    private FileNameExtensionFilter characterFilter;
 
     public CombatFileManager() {
         FileSystemView fsv = FileSystemView.getFileSystemView(); //For getting desktop path
 
-        FileNameExtensionFilter mapFilter = new FileNameExtensionFilter(
-                "Combat file *.ser", "ser"
+        mapFilter = new FileNameExtensionFilter(
+                "Map file *.map", "map"
         );
 
-        FileNameExtensionFilter characterFilter = new FileNameExtensionFilter(
-                "Character file *.ser", "ser"
+        characterFilter = new FileNameExtensionFilter(
+                "Character file *.pl", "pl"
         );
 
-        saveMapChooser = new JFileChooser();
-        saveMapChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        saveMapChooser.setFileFilter(mapFilter);
-        saveMapChooser.setCurrentDirectory(fsv.getHomeDirectory());
+        saveChooser = new JFileChooser();
+        saveChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        saveChooser.setFileFilter(mapFilter);
+        saveChooser.setCurrentDirectory(fsv.getHomeDirectory());
 
-        loadMapChooser = new JFileChooser();
-        loadMapChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        loadMapChooser.setFileFilter(mapFilter);
-        loadMapChooser.setCurrentDirectory(fsv.getHomeDirectory());
+        loadChooser = new JFileChooser();
+        loadChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        loadChooser.setFileFilter(mapFilter);
+        loadChooser.setCurrentDirectory(fsv.getHomeDirectory());
     }
 
-    public void saveMapFile(Object object) {
+    public void saveFileDialog(Object object, String extension) {
         File file;
         String path;
 
-        int returnVal = saveMapChooser.showSaveDialog(null);
+        int returnVal = saveChooser.showSaveDialog(null);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            file = saveMapChooser.getSelectedFile();
+            file = saveChooser.getSelectedFile();
             path = file.getAbsolutePath();
             System.out.println("Saving: " + path);
 
@@ -56,11 +56,11 @@ public class CombatFileManager {
                 path = path.substring(0, path.lastIndexOf("."));
                 if (fileOverridePopup() == JOptionPane.OK_OPTION) {
                     System.out.println(file.delete());
-                    serializeObject(object, path);
+                    serializeObject(object, path, extension);
                     return;
                 }
                 if (fileOverridePopup() == JOptionPane.NO_OPTION) {
-                    saveMapFile(object);
+                    saveFileDialog(object, extension);
                     return;
                 }
                 if (fileOverridePopup() == JOptionPane.CANCEL_OPTION) {
@@ -68,21 +68,28 @@ public class CombatFileManager {
                 }
             }
             else {
-                serializeObject(object, path);
+                serializeObject(object, path, extension);
             }
         }
     }
 
     public void saveCharacterFile(List<Creature> object) {
-        saveMapFile(object);
+        saveChooser.setFileFilter(characterFilter);
+        saveFileDialog(object, ".pl");
+    }
+
+    public void saveMapFile(Grid object) {
+        saveChooser.setFileFilter(mapFilter);
+        saveFileDialog(object, ".map");
     }
 
     public Grid loadMapFile() {
         File file;
+        loadChooser.setFileFilter(mapFilter);
 
-        int returnVal = loadMapChooser.showOpenDialog(null);
+        int returnVal = loadChooser.showOpenDialog(null);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            file = loadMapChooser.getSelectedFile();
+            file = loadChooser.getSelectedFile();
             System.out.println("Loading file: " + file.getAbsolutePath());
             if (file.exists()) {
                 return deserializeGrid(file);
@@ -93,10 +100,11 @@ public class CombatFileManager {
 
     public List<Creature> loadCharacterFile() {
         File file;
+        loadChooser.setFileFilter(characterFilter);
 
-        int returnVal = loadMapChooser.showOpenDialog(null);
+        int returnVal = loadChooser.showOpenDialog(null);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            file = loadMapChooser.getSelectedFile();
+            file = loadChooser.getSelectedFile();
             System.out.println("Loading file: " + file.getAbsolutePath());
             if (file.exists()) {
                 return deserializeList(file);
@@ -105,14 +113,14 @@ public class CombatFileManager {
         return null;
     }
 
-    private static void serializeObject(Object object, String path) {
+    private static void serializeObject(Object object, String path, String extension) {
         try {
-            FileOutputStream fileOut = new FileOutputStream(path + ".ser");
+            FileOutputStream fileOut = new FileOutputStream(path + extension);
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(object);
             out.close();
             fileOut.close();
-            System.out.println("Saved Combat map");
+            System.out.println("Saved!");
         } catch (IOException e) {
             System.out.println("Error saving object");
             e.printStackTrace();

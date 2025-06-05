@@ -40,8 +40,8 @@ public class Grid extends SceneObject {
                 CombatHexagon combatHexagon = createCombatHexagon(row, col);
                 combatHexagon.setShaderProgram(loadedGrid.getHexagonAt(row, col).getShaderProgram());
                 grid[row][col] = combatHexagon;
-                combatHexagon.setTexture(loadedGrid.getHexagonAt(row, col).getTexture());
-                combatHexagon.setIconTexture(loadedGrid.getHexagonAt(row, col).getIconTexture());
+                combatHexagon.paintTerrainTexture(loadedGrid.getHexagonAt(row, col).getTexture());
+                combatHexagon.paintIconTexture(loadedGrid.getHexagonAt(row, col).getIconTexture());
             }
         }
         this.grid = grid;

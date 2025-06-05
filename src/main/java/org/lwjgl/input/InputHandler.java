@@ -116,8 +116,6 @@ public class InputHandler {
         return 0;
     }
 
-
-
     // Mouse input queries
     public Vector2f getMouseDelta() {
         return mouseDelta;

@@ -28,11 +28,13 @@ public class InitiativeTracker extends ImGuiWindow {
 
     private Creature currentTurn;
 
+
     public InitiativeTracker(ImGuiManager imGuiManager, Scene scene, InputHandler inputHandler) {
         super(imGuiManager, scene, inputHandler, "Initiative Tracker");
         uiWidth = 400;
         uiHeight = 250;
         uiXPos = scene.getScreenWidth()-400;
+
 
         initiativeList = new ArrayList<>();
         currentTurn = null;

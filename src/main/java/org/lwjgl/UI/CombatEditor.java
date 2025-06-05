@@ -330,7 +330,6 @@ public class CombatEditor extends ImGuiWindow {
                 ImGui.sliderInt("Direction", spellDirection, 0, 5, Hexagon.intToDirection(spellDirection[0]));
 
                 int scrollDirection = inputHandler.isMouseWheelMoved();
-                ImGui.text(String.valueOf(scrollDirection));
                 if (scrollDirection != 0) {
                     spellDirection[0] += scrollDirection;
                     if (spellDirection[0] > 5) {
