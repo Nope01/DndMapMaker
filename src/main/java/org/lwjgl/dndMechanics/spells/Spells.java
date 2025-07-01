@@ -1,7 +1,7 @@
 package org.lwjgl.dndMechanics.spells;
 
 import org.lwjgl.objects.Grid;
-import org.lwjgl.objects.Hexagon;
+import org.lwjgl.objects.hexagons.Hexagon;
 
 import java.util.Set;
 

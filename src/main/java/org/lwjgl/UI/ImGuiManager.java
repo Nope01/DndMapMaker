@@ -4,27 +4,21 @@ import imgui.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.*;
 import org.lwjgl.data.CombatFileManager;
-import org.lwjgl.data.MapSaveLoad;
-import org.lwjgl.data.update.UpdateChecker;
-import org.lwjgl.input.InputHandler;
+import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.objects.entities.Creature;
-import org.lwjgl.objects.entities.Player;
 import org.lwjgl.opengl.GL;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static imgui.ImGui.getDrawData;
 import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
-import static org.lwjgl.objects.entities.Player.remakePlayer;
 
 public class ImGuiManager {
     private long window;

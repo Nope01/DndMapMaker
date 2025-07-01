@@ -1,7 +1,7 @@
 package org.lwjgl.UI;
 
 import imgui.ImGui;
-import org.lwjgl.input.InputHandler;
+import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.Scene;
 
 public abstract class ImGuiWindow {

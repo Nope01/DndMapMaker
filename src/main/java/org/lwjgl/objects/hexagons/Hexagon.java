@@ -1,10 +1,11 @@
-package org.lwjgl.objects;
+package org.lwjgl.objects.hexagons;
 
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
-import org.lwjgl.combatMap.CombatHexagon;
-import org.lwjgl.input.InputHandler;
+import org.lwjgl.objects.Grid;
+import org.lwjgl.objects.SceneObject;
+import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.objects.models.opengl.HexagonShape;
 import org.lwjgl.textures.Texture;

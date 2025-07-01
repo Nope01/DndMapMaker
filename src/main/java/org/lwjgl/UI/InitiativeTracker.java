@@ -6,16 +6,15 @@ import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import org.lwjgl.Scene;
-import org.lwjgl.dndMechanics.statusEffects.Dash;
-import org.lwjgl.input.InputHandler;
+import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.objects.entities.Creature;
+import org.lwjgl.objects.entities.Player;
 import org.lwjgl.utils.GuiUtils;
 import org.lwjgl.utils.Pair;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 public class InitiativeTracker extends ImGuiWindow {
     private List<Pair<Creature, Integer>> initiativeList;
@@ -172,12 +171,8 @@ public class InitiativeTracker extends ImGuiWindow {
     }
 
     private void resetStats(Creature creature) {
-        creature.setMoveSpeed(creature.getMaxMoveSpeed());
-        creature.setActions(creature.getMaxActions());
-        creature.setBonusActions(creature.getMaxBonusActions());
-        creature.setReaction(1);
-        if (creature.hasStatusEffect(Dash.class)) {
-            creature.removeStatusEffect(Dash.class);
+        if (creature instanceof Player player) {
+            player.resetStats();
         }
 
     }

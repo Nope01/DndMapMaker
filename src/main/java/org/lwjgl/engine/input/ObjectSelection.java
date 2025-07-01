@@ -1,4 +1,4 @@
-package org.lwjgl.input;
+package org.lwjgl.engine.input;
 
 
 import org.joml.Vector3f;

@@ -3,7 +3,7 @@ package org.lwjgl.UI;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector2f;
-import org.lwjgl.input.InputHandler;
+import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.utils.GuiUtils;
 import org.lwjgl.utils.VectorUtils;

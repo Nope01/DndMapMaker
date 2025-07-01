@@ -4,8 +4,8 @@ import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector3f;
 import org.lwjgl.*;
-import org.lwjgl.continentMap.ContinentHexagon;
-import org.lwjgl.input.InputHandler;
+import org.lwjgl.objects.hexagons.ContinentHexagon;
+import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.objects.SceneObject;
 
 import java.text.DecimalFormat;

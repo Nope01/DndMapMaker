@@ -1,17 +1,15 @@
 package org.lwjgl;
 
 import imgui.ImGui;
-import org.lwjgl.combatMap.CombatHexagon;
 import org.lwjgl.data.CombatFileManager;
 import org.lwjgl.data.ImageGeneration;
 import org.lwjgl.data.MapSaveLoad;
-import org.lwjgl.continentMap.ContinentHexagon;
-import org.lwjgl.input.InputHandler;
-import org.lwjgl.input.ObjectSelection;
+import org.lwjgl.objects.hexagons.ContinentHexagon;
+import org.lwjgl.engine.input.InputHandler;
+import org.lwjgl.engine.input.ObjectSelection;
 import org.lwjgl.objects.Grid;
 import org.lwjgl.objects.SceneObject;
 import org.lwjgl.objects.Trap;
-import org.lwjgl.objects.entities.Creature;
 import org.lwjgl.objects.entities.Player;
 import org.lwjgl.shaders.ShaderProgramCache;
 import org.lwjgl.textures.TextureCache;

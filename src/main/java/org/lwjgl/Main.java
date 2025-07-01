@@ -1,11 +1,8 @@
 package org.lwjgl;
 
-import imgui.ImFontAtlas;
-import imgui.ImGui;
-import imgui.ImGuiIO;
 import org.lwjgl.UI.ImGuiManager;
 import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.input.InputHandler;
+import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLDebugMessageCallback;
 import org.lwjgl.shaders.ShaderProgramCache;

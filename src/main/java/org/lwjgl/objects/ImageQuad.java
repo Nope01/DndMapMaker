@@ -1,6 +1,6 @@
 package org.lwjgl.objects;
 
-import org.lwjgl.input.InputHandler;
+import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.objects.models.opengl.Plane;
 import org.lwjgl.utils.ObjectUtils;

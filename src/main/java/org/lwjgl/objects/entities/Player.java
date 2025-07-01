@@ -2,10 +2,11 @@ package org.lwjgl.objects.entities;
 
 import org.joml.Vector2i;
 import org.lwjgl.Scene;
+import org.lwjgl.dndMechanics.statusEffects.Dash;
 import org.lwjgl.objects.Grid;
-import org.lwjgl.objects.Hexagon;
+import org.lwjgl.objects.hexagons.Hexagon;
 import org.lwjgl.utils.VectorUtils;
-import org.lwjgl.input.InputHandler;
+import org.lwjgl.engine.input.InputHandler;
 
 import static org.lwjgl.objects.entities.Classes.BARD;
 import static org.lwjgl.objects.entities.Races.HUMAN;
@@ -80,5 +81,15 @@ public class Player extends Creature {
         newPlayer.setId(oldPlayer.getId());
 
         return newPlayer;
+    }
+
+    public void resetStats() {
+        setMoveSpeed(getMaxMoveSpeed());
+        setActions(getMaxActions());
+        setBonusActions(getMaxBonusActions());
+        setReaction(1);
+        if (hasStatusEffect(Dash.class)) {
+            removeStatusEffect(Dash.class);
+        }
     }
 }

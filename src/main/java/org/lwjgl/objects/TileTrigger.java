@@ -2,6 +2,7 @@ package org.lwjgl.objects;
 
 import org.joml.Vector2i;
 import org.joml.Vector3i;
+import org.lwjgl.objects.hexagons.Hexagon;
 
 public abstract class TileTrigger extends SceneObject {
 

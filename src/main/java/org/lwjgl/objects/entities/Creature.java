@@ -2,11 +2,10 @@ package org.lwjgl.objects.entities;
 
 import org.joml.Vector2i;
 import org.joml.Vector3i;
-import org.lwjgl.Scene;
-import org.lwjgl.cityMap.CityHexagon;
-import org.lwjgl.combatMap.CombatHexagon;
+import org.lwjgl.objects.hexagons.CityHexagon;
+import org.lwjgl.objects.hexagons.CombatHexagon;
 import org.lwjgl.dndMechanics.statusEffects.StatusEffect;
-import org.lwjgl.objects.Hexagon;
+import org.lwjgl.objects.hexagons.Hexagon;
 import org.lwjgl.utils.ObjectUtils;
 import org.lwjgl.objects.SceneObject;
 import org.lwjgl.objects.models.opengl.HexagonShape;

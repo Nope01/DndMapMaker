@@ -1,7 +1,6 @@
-package org.lwjgl.combatMap;
+package org.lwjgl.objects.hexagons;
 
 import org.joml.Vector2i;
-import org.lwjgl.objects.Hexagon;
 import org.lwjgl.textures.Texture;
 import org.lwjgl.textures.TextureCache;
 

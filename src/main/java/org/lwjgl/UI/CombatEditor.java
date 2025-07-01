@@ -8,17 +8,16 @@ import imgui.flag.ImGuiDir;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
-import org.joml.Vector2i;
 import org.lwjgl.Scene;
 import org.lwjgl.dndMechanics.spells.Spells;
-import org.lwjgl.combatMap.CombatHexagon;
+import org.lwjgl.objects.hexagons.CombatHexagon;
 import org.lwjgl.dndMechanics.statusEffects.Blinded;
 import org.lwjgl.dndMechanics.statusEffects.Dash;
 import org.lwjgl.dndMechanics.statusEffects.Grappled;
 import org.lwjgl.dndMechanics.statusEffects.Invisible;
-import org.lwjgl.input.InputHandler;
+import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.objects.Grid;
-import org.lwjgl.objects.Hexagon;
+import org.lwjgl.objects.hexagons.Hexagon;
 import org.lwjgl.objects.SceneObject;
 import org.lwjgl.objects.entities.Classes;
 import org.lwjgl.objects.entities.Creature;
@@ -35,14 +34,13 @@ import java.util.Set;
 
 import static org.lwjgl.data.ApiCalls.getRandomName;
 import static org.lwjgl.dndMechanics.spells.Spells.clearSpellHighlightedTiles;
-import static org.lwjgl.input.InputUtils.*;
-import static org.lwjgl.objects.Hexagon.*;
+import static org.lwjgl.engine.input.InputUtils.selectHovered;
+import static org.lwjgl.objects.hexagons.Hexagon.*;
 import static org.lwjgl.objects.entities.Classes.FIGHTER;
 import static org.lwjgl.objects.entities.Classes.classList;
 import static org.lwjgl.objects.entities.Player.createCreatureRandomPos;
 import static org.lwjgl.objects.entities.Player.remakePlayer;
 import static org.lwjgl.objects.entities.Races.*;
-import static org.lwjgl.utils.GridUtils.*;
 import static org.lwjgl.utils.VectorUtils.rgbToImVec4;
 
 public class CombatEditor extends ImGuiWindow {
@@ -366,6 +364,7 @@ public class CombatEditor extends ImGuiWindow {
             }
         }
 
+        //Combat
         if (menuCurrentlyOpen == 2) {
             if (selectedObject instanceof Player player) {
                 if (ImGui.button("Delete character")) {
@@ -373,6 +372,10 @@ public class CombatEditor extends ImGuiWindow {
                     characterList.remove(player);
                     player.cleanup();
                     selectedObject = null;
+                }
+                ImGui.sameLine();
+                if (ImGui.button("End turn")) {
+                    player.resetStats();
                 }
                 ImGui.separator();
                 if (ImGui.button("Blindness")) {

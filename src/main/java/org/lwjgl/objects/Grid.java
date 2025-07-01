@@ -4,16 +4,14 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.lwjgl.Scene;
-import org.lwjgl.cityMap.CityHexagon;
-import org.lwjgl.combatMap.CombatHexagon;
-import org.lwjgl.continentMap.ContinentHexagon;
-import org.lwjgl.input.InputHandler;
+import org.lwjgl.objects.hexagons.CityHexagon;
+import org.lwjgl.objects.hexagons.CombatHexagon;
+import org.lwjgl.objects.hexagons.ContinentHexagon;
+import org.lwjgl.engine.input.InputHandler;
+import org.lwjgl.objects.hexagons.Hexagon;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.lwjgl.opengl.GL11.glGetError;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 
 
 public class Grid extends SceneObject {

@@ -1,9 +1,8 @@
-package org.lwjgl.cityMap;
+package org.lwjgl.objects.hexagons;
 
 import org.joml.Vector2i;
 import org.lwjgl.Scene;
-import org.lwjgl.input.InputHandler;
-import org.lwjgl.objects.Hexagon;
+import org.lwjgl.engine.input.InputHandler;
 
 import java.io.Serializable;
 

@@ -1,8 +1,9 @@
 package org.lwjgl.objects;
 
 import org.joml.*;
-import org.lwjgl.input.InputHandler;
+import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.Scene;
+import org.lwjgl.objects.hexagons.Hexagon;
 import org.lwjgl.textures.Texture;
 
 import java.io.Serializable;
