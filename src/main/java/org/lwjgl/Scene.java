@@ -4,6 +4,7 @@ import imgui.ImGui;
 import org.lwjgl.data.CombatFileManager;
 import org.lwjgl.data.ImageGeneration;
 import org.lwjgl.data.MapSaveLoad;
+import org.lwjgl.engine.Camera;
 import org.lwjgl.objects.hexagons.ContinentHexagon;
 import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.engine.input.ObjectSelection;

@@ -1,4 +1,4 @@
-package org.lwjgl;
+package org.lwjgl.engine;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2f;

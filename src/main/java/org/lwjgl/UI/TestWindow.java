@@ -4,6 +4,7 @@ import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector3f;
 import org.lwjgl.*;
+import org.lwjgl.engine.Camera;
 import org.lwjgl.objects.hexagons.ContinentHexagon;
 import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.objects.SceneObject;
