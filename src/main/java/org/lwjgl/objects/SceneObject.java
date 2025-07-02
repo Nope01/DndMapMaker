@@ -83,22 +83,48 @@ public abstract class SceneObject implements Serializable {
     }
 
     // Parent-child management
-    public void setParent(SceneObject parent) {
+    public void setParent(SceneObject newParent) {
         if (this.parent != null) {
             this.parent.children.remove(this);
         }
-        this.parent = parent;
-        if (parent != null) {
-            parent.children.add(this);
+        this.parent = newParent;
+        if (newParent != null && !newParent.children.contains(this)) {
+            newParent.children.add(this);
         }
+        updateWorldPosition();
     }
 
     public void addChild(SceneObject child) {
-        child.setParent(this);
+        if (!children.contains(child)) {
+            children.add(child);
+            child.setParent(this);
+        }
     }
 
     public void removeChild(SceneObject child) {
-        this.children.remove(child);
+
+        if (children.remove(child)) {
+            child.parent = null;
+        }
+    }
+
+    protected void updateWorldPosition() {
+        // If parent exists, world position = parent world position + local position
+        // Otherwise, world position = local position
+        // Implement as needed for your math library
+        for (SceneObject child : children) {
+            child.updateWorldPosition();
+        }
+    }
+
+    public void moveToParent(SceneObject newParent) {
+        setParent(newParent);
+    }
+
+    public void setPosition(Vector3f localPosition) {
+        this.position.set(localPosition);
+        setAabb(localPosition);
+        updateWorldPosition();
     }
 
     // Getters and setters
@@ -136,10 +162,10 @@ public abstract class SceneObject implements Serializable {
         }
 
     }
-    public void setPosition(Vector3f pos) {
-        position.set(pos);
-        setAabb(pos);
-    }
+//    public void setPosition(Vector3f pos) {
+//        position.set(pos);
+//        setAabb(pos);
+//    }
     public void addPosition(float x, float y, float z) {
         position.add(x, y, z);
         translateAabb(new Vector3f(x, y, z));
