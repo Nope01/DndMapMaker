@@ -22,6 +22,7 @@ public class ShaderProgramCache {
         shaderMap.put("combatHex", createShaderProgram("combatHex"));
         shaderMap.put("trap", createShaderProgram("trap"));
         shaderMap.put("creature", createShaderProgram("creature"));
+        shaderMap.put("mirror", createShaderProgram("mirror"));
     }
 
     public Map<String, Integer> getShaderMap() {

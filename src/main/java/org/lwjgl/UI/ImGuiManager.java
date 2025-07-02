@@ -3,6 +3,7 @@ package org.lwjgl.UI;
 import imgui.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.*;
+import imgui.internal.ImGuiContext;
 import org.lwjgl.data.CombatFileManager;
 import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.Scene;
@@ -23,6 +24,7 @@ import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
 public class ImGuiManager {
     private long window;
     private ImGuiIO io;
+    public ImGuiContext imGuiContext;
     private List<ImGuiWindow> windows;
     private static ImGuiImplGlfw imGuiGlfw;
     private static ImGuiImplGl3 imGuiGl3;
@@ -59,7 +61,8 @@ public class ImGuiManager {
         GL.createCapabilities();
 
         // Initialize ImGui
-        ImGui.createContext();
+        imGuiContext = ImGui.createContext();
+        ImGui.setCurrentContext(imGuiContext);
         io = ImGui.getIO();
 
         // Initialize GLFW and OpenGL backends

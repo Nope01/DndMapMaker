@@ -9,6 +9,7 @@ import org.lwjgl.shaders.ShaderProgramCache;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
@@ -42,6 +43,26 @@ public class Window {
         }
     }
 
+    public void initMainWindow(Engine engine) {
+        init();
+        glClearColor(0.5f, 0.1f, 0.1f, 1.0f);
+
+        //Init scene
+        setupInputHandler();
+        setupScene(shaderCache, engine);
+        setupUI();
+
+    }
+
+    public void initSecondaryWindow(Engine engine) {
+        init();
+        glClearColor(0.1f, 0.1f, 0.5f, 1.0f);
+
+        setupInputHandler();
+        setupScene(shaderCache, engine);
+        scene.initCombatScene();
+    }
+
     public void init() {
         glfwMakeContextCurrent(handle);
         GL.createCapabilities();
@@ -52,18 +73,10 @@ public class Window {
         width = arrWidth[0];
         height = arrHeight[0];
 
-        // Set up OpenGL
         glEnable(GL_DEPTH_TEST);
-        glClearColor(0.5f, 0.1f, 0.1f, 1.0f);
         glViewport(0, 0, width, height);
 
         shaderCache = new ShaderProgramCache();
-
-        //Init scene
-        setupInputHandler();
-        setupScene(shaderCache);
-        setupUI();
-
         matrixBuffer = BufferUtils.createFloatBuffer(16);
     }
 
@@ -71,8 +84,8 @@ public class Window {
     public void setupInputHandler() {
         inputHandler = new InputHandler(handle, width, height);
     }
-    public void setupScene(ShaderProgramCache shaderCache) {
-        scene = new Scene(width, height, inputHandler, shaderCache, handle);
+    public void setupScene(ShaderProgramCache shaderCache, Engine engine) {
+        scene = new Scene(width, height, inputHandler, shaderCache, this, engine);
     }
 
     public void setupUI() {
@@ -110,22 +123,26 @@ public class Window {
         oldTime = time;
 
         // Update camera and scene
-        inputHandler.update(width, height);
-        scene.getCamera().update(inputHandler);
-        scene.update(deltaTime);
-        // Render scene
-        scene.render();
+        if (inputHandler != null) {
+            inputHandler.update(width, height);
+        }
 
-        //For each shader, set it as active then set uniforms
-        //Either do it once here or for each sceneObject
-        shaderCache.getShaderMap().values().forEach(shader -> {
-            // Set shader uniforms
-            glUseProgram(shader);
-            int projLoc = glGetUniformLocation(shader, "projection");
-            glUniformMatrix4fv(projLoc, false, scene.getCamera().getProjectionMatrix().get(matrixBuffer)); matrixBuffer.rewind();
-            int viewLoc = glGetUniformLocation(shader, "view");
-            glUniformMatrix4fv(viewLoc, false, scene.getCamera().getViewMatrix().get(matrixBuffer)); matrixBuffer.rewind();
-        });
+        if (scene != null) {
+            scene.getCamera().update(inputHandler);
+            scene.update(deltaTime);
+            scene.render();
+
+            //For each shader, set it as active then set uniforms
+            //Either do it once here or for each sceneObject
+            shaderCache.getShaderMap().values().forEach(shader -> {
+                // Set shader uniforms
+                glUseProgram(shader);
+                int projLoc = glGetUniformLocation(shader, "projection");
+                glUniformMatrix4fv(projLoc, false, scene.getCamera().getProjectionMatrix().get(matrixBuffer)); matrixBuffer.rewind();
+                int viewLoc = glGetUniformLocation(shader, "view");
+                glUniformMatrix4fv(viewLoc, false, scene.getCamera().getViewMatrix().get(matrixBuffer)); matrixBuffer.rewind();
+            });
+        }
 
         if (imGuiManager != null) {
             imGuiManager.update(deltaTime, scene, inputHandler);

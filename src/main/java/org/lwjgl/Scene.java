@@ -5,6 +5,9 @@ import org.lwjgl.data.CombatFileManager;
 import org.lwjgl.data.ImageGeneration;
 import org.lwjgl.data.MapSaveLoad;
 import org.lwjgl.engine.Camera;
+import org.lwjgl.engine.Engine;
+import org.lwjgl.engine.Window;
+import org.lwjgl.objects.entities.Creature;
 import org.lwjgl.objects.hexagons.ContinentHexagon;
 import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.engine.input.ObjectSelection;
@@ -12,7 +15,9 @@ import org.lwjgl.objects.Grid;
 import org.lwjgl.objects.SceneObject;
 import org.lwjgl.objects.Trap;
 import org.lwjgl.objects.entities.Player;
+import org.lwjgl.objects.hexagons.Hexagon;
 import org.lwjgl.shaders.ShaderProgramCache;
+import org.lwjgl.textures.FrameBuffer;
 import org.lwjgl.textures.TextureCache;
 
 import java.util.ArrayList;
@@ -23,9 +28,10 @@ public class Scene extends SceneObject {
     private List<SceneObject> rootObjects;
     private List<SceneObject> allObjects;
     private Grid grid;
+    public Engine engine;
     private int screenWidth;
     private int screenHeight;
-    private long window;
+    private Window window;
     private InputHandler inputHandler;
     private SceneObject hoveredObject;
     private SceneObject selectedObject;
@@ -34,7 +40,7 @@ public class Scene extends SceneObject {
     private MapSaveLoad mapSaveLoad;
     private CombatFileManager combatFileManager;
 
-    public Scene(int width, int height, InputHandler inputHandler, ShaderProgramCache shaderCache, long window) {
+    public Scene(int width, int height, InputHandler inputHandler, ShaderProgramCache shaderCache, Window window, Engine engine) {
         //CopyOnWriteArrayList
         rootObjects = new ArrayList<>();
         allObjects = new ArrayList<>();
@@ -45,9 +51,12 @@ public class Scene extends SceneObject {
         this.hoveredObject = null;
         this.textureCache = new TextureCache();
         this.shaderCache = shaderCache;
+        this.engine = engine;
 
         this.mapSaveLoad = new MapSaveLoad();
         this.combatFileManager = new CombatFileManager();
+
+
 
         setupScene(width, height);
     }
@@ -156,14 +165,17 @@ public class Scene extends SceneObject {
             grid.clearHoveredHexagons();
         }
 
+        if (window.title.equals("Main")) {
+            if (grid != null) {
+                engine.getSecondaryWindow().scene.copyGridFromMainToSecondary(grid);
+            }
+        }
+
         //Only get a new hovered object when not hovering over UI
         if (!ImGui.getIO().getWantCaptureMouse()) {
             ObjectSelection.hoverObject(this, inputHandler, rootObjects);
         }
 
-//        if (hoveredObject != null) {
-//            hoveredObject.update(this, deltaTime, inputHandler);
-//        }
     }
 
     public void render() {
@@ -244,8 +256,47 @@ public class Scene extends SceneObject {
     public ShaderProgramCache getShaderCache() {
         return shaderCache;
     }
+
     public Grid getGrid() {
         return grid;
+    }
+
+    public void copyGridFromMainToSecondary(Grid newGrid) {
+        if (this.grid == null) {
+            this.grid = new Grid(this, newGrid.rows, newGrid.columns);
+        }
+
+        // Copy all hexagon states and properties
+        for (int row = 0; row < newGrid.rows; row++) {
+            for (int col = 0; col < newGrid.columns; col++) {
+                Hexagon srcHex = newGrid.getHexagonAt(row, col);
+                Hexagon destHex = this.grid.getHexagonAt(row, col);
+
+                // Copy all necessary properties
+                destHex.setPosition(srcHex.getPosition());
+                destHex.setHovered(srcHex.getHovered());
+                destHex.setShaderProgram(srcHex.getShaderProgram());
+                destHex.setTexture(srcHex.getTexture());
+                destHex.setIconTexture(srcHex.getIconTexture());
+                destHex.setMovementHighlighted(srcHex.isMovementHighlighted());
+                destHex.setVisible(srcHex.isVisible());
+
+                if (!srcHex.children.isEmpty()) {
+                    Player srcChild = (Player) srcHex.children.get(0);
+                    Player destChild = new Player(srcChild.getOffsetPos());
+
+                    destChild.setId(srcChild.getId());
+                    destChild.setShaderProgram(srcChild.getShaderProgram());
+                    destChild.setPosition(srcChild.getPosition());
+                    destChild.setTexture(srcChild.getTexture());
+                    //destChild.setParent(grid.getHexagonAt(srcChild.parent.getCubePos()));
+                    //TODO: fix children being copied
+                    //destHex.addChild(destChild);
+
+                    destHex.setTexture(textureCache.getTexture("sandvich"));
+                }
+            }
+        }
     }
 
     public void saveContinentMap() {
@@ -260,6 +311,6 @@ public class Scene extends SceneObject {
     }
 
     public void saveImage() {
-        ImageGeneration.saveImageAsFile(window, screenWidth, screenHeight);
+        ImageGeneration.saveImageAsFile(window.handle, screenWidth, screenHeight);
     }
 }

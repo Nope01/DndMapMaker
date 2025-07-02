@@ -4,6 +4,7 @@ import org.joml.Vector2i;
 import org.lwjgl.Scene;
 import org.lwjgl.dndMechanics.statusEffects.Dash;
 import org.lwjgl.objects.Grid;
+import org.lwjgl.objects.SceneObject;
 import org.lwjgl.objects.hexagons.Hexagon;
 import org.lwjgl.utils.VectorUtils;
 import org.lwjgl.engine.input.InputHandler;
@@ -44,6 +45,8 @@ public class Player extends Creature {
         this.setOffsetPos(offsetPos);
         this.setCubePos(Hexagon.offsetToCubeCoords(offsetPos));
     }
+
+
 
     @Override
     public void render() {

@@ -1,15 +1,7 @@
 package org.lwjgl.engine;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.Scene;
-import org.lwjgl.UI.ImGuiManager;
-import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.shaders.ShaderProgramCache;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,19 +16,15 @@ import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
 import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
 import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
 import static org.lwjgl.glfw.GLFW.glfwInit;
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwSetFramebufferSizeCallback;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.glViewport;
-import static org.lwjgl.opengl.GL20.*;
 
 public class Engine {
     public int width;
     public int height;
     private List<Window> windows;
-    private ShaderProgramCache shaderCache;
 
 
     public Engine() {
@@ -58,12 +46,14 @@ public class Engine {
 
         //Windows
         windows = new ArrayList<>();
-        windows.add(new Window(width, height, "Main"));
-        windows.add(new Window(width, height, "Secondary"));
+        Window mainWindow = new Window(width, height, "Main");
+        Window secondaryWindow = new Window(width, height, "Secondary");
 
-        for (Window window: windows) {
-            window.init();
-        }
+        mainWindow.initMainWindow(this);
+        secondaryWindow.initSecondaryWindow(this);
+
+        windows.add(mainWindow);
+        windows.add(secondaryWindow);
 
         initCallbacks();
     }
@@ -72,10 +62,12 @@ public class Engine {
         for (Window window: windows) {
             glfwSetFramebufferSizeCallback(window.handle, (windowHandle, width, height) -> {
                 if (width > 0 && height > 0) {
-                    glViewport(0, 0, width, height);
-                    window.scene.getCamera().updateProjection(width, height);
-                    if (window.imGuiManager != null) {
-                        window.imGuiManager.resize(width, height);
+                    if (window.scene != null) {
+                        glViewport(0, 0, width, height);
+                        window.scene.getCamera().updateProjection(width, height);
+                        if (window.imGuiManager != null) {
+                            window.imGuiManager.resize(width, height);
+                        }
                     }
                 }
             });
@@ -93,9 +85,19 @@ public class Engine {
     public void cleanup() {
 
         for (Window window: windows) {
-            window.scene.cleanup();
-            glfwDestroyWindow(window.handle);
+            if (window.scene != null) {
+                window.scene.cleanup();
+                glfwDestroyWindow(window.handle);
+            }
         }
         glfwTerminate();
+    }
+
+    public Window getMainWindow() {
+        return windows.get(0);
+    }
+
+    public Window getSecondaryWindow() {
+        return windows.get(1);
     }
 }
