@@ -285,7 +285,7 @@ public class ImGuiManager {
 
                 if (ImGui.menuItem("Load##map")) {
                     //TODO: reset walls and obstacle states
-                    scene.getGrid().makeGridFromLoadedGrid(combatFileManager.loadMapFile());
+                    scene.getGrid().makeGridFromLoadedGrid(combatFileManager.loadMapFileDialog());
 
                     CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
                     combatEditor.remakeSameCharacterList();
@@ -303,7 +303,7 @@ public class ImGuiManager {
                 if (ImGui.menuItem("Load##characters")) {
                     CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");
                     combatEditor.clearCharacterList();
-                    List<Creature> characterList = combatFileManager.loadCharacterFile();
+                    List<Creature> characterList = combatFileManager.loadCharacterFileDialog();
 
                     combatEditor.remakeLoadedCharacterList(characterList);
                 }

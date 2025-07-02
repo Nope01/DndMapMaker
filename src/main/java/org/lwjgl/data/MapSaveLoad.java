@@ -12,6 +12,8 @@ public class MapSaveLoad {
     private JFileChooser saveFileChooser;
     private JFileChooser loadFileChooser;
 
+    //TODO: move this to combatFileManager
+
     public MapSaveLoad() {
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Map file *.ser", "ser"

@@ -14,6 +14,13 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class ImageGeneration {
 
+    /**
+     * Saves the current OpenGL context as an image file to the desktop
+     *
+     * @param window The GLFW window handle.
+     * @param width  The width of the image.
+     * @param height The height of the image.
+     */
     public static void saveImageAsFile(long window, int width, int height) {
         BufferedImage image = makeImage(window, width, height);
 
@@ -27,6 +34,14 @@ public class ImageGeneration {
         }
     }
 
+    /**
+     * Creates a BufferedImage from the current OpenGL context.
+     *
+     * @param window The GLFW window handle.
+     * @param width  The width of the image.
+     * @param height The height of the image.
+     * @return A BufferedImage containing the current OpenGL context.
+     */
     private static BufferedImage makeImage(long window, int width, int height) {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics graphics = image.getGraphics();
@@ -43,5 +58,4 @@ public class ImageGeneration {
         }
         return image;
     }
-
 }
