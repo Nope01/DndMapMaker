@@ -6,6 +6,8 @@ import org.lwjgl.dndMechanics.statusEffects.Dash;
 import org.lwjgl.objects.Grid;
 import org.lwjgl.objects.SceneObject;
 import org.lwjgl.objects.hexagons.Hexagon;
+import org.lwjgl.shaders.ShaderProgramCache;
+import org.lwjgl.textures.TextureCache;
 import org.lwjgl.utils.VectorUtils;
 import org.lwjgl.engine.input.InputHandler;
 
@@ -82,6 +84,25 @@ public class Player extends Creature {
         newPlayer.setPosition(0.0f, 0.2f, 0.0f);
         newPlayer.setShaderProgram(oldPlayer.getShaderProgram());
         newPlayer.setId(oldPlayer.getId());
+
+        return newPlayer;
+    }
+
+    public Player cloneForContext(Grid grid, TextureCache textureCache, ShaderProgramCache shaderCache) {
+        Player newPlayer = new Player(
+                this.getName(),
+                this.getClassType(),
+                this.getRaceType(),
+                this.getMoveSpeed(),
+                this.getAC(),
+                this.getMaxHP(),
+                this.getOffsetPos()
+        );
+        newPlayer.setTexture(textureCache.getTexture(this.getTexture().getTextureName()));
+        newPlayer.setShaderProgram(shaderCache.getShader("creature"));
+        newPlayer.setParent(grid.getHexagonAt(this.parent.getCubePos()));
+        newPlayer.setPosition(this.getPosition());
+        newPlayer.setId(this.getId());
 
         return newPlayer;
     }

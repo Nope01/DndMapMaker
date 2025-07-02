@@ -23,6 +23,8 @@ import org.lwjgl.textures.TextureCache;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+
 public class Scene extends SceneObject {
     private Camera camera;
     private List<SceneObject> rootObjects;
@@ -169,6 +171,7 @@ public class Scene extends SceneObject {
             if (grid != null) {
                 engine.getSecondaryWindow().scene.copyGridFromMainToSecondary(grid);
             }
+            glfwMakeContextCurrent(window.handle);
         }
 
         //Only get a new hovered object when not hovering over UI
@@ -282,18 +285,18 @@ public class Scene extends SceneObject {
                 destHex.setVisible(srcHex.isVisible());
 
                 if (!srcHex.children.isEmpty()) {
+                    glfwMakeContextCurrent(window.handle);
                     Player srcChild = (Player) srcHex.children.get(0);
-                    Player destChild = new Player(srcChild.getOffsetPos());
-
-                    destChild.setId(srcChild.getId());
-                    destChild.setShaderProgram(srcChild.getShaderProgram());
-                    destChild.setPosition(srcChild.getPosition());
-                    destChild.setTexture(srcChild.getTexture());
-                    //destChild.setParent(grid.getHexagonAt(srcChild.parent.getCubePos()));
-                    //TODO: fix children being copied
-                    //destHex.addChild(destChild);
-
-                    destHex.setTexture(textureCache.getTexture("sandvich"));
+                    Player destChild = srcChild.cloneForContext(
+                            this.grid, // secondary grid
+                            this.getTextureCache(),
+                            this.getShaderCache()
+                    );
+                    destHex.addChild(destChild);
+                }
+                else {
+                    // If no children, ensure the destination hexagon has no children
+                    destHex.children.clear();
                 }
             }
         }
