@@ -2,13 +2,15 @@ package org.lwjgl.dndMechanics.statusEffects;
 
 import org.lwjgl.objects.entities.Creature;
 
+//This class represents a status effect that blinds a creature, reducing its visibility range
 public class Blinded implements StatusEffect{
+
     private final int originalDungeonVisibleRange;
 
-    //Pass the creature being blinded to init the original range
+    //Saves the original visibility and applies the blinded effect
     public Blinded(Creature creature) {
         originalDungeonVisibleRange = creature.getDungeonVisibleRange();
-        creature.setDungeonVisibleRange(1);
+        applyEffect(creature);
     }
     @Override
     public String getName() {
@@ -27,6 +29,7 @@ public class Blinded implements StatusEffect{
 
     @Override
     public void applyEffect(Creature creature) {
+        creature.setDungeonVisibleRange(1);
         System.out.println("Creature is blinded");
     }
 

@@ -8,7 +8,7 @@ public class Grappled implements StatusEffect {
 
     public Grappled(Creature creature) {
         originalMoveSpeed = creature.getMoveSpeed();
-        creature.setMoveSpeed(0);
+        applyEffect(creature);
     }
 
     @Override
@@ -28,6 +28,7 @@ public class Grappled implements StatusEffect {
 
     @Override
     public void applyEffect(Creature creature) {
+        creature.setMoveSpeed(0);
         System.out.println("Creature is grappled");
     }
 

@@ -5,7 +5,7 @@ import org.lwjgl.objects.entities.Creature;
 public class Dash implements StatusEffect {
 
     public Dash(Creature creature) {
-        creature.setMoveSpeed(creature.getMoveSpeed() + creature.getMaxMoveSpeed());
+        applyEffect(creature);
     }
 
     @Override
@@ -25,6 +25,7 @@ public class Dash implements StatusEffect {
 
     @Override
     public void applyEffect(Creature creature) {
+        creature.setMoveSpeed(creature.getMoveSpeed() + creature.getMaxMoveSpeed());
         System.out.println("Got the zoomies");
     }
 

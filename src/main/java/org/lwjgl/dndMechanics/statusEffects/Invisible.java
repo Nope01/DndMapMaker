@@ -6,8 +6,9 @@ public class Invisible implements StatusEffect {
 
 
     public Invisible(Creature creature) {
-        creature.setVisible(true);
+        applyEffect(creature);
     }
+
     @Override
     public String getName() {
         return "Invisible";
@@ -25,6 +26,7 @@ public class Invisible implements StatusEffect {
 
     @Override
     public void applyEffect(Creature creature) {
+        creature.setVisible(true);
         System.out.println("Creature is a spooky ghost");
     }
 
