@@ -47,13 +47,13 @@ public class Engine {
         //Windows
         windows = new ArrayList<>();
         Window mainWindow = new Window(width, height, "Main");
-        Window secondaryWindow = new Window(width, height, "Secondary");
+        //Window secondaryWindow = new Window(width, height, "Secondary");
 
         mainWindow.initMainWindow(this);
-        secondaryWindow.initSecondaryWindow(this);
+        //secondaryWindow.initSecondaryWindow(this);
 
         windows.add(mainWindow);
-        windows.add(secondaryWindow);
+        //windows.add(secondaryWindow);
 
         initCallbacks();
     }
@@ -98,6 +98,9 @@ public class Engine {
     }
 
     public Window getSecondaryWindow() {
+        if (windows.size() < 2) {
+            return null; // No secondary window available
+        }
         return windows.get(1);
     }
 }

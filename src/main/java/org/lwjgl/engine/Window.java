@@ -29,7 +29,7 @@ public class Window {
     public Scene scene;
     public ImGuiManager imGuiManager;
     private FloatBuffer matrixBuffer;
-    public float oldTime = System.currentTimeMillis();
+    public long oldTime = System.currentTimeMillis();
 
     public Window(int width, int height, String title) {
         this.width = width;

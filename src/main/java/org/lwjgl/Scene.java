@@ -41,6 +41,7 @@ public class Scene extends SceneObject {
     private ShaderProgramCache shaderCache;
     private MapSaveLoad mapSaveLoad;
     private CombatFileManager combatFileManager;
+    private float gridCopyTimer = 0.0f;
 
     public Scene(int width, int height, InputHandler inputHandler, ShaderProgramCache shaderCache, Window window, Engine engine) {
         //CopyOnWriteArrayList
@@ -118,15 +119,6 @@ public class Scene extends SceneObject {
                 removeObjectChild(rootObject, removeObject);
             }
         }
-
-
-//        for (SceneObject root : rootObjects) {
-//            if (root instanceof ContinentHexagon) {
-//                root.cleanup();
-//            }
-//            // Recursively clean up children if needed
-//            cleanupChildren(root);
-//        }
     }
 
     private void removeObjectChild(SceneObject object, SceneObject removeObject) {
@@ -168,10 +160,19 @@ public class Scene extends SceneObject {
         }
 
         if (window.title.equals("Main")) {
-            if (grid != null) {
-                engine.getSecondaryWindow().scene.copyGridFromMainToSecondary(grid);
+            gridCopyTimer += deltaTime;
+            if (gridCopyTimer >= 1.0f) {
+                if (grid != null) {
+                    if (engine.getSecondaryWindow() == null) {
+                        System.out.println("No secondary window to copy grid to.");
+                        gridCopyTimer = 0.0f;
+                        return;
+                    }
+                    engine.getSecondaryWindow().scene.copyGridFromMainToSecondary(grid);
+                    glfwMakeContextCurrent(window.handle);
+                }
+                gridCopyTimer = 0.0f;
             }
-            glfwMakeContextCurrent(window.handle);
         }
 
         //Only get a new hovered object when not hovering over UI

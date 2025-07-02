@@ -166,6 +166,7 @@ public abstract class SceneObject implements Serializable {
 //        position.set(pos);
 //        setAabb(pos);
 //    }
+
     public void addPosition(float x, float y, float z) {
         position.add(x, y, z);
         translateAabb(new Vector3f(x, y, z));
