@@ -83,7 +83,6 @@ public class Engine {
     }
 
     public void cleanup() {
-
         for (Window window: windows) {
             if (window.scene != null) {
                 window.scene.cleanup();

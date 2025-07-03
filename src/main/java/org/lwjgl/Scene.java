@@ -7,7 +7,6 @@ import org.lwjgl.data.MapSaveLoad;
 import org.lwjgl.engine.Camera;
 import org.lwjgl.engine.Engine;
 import org.lwjgl.engine.Window;
-import org.lwjgl.objects.entities.Creature;
 import org.lwjgl.objects.hexagons.ContinentHexagon;
 import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.engine.input.ObjectSelection;
@@ -17,7 +16,6 @@ import org.lwjgl.objects.Trap;
 import org.lwjgl.objects.entities.Player;
 import org.lwjgl.objects.hexagons.Hexagon;
 import org.lwjgl.shaders.ShaderProgramCache;
-import org.lwjgl.textures.FrameBuffer;
 import org.lwjgl.textures.TextureCache;
 
 import java.util.ArrayList;
@@ -41,6 +39,8 @@ public class Scene extends SceneObject {
     private ShaderProgramCache shaderCache;
     private MapSaveLoad mapSaveLoad;
     private CombatFileManager combatFileManager;
+    private boolean isSecondaryWindowActive = false;
+
     private float gridCopyTimer = 0.0f;
 
     public Scene(int width, int height, InputHandler inputHandler, ShaderProgramCache shaderCache, Window window, Engine engine) {
@@ -59,17 +59,28 @@ public class Scene extends SceneObject {
         this.mapSaveLoad = new MapSaveLoad();
         this.combatFileManager = new CombatFileManager();
 
-
-
-        setupScene(width, height);
+        setupCamera(width, height);
+        checkWindowCount();
     }
 
-    private void setupScene(int width, int height) {
+    private void setupCamera(int width, int height) {
         camera = new Camera(width, height);
         camera.setPosition(60f, 50.0f, 40f);
         //camera.setPosition(0, 10f, 0);
         camera.setRotation(1.5f, 0.0f);
         camera.resize(width, height);
+
+    }
+
+    private void checkWindowCount() {
+        if (engine.getSecondaryWindow() == null) {
+            System.out.println("Only one window is open, no need to copy grid.");
+            isSecondaryWindowActive = false;
+        }
+        else {
+            System.out.println("Secondary window is active, copying grid.");
+            isSecondaryWindowActive = true;
+        }
     }
 
     public void initContinentScene() {
@@ -155,31 +166,28 @@ public class Scene extends SceneObject {
             ObjectSelection.resetHoveredObject(hoveredObject);
             hoveredObject = null;
         }
-        if (grid != null) {
-            grid.clearHoveredHexagons();
-        }
 
-        if (window.title.equals("Main")) {
-            gridCopyTimer += deltaTime;
-            if (gridCopyTimer >= 1.0f) {
-                if (grid != null) {
-                    if (engine.getSecondaryWindow() == null) {
-                        System.out.println("No secondary window to copy grid to.");
-                        gridCopyTimer = 0.0f;
-                        return;
+        if (isSecondaryWindowActive) {
+            if (window.title.equals("Main")) {
+                gridCopyTimer += deltaTime;
+                if (gridCopyTimer >= 1.0f) {
+                    if (grid != null) {
+                        engine.getSecondaryWindow().scene.copyGridFromMainToSecondary(grid);
+                        glfwMakeContextCurrent(window.handle);
                     }
-                    engine.getSecondaryWindow().scene.copyGridFromMainToSecondary(grid);
-                    glfwMakeContextCurrent(window.handle);
+                    gridCopyTimer = 0.0f;
                 }
-                gridCopyTimer = 0.0f;
             }
         }
 
         //Only get a new hovered object when not hovering over UI
         if (!ImGui.getIO().getWantCaptureMouse()) {
-            ObjectSelection.hoverObject(this, inputHandler, rootObjects);
+            //ObjectSelection.searchSceneForHoveredObject(this, inputHandler, rootObjects);
+            hoveredObject = ObjectSelection.findHoveredObject(inputHandler, rootObjects, camera);
+            if (hoveredObject != null) {
+                hoveredObject.setHovered(true);
+            }
         }
-
     }
 
     public void render() {

@@ -43,6 +43,12 @@ public class Window {
         }
     }
 
+    /**
+     * Initializes the main window with the specified engine.
+     * Sets up OpenGL context, input handler, scene, and UI.
+     *
+     * @param engine The engine to be passed to the scene setup.
+     */
     public void initMainWindow(Engine engine) {
         init();
         glClearColor(0.5f, 0.1f, 0.1f, 1.0f);
@@ -54,6 +60,12 @@ public class Window {
 
     }
 
+    /**
+     * Initializes the secondary window with the specified engine.
+     * Sets up OpenGL context, input handler, and scene, without UI.
+     *
+     * @param engine The engine to be passed to the scene setup.
+     */
     public void initSecondaryWindow(Engine engine) {
         init();
         glClearColor(0.1f, 0.1f, 0.5f, 1.0f);
@@ -63,6 +75,13 @@ public class Window {
         scene.initCombatScene();
     }
 
+    /**
+     * Common initialization method for both main and secondary windows.
+     * <p>
+     * Initializes the OpenGL context and capabilities.
+     * Sets the viewport and enables depth testing.
+     * Retrieves the framebuffer size to set the initial width and height.
+     */
     public void init() {
         glfwMakeContextCurrent(handle);
         GL.createCapabilities();
@@ -80,14 +99,29 @@ public class Window {
         matrixBuffer = BufferUtils.createFloatBuffer(16);
     }
 
-
+    /**
+     * Sets up the input handler for the window.
+     * Initializes the InputHandler with the current window handle and dimensions.
+     */
     public void setupInputHandler() {
         inputHandler = new InputHandler(handle, width, height);
     }
+
+    /**
+     * Sets up the scene for the window.
+     * Initializes the Scene with the specified shader cache and engine.
+     *
+     * @param shaderCache The shader program cache to be used by the scene.
+     * @param engine      The engine to be passed to the scene setup.
+     */
     public void setupScene(ShaderProgramCache shaderCache, Engine engine) {
         scene = new Scene(width, height, inputHandler, shaderCache, this, engine);
     }
 
+    /**
+     * Sets up the ImGui UI manager for the main window.
+     * Initializes the ImGuiManager and sets up the main menu.
+     */
     public void setupUI() {
         //Init UI
         try {
@@ -100,6 +134,11 @@ public class Window {
         }
     }
 
+    /**
+     * Main loop for the window.
+     * Handles rendering, input updates, and scene management.
+     * Updates the ImGui UI if available.
+     */
     public void loop() {
         IntBuffer widthBuf = BufferUtils.createIntBuffer(1);
         IntBuffer heightBuf = BufferUtils.createIntBuffer(1);
@@ -150,6 +189,5 @@ public class Window {
 
         glfwSwapBuffers(handle);
         glfwPollEvents();
-
     }
 }

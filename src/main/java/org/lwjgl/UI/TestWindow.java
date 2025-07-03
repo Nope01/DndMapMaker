@@ -27,7 +27,7 @@ public class TestWindow extends ImGuiWindow {
         uiXPos = 0;
         uiYPos = 20;
 
-        worldPos = inputHandler.getWorldPos(scene);
+        worldPos = inputHandler.getWorldPos(scene.getCamera());
         camera = scene.getCamera();
         cameraPos = camera.getPosition();
         hoveredObject = scene.getHoveredObject();
@@ -38,7 +38,7 @@ public class TestWindow extends ImGuiWindow {
 
     @Override
     protected void update() {
-        worldPos = inputHandler.getWorldPos(scene);
+        worldPos = inputHandler.getWorldPos(scene.getCamera());
         cameraPos = camera.getPosition();
         hoveredObject = scene.getHoveredObject();
         if (hoveredObject instanceof ContinentHexagon) {

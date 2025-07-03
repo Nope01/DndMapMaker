@@ -34,7 +34,7 @@ import java.util.Set;
 
 import static org.lwjgl.data.ApiCalls.getRandomName;
 import static org.lwjgl.dndMechanics.spells.Spells.clearSpellHighlightedTiles;
-import static org.lwjgl.engine.input.InputUtils.selectHovered;
+import static org.lwjgl.engine.input.ObjectSelection.selectHovered;
 import static org.lwjgl.objects.hexagons.Hexagon.*;
 import static org.lwjgl.objects.entities.Classes.FIGHTER;
 import static org.lwjgl.objects.entities.Classes.classList;
@@ -153,7 +153,7 @@ public class CombatEditor extends ImGuiWindow {
             }
 
             //Eraser
-            if (hoveredObject instanceof CombatHexagon hoveredHex && inputHandler.isRightClicked()) {
+            if (hoveredObject instanceof CombatHexagon hoveredHex && inputHandler.isRightClickedAndHeld()) {
                 hoveredHex.clearAllTerrainFeatures(scene.getTextureCache());
             }
         }
@@ -217,7 +217,7 @@ public class CombatEditor extends ImGuiWindow {
 
         }
 
-        if (clickInput || inputHandler.isRightClicked()) {
+        if (clickInput || inputHandler.isRightClickedAndHeld()) {
             //Vision logic
             //Highlight all visible tiles unless a creature is selected, then only show their visible tiles
             if (selectedObject instanceof Creature creature) {
@@ -238,7 +238,7 @@ public class CombatEditor extends ImGuiWindow {
         }
 
         //Deselect
-        if (selectedObject != null && inputHandler.isRightClicked()) {
+        if (selectedObject != null && inputHandler.isRightClickedAndHeld()) {
             selectedObject.setSelected(false);
             selectedObject = null;
             selectedObstacle = null;
@@ -250,7 +250,7 @@ public class CombatEditor extends ImGuiWindow {
             }
         }
 
-        if (inputHandler.isRightClicked()) {
+        if (inputHandler.isRightClickedAndHeld()) {
             clearSpellHighlightedTiles(spellHighlightedTiles);
         }
     }

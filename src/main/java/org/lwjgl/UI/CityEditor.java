@@ -118,7 +118,7 @@ public class CityEditor extends ImGuiWindow {
         }
 
         //Deselect
-        if (selectedObject != null && inputHandler.isRightClicked()) {
+        if (selectedObject != null && inputHandler.isRightClickedAndHeld()) {
             selectedObject.setSelected(false);
             selectedObject = null;
             clearReachableTiles(gridClass);
@@ -126,7 +126,7 @@ public class CityEditor extends ImGuiWindow {
         }
 
         //Icon eraser
-        if (hoveredObject instanceof CityHexagon && inputHandler.isRightClicked()) {
+        if (hoveredObject instanceof CityHexagon && inputHandler.isRightClickedAndHeld()) {
             ((CityHexagon) hoveredObject).setIconTexture(scene.getTextureCache().getTexture("empty"));
             ((CityHexagon) hoveredObject).isHalfCover = false;
         }

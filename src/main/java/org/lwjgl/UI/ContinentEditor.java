@@ -79,7 +79,7 @@ public class ContinentEditor extends ImGuiWindow{
         }
 
         //Erase the tile based on whether a tile or icon was last selected
-        if (inputHandler.isRightClicked() && selectedObject != null) {
+        if (inputHandler.isRightClickedAndHeld() && selectedObject != null) {
             if (isTerrainSelected) {
                 ((ContinentHexagon) selectedObject).clearType();
                 selectedObject.setTexture(scene.getTextureCache().getTexture("default_tile"));
