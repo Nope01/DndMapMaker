@@ -285,6 +285,7 @@ public class ImGuiManager {
 
                 if (ImGui.menuItem("Load##map")) {
                     //TODO: reset walls and obstacle states
+                    //TODO: fix loading maps not being interactable
                     scene.getGrid().makeGridFromLoadedGrid(combatFileManager.loadMapFileDialog());
 
                     CombatEditor combatEditor = (CombatEditor) imGuiManager.getWindow("Combat Editor");

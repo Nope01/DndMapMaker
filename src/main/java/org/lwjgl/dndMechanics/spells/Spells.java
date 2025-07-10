@@ -2,6 +2,7 @@ package org.lwjgl.dndMechanics.spells;
 
 import org.lwjgl.objects.Grid;
 import org.lwjgl.objects.hexagons.Hexagon;
+import org.lwjgl.objects.hexagons.HexagonMath;
 
 import java.util.Set;
 
@@ -52,7 +53,7 @@ public final class Spells {
      * @return a set of hexagons in the line between start and end
      */
     public static Set<Hexagon> getHexesInLineSpell(Hexagon start, Hexagon end, Grid gridClass ) {
-        return Hexagon.cubeLineDraw(start.getCubePos(), end.getCubePos(), gridClass);
+        return HexagonMath.cubeLineDraw(start.getCubePos(), end.getCubePos(), gridClass);
     }
 
     /**
@@ -64,7 +65,7 @@ public final class Spells {
      * @return a set of hexagons in a circle around the origin
      */
     public static Set<Hexagon> getHexesInCircleSpell(Hexagon origin, int size, Grid gridClass) {
-        return Hexagon.hexVisible(origin, size, gridClass);
+        return HexagonMath.hexVisible(origin, size, gridClass);
     }
 
     /**
@@ -77,6 +78,6 @@ public final class Spells {
      * @return a set of hexagons in the cone shape
      */
     public static Set<Hexagon> getHexesInConeSpell(Hexagon origin, int direction, int size, Grid gridClass) {
-        return Hexagon.hexCone(origin, direction, size, gridClass);
+        return HexagonMath.hexCone(origin, direction, size, gridClass);
     }
 }

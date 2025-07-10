@@ -10,6 +10,7 @@ import org.joml.Vector3i;
 import org.lwjgl.objects.hexagons.CityHexagon;
 import org.lwjgl.objects.entities.Creature;
 import org.lwjgl.objects.hexagons.Hexagon;
+import org.lwjgl.objects.hexagons.HexagonMath;
 import org.lwjgl.textures.Texture;
 import org.lwjgl.utils.GuiUtils;
 import org.lwjgl.utils.VectorUtils;
@@ -22,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.data.ApiCalls.getRandomName;
-import static org.lwjgl.objects.hexagons.Hexagon.clearReachableTiles;
-import static org.lwjgl.objects.hexagons.Hexagon.showMovementRange;
 import static org.lwjgl.objects.entities.Classes.*;
 import static org.lwjgl.objects.entities.Player.createCreatureRandomPos;
 import static org.lwjgl.objects.entities.Races.*;
@@ -77,16 +76,12 @@ public class CityEditor extends ImGuiWindow {
         boolean clickInput = inputHandler.isLeftClicked();
 
         //Movement logic
-        if (clickInput && selectedObject instanceof Player) {
+        if (clickInput && selectedObject instanceof Player player) {
             selectedTerrain = null;
-            if (((Player) selectedObject).canMoveCreature(selectedObject, hoveredObject)) {
-                selectedObject.setParent(hoveredObject);
-                selectedObject.setOffsetAndCubePos(((Hexagon) selectedObject.parent).getOffsetPos());
-                selectedObject.initAabb();
-            }
+            player.moveIfValid(selectedObject);
             //Neighbours
             if (selectedObject.parent instanceof CityHexagon hexUnderPlayer) {
-                Vector3i[] neighbourCoords = hexUnderPlayer.getAllNeighbours();
+                Vector3i[] neighbourCoords = HexagonMath.getAllNeighbours(hexUnderPlayer.getCubePos());
                 for (int i = 0; i < neighbours.length; i++) {
                     neighbours[i] = (CityHexagon) gridClass.getHexagonAt(neighbourCoords[i]);
                 }
@@ -95,7 +90,6 @@ public class CityEditor extends ImGuiWindow {
 
         //Selection logic
         if (clickInput && hoveredObject != null) {
-            clearReachableTiles(gridClass);
             if (selectedObject != null) {
                 selectedObject.setSelected(false);
             }
@@ -103,8 +97,8 @@ public class CityEditor extends ImGuiWindow {
             selectedObject.setSelected(true);
 
             //Highlight moveable tiles
-            if (selectedObject instanceof Player) {
-                showMovementRange(gridClass, (Hexagon) selectedObject.parent, ((Player) selectedObject).getMoveSpeed());
+            if (selectedObject instanceof Player player) {
+                HexagonMath.hexReachable((Hexagon) player.parent, player.getMoveSpeed(), gridClass);
             }
         }
 
@@ -121,7 +115,6 @@ public class CityEditor extends ImGuiWindow {
         if (selectedObject != null && inputHandler.isRightClickedAndHeld()) {
             selectedObject.setSelected(false);
             selectedObject = null;
-            clearReachableTiles(gridClass);
             selectedTerrain = null;
         }
 
@@ -197,7 +190,7 @@ public class CityEditor extends ImGuiWindow {
         for (int i = 0; i < neighbours.length; i++) {
             if (neighbours[i] != null) {
                 if (neighbours[i].isHalfCover) {
-                    ImGui.text("Covered " + Hexagon.intToDirection(i));
+                    ImGui.text("Covered " + HexagonMath.intToDirection(i));
                 }
             }
         }
@@ -241,7 +234,7 @@ public class CityEditor extends ImGuiWindow {
                 player.setTexture(scene.getTextureCache().getTexture("sandvich"));
                 player.setId(name.toString());
                 player.setShaderProgram(scene.getShaderCache().getShader("creature"));
-                player.setParent(gridClass.getHexagonAt(player.getOffsetPos()));
+                player.setParent(gridClass.getHexagonAt(player.getCubePos()));
                 player.setPosition(0.0f, 0.2f, 0.0f);
                 characterList.add(player);
 

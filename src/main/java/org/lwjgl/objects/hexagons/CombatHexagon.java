@@ -11,10 +11,9 @@ import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import static org.lwjgl.opengl.GL20.glUniform1i;
 
 public class CombatHexagon extends Hexagon implements Serializable {
-    private int movementModifier;
-    private int visibilityModifier;
 
-    //TODO: use static ints instead of booleans for tile types
+    //TODO: use static ints instead of booleans for tile types?
+
     public boolean isHalfCover;
     public boolean isFullCover;
     public boolean isWall;
@@ -31,21 +30,19 @@ public class CombatHexagon extends Hexagon implements Serializable {
         glUseProgram(shaderProgram);
         int selected = glGetUniformLocation(shaderProgram, "selected");
         glUniform1i(selected, this.getSelected() ? 1 : 0);
-        int highlighted = glGetUniformLocation(shaderProgram, "highlighted");
-        glUniform1i(highlighted, this.highlighted ? 1 : 0);
-        int isVisible = glGetUniformLocation(shaderProgram, "isVisible");
-        glUniform1i(isVisible, this.isVisible() ? 1 : 0);
-        int movementHighlighted = glGetUniformLocation(shaderProgram, "movementHighlighted");
-        glUniform1i(movementHighlighted, this.isMovementHighlighted() ? 1 : 0);
-        int spellHighlighted = glGetUniformLocation(shaderProgram, "spellHighlighted");
-        glUniform1i(spellHighlighted, this.isSpellHighlighted() ? 1 : 0);
+
         super.render();
     }
 
-    public boolean isBlocked() {
-        return isWall || isFullCover || isHalfCover;
+    public boolean isBlockedForMovement() {
+        return isWall ;
     }
 
+    /**
+     * Paints the terrain texture of the hexagon.
+     * <p> Also sets the isWall property based on the texture name.
+     * @param selectedTerrain the texture to be applied to the hexagon
+     */
     public void paintTerrainTexture(Texture selectedTerrain) {
         if (selectedTerrain != null) {
             this.setTexture(selectedTerrain);
@@ -59,6 +56,11 @@ public class CombatHexagon extends Hexagon implements Serializable {
         }
     }
 
+    /**
+     * Paints the icon texture of the hexagon.
+     * <p> Also sets the isHalfCover and isFullCover properties based on the texture name.
+     * @param selectedObstacle the texture to be applied as an icon
+     */
     public void paintIconTexture(Texture selectedObstacle) {
         if (selectedObstacle != null) {
             this.setIconTexture(selectedObstacle);
@@ -78,6 +80,11 @@ public class CombatHexagon extends Hexagon implements Serializable {
         }
     }
 
+    /**
+     * Clears all terrain features of the hexagon.
+     * <p> Resets the icon texture, terrain texture, and cover properties.
+     * @param textureCache the texture cache to retrieve default textures
+     */
     public void clearAllTerrainFeatures(TextureCache textureCache) {
         this.setIconTexture(textureCache.getTexture("empty"));
         this.setTexture(textureCache.getTexture("default_tile"));
@@ -85,4 +92,5 @@ public class CombatHexagon extends Hexagon implements Serializable {
         this.isWall = false;
         this.isFullCover = false;
     }
+
 }

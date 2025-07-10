@@ -6,6 +6,7 @@ import org.lwjgl.dndMechanics.statusEffects.Dash;
 import org.lwjgl.objects.Grid;
 import org.lwjgl.objects.SceneObject;
 import org.lwjgl.objects.hexagons.Hexagon;
+import org.lwjgl.objects.hexagons.HexagonMath;
 import org.lwjgl.shaders.ShaderProgramCache;
 import org.lwjgl.textures.TextureCache;
 import org.lwjgl.utils.VectorUtils;
@@ -45,7 +46,7 @@ public class Player extends Creature {
         this.setReaction(1);
 
         this.setOffsetPos(offsetPos);
-        this.setCubePos(Hexagon.offsetToCubeCoords(offsetPos));
+        this.setCubePos(HexagonMath.offsetToCubeCoords(offsetPos));
     }
 
 

@@ -23,6 +23,7 @@ import org.lwjgl.objects.entities.Classes;
 import org.lwjgl.objects.entities.Creature;
 import org.lwjgl.objects.entities.Player;
 import org.lwjgl.objects.entities.Races;
+import org.lwjgl.objects.hexagons.HexagonMath;
 import org.lwjgl.textures.Texture;
 import org.lwjgl.utils.GuiUtils;
 import org.lwjgl.utils.VectorUtils;
@@ -41,6 +42,7 @@ import static org.lwjgl.objects.entities.Classes.classList;
 import static org.lwjgl.objects.entities.Player.createCreatureRandomPos;
 import static org.lwjgl.objects.entities.Player.remakePlayer;
 import static org.lwjgl.objects.entities.Races.*;
+import static org.lwjgl.objects.hexagons.HexagonMath.N;
 import static org.lwjgl.utils.VectorUtils.rgbToImVec4;
 
 public class CombatEditor extends ImGuiWindow {
@@ -195,7 +197,7 @@ public class CombatEditor extends ImGuiWindow {
         if (clickInput) {
             //Movement logic
             if (creatureToMove != null) {
-                creatureToMove.moveIfValid(selectedObject, hoveredObject);
+                creatureToMove.moveIfValid(selectedObject);
 
                 if (fogOfWar) {
                     creatureToMove.clearVisibleTiles();
@@ -207,7 +209,7 @@ public class CombatEditor extends ImGuiWindow {
                 selectedObstacle = null;
                 selectedTerrain = null;
                 player.setReachableTiles
-                        (hexReachable((CombatHexagon)selectedObject.parent, player.getMoveSpeed(), gridClass));
+                        (HexagonMath.hexReachable((Hexagon)selectedObject.parent, player.getMoveSpeed(), gridClass));
                 if (overrideMovement) {
                     player.setReachableTiles(gridClass.getAllHexagons());
                 }
@@ -227,12 +229,12 @@ public class CombatEditor extends ImGuiWindow {
                     }
                 }
                 creature.setVisibleTiles(
-                        hexVisible((CombatHexagon)creature.parent, creature.getDungeonVisibleRange(), gridClass));
+                        HexagonMath.hexVisible((CombatHexagon)creature.parent, creature.getDungeonVisibleRange(), gridClass));
             }
             else {
                 for (Creature creature : characterList) {
                     creature.setVisibleTiles(
-                            hexVisible((CombatHexagon)creature.parent, creature.getDungeonVisibleRange(), gridClass));
+                            HexagonMath.hexVisible((CombatHexagon)creature.parent, creature.getDungeonVisibleRange(), gridClass));
                 }
             }
         }
@@ -325,6 +327,12 @@ public class CombatEditor extends ImGuiWindow {
                     }
                 }
             }
+
+            if (hoveredObject instanceof CombatHexagon hoveredHex) {
+                ImGui.text("Hovered hex: " + hoveredHex.getOffsetPos().x + ", " + hoveredHex.getOffsetPos().y);
+                ImGui.text("Cube coordinates: " + hoveredHex.getCubePos().x + ", " + hoveredHex.getCubePos().y + ", " + hoveredHex.getCubePos().z);
+                ImGui.text("Cover: " + (hoveredHex.isWall ? "Wall" : hoveredHex.isFullCover ? "Full cover" : hoveredHex.isHalfCover ? "Half cover" : "None"));
+            }
         }
         //Spells
         if (menuCurrentlyOpen == 1) {
@@ -349,7 +357,7 @@ public class CombatEditor extends ImGuiWindow {
             ImGui.text("Spell type: " + Spells.getSpellName(spellType) );
             if (spellType != 0) {
                 ImGui.sliderInt("Spell size", spellSize, 1, 10);
-                ImGui.sliderInt("Direction", spellDirection, 0, 5, Hexagon.intToDirection(spellDirection[0]));
+                ImGui.sliderInt("Direction", spellDirection, 0, 5, HexagonMath.intToDirection(spellDirection[0]));
 
                 int scrollDirection = inputHandler.isMouseWheelMoved();
                 if (scrollDirection != 0) {
@@ -447,6 +455,13 @@ public class CombatEditor extends ImGuiWindow {
             if (selectedObject instanceof Player player) {
                 renderStatBlock();
             }
+        }
+        if (selectedObject instanceof Player player) {
+
+            ImGui.text(String.format("AabbMin values: %.2f, %.2f, %.2f",
+                    player.getAabbMin().x, player.getAabbMin().y, player.getAabbMin().z));
+            ImGui.text(String.format("AabbMax values: %.2f, %.2f, %.2f",
+                    player.getAabbMax().x, player.getAabbMax().y, player.getAabbMax().z));
         }
 
         ImGui.end();

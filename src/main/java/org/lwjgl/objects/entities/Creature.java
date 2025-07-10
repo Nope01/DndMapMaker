@@ -6,6 +6,7 @@ import org.lwjgl.objects.hexagons.CityHexagon;
 import org.lwjgl.objects.hexagons.CombatHexagon;
 import org.lwjgl.dndMechanics.statusEffects.StatusEffect;
 import org.lwjgl.objects.hexagons.Hexagon;
+import org.lwjgl.objects.hexagons.HexagonMath;
 import org.lwjgl.utils.ObjectUtils;
 import org.lwjgl.objects.SceneObject;
 import org.lwjgl.objects.models.opengl.HexagonShape;
@@ -47,30 +48,15 @@ public abstract class Creature extends SceneObject {
     private Set<Hexagon> reachableTiles = new HashSet<>();
 
 
-    /*
-    perception
-    investigation
-    race
-    creature type
-    class
-
-    health
-    resistances
-    weaknesses
-    AC
-    bloodied
-     */
-
-
     public Creature() {
         initGeometry();
         initAabb();
     }
+
     public Creature(Vector2i offsetPos) {
         initGeometry();
         initAabb();
     }
-
 
     @Override
     public void render() {
@@ -129,69 +115,80 @@ public abstract class Creature extends SceneObject {
         glBindVertexArray(0);
     }
 
-    //Continent useage, should get rid of soon
-    //TODO replace these in continent editor
-    public static int moveSpeedToHexSpeed(int moveSpeed) {
-        return moveSpeed / 5;
-    }
-
-    //NOT USEFUL FOR PROPER CREATURE MOVEMENT, USE HEXREACHABLE INSTEAD
-    public boolean canMoveCreature(SceneObject origin, SceneObject destination) {
-        if (!(origin instanceof Hexagon) && !(destination instanceof Hexagon)) {
-            System.out.println("Selected destination is not a Hexagon");
-        }
-        else {
-            Vector3i originCoords = ((Hexagon) origin.parent).getCubePos();
-            Vector3i destinationCoords = ((Hexagon) destination).getCubePos();
-
-            if (isValidMove(originCoords, destinationCoords)) {
-                if (destination instanceof CityHexagon) {
-                    if (((CityHexagon) destination).isHalfCover) {
-                        System.out.println("Blocked from moving because of half cover");
-                        return false;
-                    }
-                }
-                else if (destination instanceof CombatHexagon) {
-                    if ((((CombatHexagon) destination).isHalfCover)) {
-                        System.out.println("Blocked from moving because of half cover");
-                        return false;
-                    }
-                    else if ((((CombatHexagon) destination).isFullCover)) {
-                        System.out.println("Blocked from moving because of full cover");
-                        return false;
-                    }
-                    if (((CombatHexagon) destination).isWall) {
-                        System.out.println("Blocked from moving because of wall");
-                        return false;
-                    }
-                }
-                System.out.println("Moving Creature");
-                return true;
-            }
-            else {
-                System.out.println("Too far");
-                return false;
-            }
-        }
-        return false;
-    }
-
-    private boolean isValidMove(Vector3i from, Vector3i to) {
-        return Hexagon.cubeDistance(from, to) <= moveSpeed;
-    }
-
-    public void moveIfValid(SceneObject selectedObject, SceneObject hoveredObject) {
-        if (reachableTiles.contains(selectedObject)) {
-            this.setMoveSpeed(this.getMoveSpeed() - this.getDistanceToHexagon((Hexagon) hoveredObject));
-            this.setParent(selectedObject);
-            this.setOffsetAndCubePos(selectedObject.getOffsetPos());
+    /**
+     * Moves the creature to the selected hex if it is within the set of reachable tiles.
+     * <p>
+     * Updates the move speed based on the distance to the selected hex, sets the parent,
+     * updates the offset and cube position, and reinitializes the axis-aligned bounding box (AABB).
+     * Regardless of movement, clears the set of reachable tiles after attempting the move.
+     *
+     * @param selectedHex the hexagon (as a SceneObject) to move to if valid
+     */
+    public void moveIfValid(SceneObject selectedHex) {
+        if (reachableTiles.contains(selectedHex)) {
+            this.setMoveSpeed(this.getMoveSpeed() - this.getDistanceToHexagon((Hexagon) selectedHex));
+            this.setParent(selectedHex);
+            this.setOffsetAndCubePos(selectedHex.getOffsetPos());
             this.initAabb();
         }
         this.clearReachableTiles();
     }
 
+    /**
+     * Calculates the distance to another hexagon using cube coordinates.
+     * This method uses the cube distance formula for hexagonal grids.
+     *
+     * @param hexagon the target hexagon to calculate the distance to
+     * @return the distance in hexes to the specified hexagon
+     */
+    public int getDistanceToHexagon(Hexagon hexagon) {
+        return HexagonMath.cubeDistance(this.getCubePos(), hexagon.getCubePos());
+    }
 
-    //Getters and setters
+    /**
+     * Checks if the creature currently has a status effect of the specified class.
+     *
+     * @param statusEffect the class of the status effect to check for
+     * @return true if the creature has a status effect of the given class, false otherwise
+     */
+    public boolean hasStatusEffect(Class<? extends StatusEffect> statusEffect) {
+        return statusEffects.stream()
+                .anyMatch(e -> e.getClass() == statusEffect);
+    }
+
+    /**
+     * Removes a status effect from the creature if it exists.
+     * If the status effect is found, it calls removeEffect on the status effect
+     * and then removes it from the list of status effects.
+     *
+     * @param statusEffect the class of the status effect to remove
+     */
+    public void removeStatusEffect(Class<? extends StatusEffect> statusEffect) {
+        statusEffects.stream()
+                .filter(e -> e.getClass() == statusEffect)
+                .findFirst()
+                .ifPresent(e -> {
+                    e.removeEffect(this);
+                    statusEffects.remove(e);
+                });
+    }
+
+    /**
+     * Removes all status effects from the creature.
+     * It iterates over a copy of the statusEffects list to avoid concurrent modification issues
+     * and calls removeStatusEffect for each effect.
+     */
+    public void removeAllStatusEffects() {
+        new ArrayList<>(statusEffects).forEach(e -> removeStatusEffect(e.getClass()));
+        statusEffects.clear();
+    }
+
+    /*
+    -------------------------------------------------------------------------------------------------------
+    Getters and Setters
+    -------------------------------------------------------------------------------------------------------
+     */
+
     public String getName() {
         return name;
     }
@@ -252,32 +249,6 @@ public abstract class Creature extends SceneObject {
         statusEffects.add(statusEffect);
     }
 
-    public boolean hasStatusEffect(Class<? extends StatusEffect> statusEffect) {
-        return statusEffects.stream()
-                .anyMatch(e -> e.getClass() == statusEffect);
-    }
-    public boolean hasStatusEffect(StatusEffect statusEffect) {
-        return statusEffects.contains(statusEffect);
-    }
-    public boolean hasStatusEffect(String statusEffect) {
-        return statusEffects.stream()
-                .anyMatch(e -> e.getName().equals(statusEffect));
-    }
-
-    public void removeStatusEffect(Class<? extends StatusEffect> statusEffect) {
-        statusEffects.stream()
-                .filter(e -> e.getClass() == statusEffect)
-                .findFirst()
-                .ifPresent(e -> {
-                    e.removeEffect(this);
-                    statusEffects.remove(e);
-                });
-    }
-
-    public void removeAllStatusEffects() {
-        new ArrayList<>(statusEffects).forEach(e -> removeStatusEffect(e.getClass()));
-        statusEffects.clear();
-    }
 
     public List<StatusEffect> getStatusEffects() {
         return statusEffects;
@@ -341,9 +312,6 @@ public abstract class Creature extends SceneObject {
         this.maxMoveSpeed = maxMoveSpeed;
     }
 
-    public int getDistanceToHexagon(Hexagon hexagon) {
-        return Hexagon.cubeDistance(this.getCubePos(), hexagon.getCubePos());
-    }
 
     public int getActions() {
         return actions;

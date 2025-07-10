@@ -8,13 +8,7 @@ import java.io.Serializable;
 
 import static org.lwjgl.opengl.GL20.*;
 
-
 public class CityHexagon extends Hexagon implements Serializable {
-    public static final float DIFFICULT_TERRAIN = 0.5f;
-
-    public static final float BRIGHT_LIGHT = 1.0f;
-    public static final float DIM_LIGHT = 0.5f;
-    public static final float DARKNESS = 0.1f;
     private int movementModifier;
     private int visibilityModifier;
 
@@ -23,7 +17,6 @@ public class CityHexagon extends Hexagon implements Serializable {
     public boolean isFullCover;
     public boolean isWall;
     public CityHexagon(Vector2i offsetPos) {
-
         super(offsetPos);
     }
 
@@ -37,8 +30,6 @@ public class CityHexagon extends Hexagon implements Serializable {
         glUseProgram(shaderProgram);
         int selected = glGetUniformLocation(shaderProgram, "selected");
         glUniform1i(selected, this.getSelected() ? 1 : 0);
-        int highlighted = glGetUniformLocation(shaderProgram, "highlighted");
-        glUniform1i(highlighted, this.highlighted ? 1 : 0);
         super.render();
     }
 

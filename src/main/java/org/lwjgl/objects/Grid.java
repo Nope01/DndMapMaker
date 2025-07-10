@@ -30,12 +30,31 @@ public class Grid extends SceneObject {
         this(scene, 2, 2);
     }
 
+    @Override
+    public void update(Scene scene, float deltaTime, InputHandler input) {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
+                grid[row][col].update(scene, deltaTime, input);
+            }
+        }
+    }
+
+    @Override
+    public void render() {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
+                grid[row][col].render();
+            }
+        }
+    }
+
     public void makeGridFromLoadedGrid(Grid loadedGrid) {
         CombatHexagon[][] grid = new CombatHexagon[loadedGrid.rows][loadedGrid.columns];
 
         for (int col = 0; col < loadedGrid.columns; col++) {
             for (int row = 0; row < loadedGrid.rows; row++) {
                 CombatHexagon combatHexagon = createCombatHexagon(row, col);
+
                 combatHexagon.setShaderProgram(loadedGrid.getHexagonAt(row, col).getShaderProgram());
                 grid[row][col] = combatHexagon;
                 combatHexagon.paintTerrainTexture(loadedGrid.getHexagonAt(row, col).getTexture());
@@ -94,7 +113,7 @@ public class Grid extends SceneObject {
     }
 
     public ContinentHexagon createContinentHexagon(int row, int col) {
-        Vector3f pos = calculatePosition(row, col);
+        Vector3f pos = calculateHexPositionFromCoords(row, col);
         ContinentHexagon continentHexagon = new ContinentHexagon(new Vector2i(col, row));
         continentHexagon.setId("hex-" + row + "-" + col);
         continentHexagon.setPosition(pos.x, pos.y, pos.z);
@@ -103,7 +122,7 @@ public class Grid extends SceneObject {
     }
 
     public CityHexagon createCityHexagon(int row, int col) {
-        Vector3f pos = calculatePosition(row, col);
+        Vector3f pos = calculateHexPositionFromCoords(row, col);
         CityHexagon cityHexagon = new CityHexagon(new Vector2i(col, row));
         cityHexagon.setId("city-" + row + "-" + col);
         cityHexagon.setPosition(pos.x, pos.y, pos.z);
@@ -112,7 +131,7 @@ public class Grid extends SceneObject {
     }
 
     public CombatHexagon createCombatHexagon(int row, int col) {
-        Vector3f pos = calculatePosition(row, col);
+        Vector3f pos = calculateHexPositionFromCoords(row, col);
         CombatHexagon combatHexagon = new CombatHexagon(new Vector2i(col, row));
         combatHexagon.setId("combat-" + row + "-" + col);
         combatHexagon.setPosition(pos.x, pos.y, pos.z);
@@ -121,7 +140,7 @@ public class Grid extends SceneObject {
         return combatHexagon;
     }
 
-    public Vector3f calculatePosition(int row, int col) {
+    public Vector3f calculateHexPositionFromCoords(int row, int col) {
         float width = 2* ContinentHexagon.SIZE;
         float height = (float) (width * Math.sqrt(3) / 2);
 
@@ -148,24 +167,7 @@ public class Grid extends SceneObject {
         }
     }
 
-    @Override
-    public void update(Scene scene, float deltaTime, InputHandler input) {
-        for (int row = 0; row < rows; row++) {
-            for (int col = 0; col < columns; col++) {
-                grid[row][col].inLine = false;
-                grid[row][col].update(scene, deltaTime, input);
-            }
-        }
-    }
 
-    @Override
-    public void render() {
-        for (int row = 0; row < rows; row++) {
-            for (int col = 0; col < columns; col++) {
-                grid[row][col].render();
-            }
-        }
-    }
 
     public Hexagon[][] getGrid() {
         return grid;
@@ -203,15 +205,6 @@ public class Grid extends SceneObject {
         }
         return null;
     }
-
-    public void clearHoveredHexagons() {
-        for (int row = 0; row < rows; row++) {
-            for (int col = 0; col < columns; col++) {
-                grid[row][col].setHovered(false);
-            }
-        }
-    }
-
     public void applyFogOfWar(boolean fogOfWar) {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
@@ -229,86 +222,4 @@ public class Grid extends SceneObject {
         }
         return hexes;
     }
-
-
-//    public void removeColumn(int old, int current) {
-////        for (int row = 0; row < rows; row++) {
-////            this.removeChild(grid[row][old-1]);
-////            grid[row][old-1].cleanup();
-////        }
-//        for (int row = 0; row < rows; row++) {
-//            for (int col = current; col < old; col++) {
-//                this.removeChild(grid[row][old-1]);
-//            }
-//        }
-//        columns = current;
-//    }
-//
-//        public void removeRow(int old, int current) {
-////        for (int col = 0; col < columns; col++) {
-////            this.removeChild(grid[old-1][col]);
-////        }
-//        for (int row = current; row < old; row++) {
-//            for (int col = 0; col < columns; col++) {
-//                this.removeChild(grid[old-1][col]);
-//            }
-//        }
-//        rows = current;
-//    }
-//
-//    public void addColumn(int old, int current) {
-//        ContinentHexagon[][] oldGrid = grid;
-//        this.grid = new ContinentHexagon[rows][current];
-//
-//        for (int row = 0; row < rows; row++) {
-//            for (int col = 0; col < columns; col++) {
-//                grid[row][col] = oldGrid[row][col];
-//            }
-//        }
-//
-//        for (int row = 0; row < rows; row++) {
-//            for (int col = old; col < current; col++) {
-//                ContinentHexagon continentHexagon = createHexagon(row, col);
-//                grid[row][col] = continentHexagon;
-//                this.addChild(continentHexagon);
-//            }
-//        }
-//        columns = current;
-//    }
-//
-//    public void addRow(int old, int current) {
-//        ContinentHexagon[][] oldGrid = grid;
-//        this.grid = new ContinentHexagon[current][columns];
-//
-//        for (int row = 0; row < rows; row++) {
-//            for (int col = 0; col < columns; col++) {
-//                grid[row][col] = oldGrid[row][col];
-//            }
-//        }
-//
-//        for (int row = old; row < current; row++) {
-//            for (int col = 0; col < columns; col++) {
-//                ContinentHexagon continentHexagon = createHexagon(row, col);
-//                grid[row][col] = continentHexagon;
-//                this.addChild(continentHexagon);
-//            }
-//        }
-//        rows = current;
-//    }
-//
-//    public void lineDraw(Scene scene) {
-//        if (scene.getSelectedObject() != null) {
-//            Vector3i[] results = ContinentHexagon.cubeLineDraw(grid[0][0].getCubeCoords(),
-//                    ((ContinentHexagon) scene.getSelectedObject()).getCubeCoords());
-//
-//            for (Vector3i vec : results) {
-//                Vector2i offset = ContinentHexagon.cubeToOffsetCoords(vec);
-//                if (offset.x < 0 || offset.y < 0) {
-//                    continue;
-//                }
-//                ContinentHexagon lineHex = getHexagonAt(offset.y, offset.x);
-//                lineHex.inLine = true;
-//            }
-//        }
-//    }
 }

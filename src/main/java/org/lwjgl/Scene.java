@@ -7,6 +7,7 @@ import org.lwjgl.data.MapSaveLoad;
 import org.lwjgl.engine.Camera;
 import org.lwjgl.engine.Engine;
 import org.lwjgl.engine.Window;
+import org.lwjgl.objects.entities.Creature;
 import org.lwjgl.objects.hexagons.ContinentHexagon;
 import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.engine.input.ObjectSelection;
@@ -195,6 +196,7 @@ public class Scene extends SceneObject {
             root.render();
         }
     }
+
 
     @Override
     public void update(Scene scene, float deltaTime, InputHandler inputHandler) {

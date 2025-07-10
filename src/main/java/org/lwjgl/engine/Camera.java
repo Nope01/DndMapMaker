@@ -87,37 +87,6 @@ public class Camera {
         invProjMatrix.set(projectionMatrix).invert();
     }
 
-    public Matrix4f getViewMatrix() { return viewMatrix; }
-    public Matrix4f getProjectionMatrix() { return projectionMatrix; }
-
-    public void setPosition(Vector3f position) {
-        position.set(position);
-        recalculate();
-    }
-    public void setPosition(float x, float y, float z) {
-        position.set(x, y, z);
-        recalculate();
-    }
-
-    public void setRotation(float x, float y) {
-        rotation.set(x, y);
-        recalculate();
-    }
-
-    public Vector3f getPosition() { return position; }
-    public Vector2f getRotation() { return rotation; }
-
-    public void addPosition(float x, float y) {
-        moveUp(x);
-        moveLeft(y);
-        recalculate();
-    }
-
-    public void addRotation(float x, float y) {
-        rotation.add(x, y);
-        recalculate();
-    }
-
     public void moveBackwards(float inc) {
         viewMatrix.positiveZ(direction).negate().mul(inc);
         position.sub(direction);
@@ -154,12 +123,51 @@ public class Camera {
         recalculate();
     }
 
+
+    /*
+    -------------------------------------------------------------------------------------------------------
+    Getters and Setters
+    -------------------------------------------------------------------------------------------------------
+     */
+
     public Matrix4f getInvViewMatrix() {
         return invViewMatrix;
     }
 
     public Matrix4f getInvProjMatrix() {
         return invProjMatrix;
+    }
+
+    public Matrix4f getViewMatrix() { return viewMatrix; }
+
+    public Matrix4f getProjectionMatrix() { return projectionMatrix; }
+
+    public void setPosition(Vector3f position) {
+        position.set(position);
+        recalculate();
+    }
+    public void setPosition(float x, float y, float z) {
+        position.set(x, y, z);
+        recalculate();
+    }
+
+    public void setRotation(float x, float y) {
+        rotation.set(x, y);
+        recalculate();
+    }
+
+    public Vector3f getPosition() { return position; }
+    public Vector2f getRotation() { return rotation; }
+
+    public void addPosition(float x, float y) {
+        moveUp(x);
+        moveLeft(y);
+        recalculate();
+    }
+
+    public void addRotation(float x, float y) {
+        rotation.add(x, y);
+        recalculate();
     }
 
 }

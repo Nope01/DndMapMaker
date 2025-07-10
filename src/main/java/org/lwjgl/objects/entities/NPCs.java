@@ -28,6 +28,12 @@ public final class NPCs {
     public static final int VAMPIRE = 24;
     public static final int ZOMBIE = 25;
 
+
+    private NPCs() {
+        // Prevent instantiation
+    }
+
+    // Array of NPC names for easy reference
     public static final String[] npcList = new String[] {
             "Assassin",
             "Beast",
@@ -55,4 +61,32 @@ public final class NPCs {
             "Vampire",
             "Zombie",
     };
+
+    /**
+     * Returns the NPC name as a string based on the NPC type.
+     *
+     * @param npcType The NPC type as an integer.
+     * @return The NPC name as a string.
+     */
+    public static String getNPCAsString(int npcType) {
+        if (npcType < 0 || npcType >= npcList.length) {
+            throw new IllegalArgumentException("Invalid NPC type: " + npcType);
+        }
+        return npcList[npcType];
+    }
+
+    /**
+     * Returns the NPC type as an integer based on the NPC name.
+     *
+     * @param npcName The NPC name as a string.
+     * @return The NPC type as an integer, or -1 if not found.
+     */
+    public static int getNPCType(String npcName) {
+        for (int i = 0; i < npcList.length; i++) {
+            if (npcList[i].equalsIgnoreCase(npcName)) {
+                return i;
+            }
+        }
+        return -1; // Not found
+    }
 }

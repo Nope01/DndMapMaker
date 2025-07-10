@@ -12,6 +12,11 @@ public final class Races {
     public static final int ORC = 8;
     public static final int TIEFLING = 9;
 
+    private Races() {
+        // Prevent instantiation
+    }
+
+    //Array of all race names for easy reference
     public static final String[] raceList = new String[] {
             "Aasimar",
             "Dragonborn",
@@ -25,7 +30,25 @@ public final class Races {
             "Tiefling",
     };
 
+
+    /**
+     * Returns the race as a string based on the race index
+     * @param race the race as an integer
+     * @return the race as a string
+     */
     public static String getRaceAsString(int race) {
+        if (race < 0 || race >= raceList.length) {
+            throw new IllegalArgumentException("Race does not exist: " + race);
+        }
         return raceList[race];
+    }
+
+    public static int getRaceType(String raceName) {
+        for (int i = 0; i < raceList.length; i++) {
+            if (raceList[i].equalsIgnoreCase(raceName)) {
+                return i;
+            }
+        }
+        return -1; // Not found
     }
 }

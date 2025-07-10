@@ -4,6 +4,7 @@ import org.joml.*;
 import org.lwjgl.engine.input.InputHandler;
 import org.lwjgl.Scene;
 import org.lwjgl.objects.hexagons.Hexagon;
+import org.lwjgl.objects.hexagons.HexagonMath;
 import org.lwjgl.textures.Texture;
 
 import java.io.Serializable;
@@ -91,7 +92,6 @@ public abstract class SceneObject implements Serializable {
         if (newParent != null && !newParent.children.contains(this)) {
             newParent.children.add(this);
         }
-        updateWorldPosition();
     }
 
     public void addChild(SceneObject child) {
@@ -102,29 +102,14 @@ public abstract class SceneObject implements Serializable {
     }
 
     public void removeChild(SceneObject child) {
-
         if (children.remove(child)) {
             child.parent = null;
         }
     }
 
-    protected void updateWorldPosition() {
-        // If parent exists, world position = parent world position + local position
-        // Otherwise, world position = local position
-        // Implement as needed for your math library
-        for (SceneObject child : children) {
-            child.updateWorldPosition();
-        }
-    }
-
-    public void moveToParent(SceneObject newParent) {
-        setParent(newParent);
-    }
-
     public void setPosition(Vector3f localPosition) {
         this.position.set(localPosition);
         setAabb(localPosition);
-        updateWorldPosition();
     }
 
     // Getters and setters
@@ -162,10 +147,6 @@ public abstract class SceneObject implements Serializable {
         }
 
     }
-//    public void setPosition(Vector3f pos) {
-//        position.set(pos);
-//        setAabb(pos);
-//    }
 
     public void addPosition(float x, float y, float z) {
         position.add(x, y, z);
@@ -222,7 +203,7 @@ public abstract class SceneObject implements Serializable {
 
     public void setOffsetAndCubePos(Vector2i offsetPos) {
         this.offsetPos = offsetPos;
-        this.cubePos = Hexagon.offsetToCubeCoords(offsetPos);
+        this.cubePos = HexagonMath.offsetToCubeCoords(offsetPos);
     }
 
     public void setOffsetPos(Vector2i offsetPos) {
@@ -230,6 +211,10 @@ public abstract class SceneObject implements Serializable {
     }
 
     public void initAabb() {
+        //Reset min and max to extreme values
+        min.set(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+        max.set(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+
         for (Vector3f vertex : verticesVecs) {
             min.x = Math.min(min.x, vertex.x);
             min.y = Math.min(min.y, vertex.y);
@@ -271,9 +256,6 @@ public abstract class SceneObject implements Serializable {
 
     public Texture getTexture() { return texture; }
 
-
-
-    // Abstract render method to be implemented by subclasses
     public abstract void render();
 
     public abstract void update(Scene scene, float deltaTime, InputHandler inputHandler);
@@ -296,4 +278,5 @@ public abstract class SceneObject implements Serializable {
     public boolean getSelected() {
         return selected;
     }
+
 }

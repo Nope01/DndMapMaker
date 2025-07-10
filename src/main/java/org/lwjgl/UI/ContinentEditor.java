@@ -69,7 +69,6 @@ public class ContinentEditor extends ImGuiWindow{
         selectedObject = scene.getHoveredObject();
 
         if (inputHandler.isLeftClickedAndHeld() && selectedObject != null) {
-            ((ContinentHexagon) selectedObject).setType(selectedType);
             if (isTerrainSelected) {
                 selectedObject.setTexture(selectedTerrainTexture);
             }
@@ -81,7 +80,6 @@ public class ContinentEditor extends ImGuiWindow{
         //Erase the tile based on whether a tile or icon was last selected
         if (inputHandler.isRightClickedAndHeld() && selectedObject != null) {
             if (isTerrainSelected) {
-                ((ContinentHexagon) selectedObject).clearType();
                 selectedObject.setTexture(scene.getTextureCache().getTexture("default_tile"));
             }
             else {
@@ -98,7 +96,6 @@ public class ContinentEditor extends ImGuiWindow{
                         ImGuiWindowFlags.MenuBar);
         imGuiManager.drawMenuBar(imGuiManager, scene, inputHandler);
 
-        ImGui.text("Selected Type: " + ContinentHexagon.getTypeAsString(selectedType));
         ImGui.text("Selected Texture: " + selectedTerrainTexture.getTextureName());
         ImGui.text("Selected Icon: " + selectedIconTexture.getTextureName());
 
