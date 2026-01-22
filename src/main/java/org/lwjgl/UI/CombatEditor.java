@@ -146,7 +146,11 @@ public class CombatEditor extends ImGuiWindow {
             //Terrain
             if (inputHandler.isLeftClickedAndHeld() && hoveredObject instanceof CombatHexagon combatHexagon) {
                 //Paint terrain
-                combatHexagon.paintTerrainTexture(selectedTerrain);
+                Set<Hexagon> brushHexes = HexagonMath.hexVisible(combatHexagon, 2, gridClass);
+                for (Hexagon hex : brushHexes) {
+                    ((CombatHexagon) hex).paintTerrainTexture(selectedTerrain);
+                }
+                //combatHexagon.paintTerrainTexture(selectedTerrain);
             }
 
             //Icons
@@ -323,10 +327,21 @@ public class CombatEditor extends ImGuiWindow {
                 for (int row = 0; row < gridClass.rows; row++) {
                     for (int col = 0; col < gridClass.columns; col++) {
                         grid[row][col].setTexture(scene.getTextureCache().getTexture("floor_01"));
+                        ((CombatHexagon) grid[row][col]).isWall = true;
+                    }
+                }
+            }
+
+            if (ImGui.button("Make all hexes wall")) {
+                for (int row = 0; row < gridClass.rows; row++) {
+                    for (int col = 0; col < gridClass.columns; col++) {
+                        grid[row][col].setTexture(scene.getTextureCache().getTexture("wall_02"));
                         ((CombatHexagon) grid[row][col]).isWall = false;
                     }
                 }
             }
+
+
 
             if (hoveredObject instanceof CombatHexagon hoveredHex) {
                 ImGui.text("Hovered hex: " + hoveredHex.getOffsetPos().x + ", " + hoveredHex.getOffsetPos().y);
